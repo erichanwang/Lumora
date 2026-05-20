@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { cn, formatCurrency, formatNumber, formatDate } from "@/lib/utils";
+import { cn, formatCurrency, formatNumber, formatDate, formatRelativeTime, formatPercentage } from "@/lib/utils";
 
 describe("cn", () => {
   it("merges class names", () => {
@@ -68,5 +68,50 @@ describe("formatDate", () => {
     expect(result).toContain("Dec");
     expect(result).toContain("25");
     expect(result).toContain("2024");
+  });
+});
+
+describe("formatRelativeTime", () => {
+  it("returns 'just now' for recent dates", () => {
+    const result = formatRelativeTime(new Date().toISOString());
+    expect(result).toBe("just now");
+  });
+
+  it("returns minutes ago", () => {
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    expect(formatRelativeTime(fiveMinAgo)).toBe("5m ago");
+  });
+
+  it("returns hours ago", () => {
+    const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
+    expect(formatRelativeTime(threeHoursAgo)).toBe("3h ago");
+  });
+
+  it("returns days ago", () => {
+    const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString();
+    expect(formatRelativeTime(twoDaysAgo)).toBe("2d ago");
+  });
+
+  it("accepts Date objects", () => {
+    const result = formatRelativeTime(new Date());
+    expect(result).toBe("just now");
+  });
+});
+
+describe("formatPercentage", () => {
+  it("formats positive values with + prefix", () => {
+    expect(formatPercentage(12.5)).toBe("+12.5%");
+  });
+
+  it("formats negative values with - prefix", () => {
+    expect(formatPercentage(-3.1)).toBe("-3.1%");
+  });
+
+  it("formats zero", () => {
+    expect(formatPercentage(0)).toBe("+0.0%");
+  });
+
+  it("respects decimal places parameter", () => {
+    expect(formatPercentage(12.345, 2)).toBe("+12.35%");
   });
 });

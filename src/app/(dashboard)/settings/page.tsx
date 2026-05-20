@@ -26,7 +26,7 @@ const languages = [
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("profile");
   const [saving, setSaving] = useState<string | null>(null);
-  const { theme, toggle } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const { toast } = useToast();
 
   // Profile form state
@@ -40,7 +40,7 @@ export default function SettingsPage() {
 
   // Settings form state
   const [settings, setSettings] = useState<SettingsInput>({
-    theme: "light",
+    theme: theme as SettingsInput["theme"],
     language: "en",
     emailNotifications: true,
     pushNotifications: true,
@@ -458,9 +458,9 @@ export default function SettingsPage() {
                   Customize your dashboard appearance
                 </p>
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-3">
                   <button
-                    onClick={() => { if (theme !== "light") toggle(); }}
+                    onClick={() => setTheme("light")}
                     className={cn(
                       "relative flex items-center gap-4 rounded-xl border-2 p-4 transition-all",
                       theme === "light"
@@ -481,7 +481,7 @@ export default function SettingsPage() {
                   </button>
 
                   <button
-                    onClick={() => { if (theme !== "dark") toggle(); }}
+                    onClick={() => setTheme("dark")}
                     className={cn(
                       "relative flex items-center gap-4 rounded-xl border-2 p-4 transition-all",
                       theme === "dark"
@@ -500,7 +500,42 @@ export default function SettingsPage() {
                       <CheckCircle2 className="absolute right-3 top-3 h-5 w-5 text-indigo-500" />
                     )}
                   </button>
+
+                  <button
+                    onClick={() => setTheme("system")}
+                    className={cn(
+                      "relative flex items-center gap-4 rounded-xl border-2 p-4 transition-all",
+                      theme === "system"
+                        ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20"
+                        : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:hover:border-slate-500"
+                    )}
+                  >
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-600 dark:text-slate-300">
+                      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                      </svg>
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-medium text-slate-900 dark:text-white">System</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Follows device theme</p>
+                    </div>
+                    {theme === "system" && (
+                      <CheckCircle2 className="absolute right-3 top-3 h-5 w-5 text-indigo-500" />
+                    )}
+                  </button>
                 </div>
+
+                <p className="mt-3 text-xs text-slate-400 dark:text-slate-500">
+                  Current: {resolvedTheme === "dark" ? "Dark" : "Light"} mode
+                </p>
               </div>
 
               {/* Language */}

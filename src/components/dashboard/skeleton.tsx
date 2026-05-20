@@ -1,12 +1,13 @@
 import { cn } from "@/lib/utils";
 
-function Skeleton({ className }: { className?: string }) {
+function Skeleton({ className, delay }: { className?: string; delay?: number }) {
   return (
     <div
       className={cn(
         "animate-pulse rounded-lg bg-slate-200 dark:bg-slate-700",
         className
       )}
+      style={delay ? { animationDelay: `${delay}ms` } : undefined}
     />
   );
 }
@@ -63,9 +64,9 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
 export function PageSkeleton() {
   return (
     <div className="space-y-6">
-      <div>
-        <Skeleton className="h-7 w-48" />
-        <Skeleton className="mt-2 h-4 w-72" />
+      <div className="space-y-2">
+        <Skeleton className="h-7 w-48" delay={0} />
+        <Skeleton className="h-4 w-72" delay={50} />
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }, (_, i) => (

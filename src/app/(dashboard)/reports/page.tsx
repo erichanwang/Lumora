@@ -44,6 +44,8 @@ const typeColors: Record<string, string> = {
   Marketing: "text-rose-600 dark:text-rose-400",
 };
 
+import { PageTransition, SectionItem } from "@/components/ui/page-transition";
+
 export default function ReportsPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -94,7 +96,9 @@ export default function ReportsPage() {
   );
 
   return (
-    <div className="space-y-6">
+    <PageTransition>
+      <SectionItem>
+      <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -120,7 +124,7 @@ export default function ReportsPage() {
                 ]
               )
             }
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             <Download className="h-4 w-4" />
             Export CSV
@@ -353,5 +357,7 @@ export default function ReportsPage() {
         }
       />
     </div>
+      </SectionItem>
+    </PageTransition>
   );
 }

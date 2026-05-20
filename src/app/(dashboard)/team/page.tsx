@@ -69,6 +69,8 @@ const statusLabel = (status: TeamMember["status"]) => {
   }
 };
 
+import { PageTransition, SectionItem } from "@/components/ui/page-transition";
+
 export default function TeamPage() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
@@ -174,7 +176,9 @@ export default function TeamPage() {
   };
 
   return (
-    <div className="space-y-6">        <div>
+    <PageTransition>
+      <SectionItem>
+      <div className="space-y-6">        <div>
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Team</h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Manage your team members and their roles.
@@ -551,5 +555,7 @@ export default function TeamPage() {
         }
       />
     </div>
+      </SectionItem>
+    </PageTransition>
   );
 }

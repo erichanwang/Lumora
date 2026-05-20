@@ -21,6 +21,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ColumnToggle } from "@/components/ui/column-toggle";
 import { useDebounce } from "@/lib/use-debounce";
 import { CopyButton } from "@/lib/clipboard";
+import { PageTransition, SectionItem } from "@/components/ui/page-transition";
 
 const allUsers = [
   { id: 1, name: "Alex Morgan", email: "alex@lumora.io", role: "Admin", status: "active", plan: "Enterprise", location: "San Francisco, CA", avatar: "AM", joined: "Jan 2023", revenue: 12400 },
@@ -146,8 +147,9 @@ export default function UsersPage() {
   const [perPageState, setPerPageState] = useState(perPage);
 
   return (
-    <div className="space-y-6">
+    <PageTransition>
       {/* Header */}
+      <SectionItem>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Users</h1>
@@ -185,7 +187,7 @@ export default function UsersPage() {
                 ]
               )
             }
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             <Download className="h-4 w-4" />
             Export CSV
@@ -476,6 +478,8 @@ export default function UsersPage() {
       </div>
       )}
 
+      </SectionItem>
+
       {/* Detail Drawer */}
       <DetailDrawer
         open={!!detailUser}
@@ -516,6 +520,6 @@ export default function UsersPage() {
       />
 
 
-    </div>
+    </PageTransition>
   );
 }

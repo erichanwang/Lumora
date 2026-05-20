@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { Moon, Sun, Globe, Bell, User, Save, Loader2, CheckCircle2, Key, Lock, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { profileSchema, type ProfileInput, type SettingsInput } from "@/lib/validations";
 import { useToast } from "@/components/ui/toast";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useFormAutosave, AutosaveBadge } from "@/hooks/use-form-autosave";
 
 type Tab = "profile" | "notifications" | "appearance";
 
@@ -37,6 +38,22 @@ export default function SettingsPage() {
     bio: "Full-stack developer and dashboard enthusiast. Building tools that make data beautiful.",
   });
   const [profileErrors, setProfileErrors] = useState<Partial<Record<keyof ProfileInput, string>>>({});
+
+  // Autosave profile to localStorage with debounce
+  const { status: autosaveStatus, lastSaved, loadDraft } = useFormAutosave({
+    key: "settings-profile",
+    data: profile,
+    delay: 1200,
+  });
+
+  // Load draft from localStorage on mount
+  useEffect(() => {
+    const draft = loadDraft();
+    if (draft) {
+      setProfile(draft);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Settings form state
   const [settings, setSettings] = useState<SettingsInput>({
@@ -206,10 +223,15 @@ export default function SettingsPage() {
           {/* ===== PROFILE TAB ===== */}
           {activeTab === "profile" && (
             <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Profile Information</h3>
-              <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
-                Update your personal details and public profile
-              </p>
+              <div className="flex items-start justify-between mb-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Profile Information</h3>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                    Update your personal details and public profile
+                  </p>
+                </div>
+                <AutosaveBadge status={autosaveStatus} lastSaved={lastSaved} />
+              </div>
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>

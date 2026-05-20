@@ -51,6 +51,8 @@ const typeConfig: Record<AuditEntry["type"], { icon: typeof UserPlus; color: str
   security: { icon: Shield, color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-100 dark:bg-violet-900/40" },
 };
 
+import { PageTransition, SectionItem } from "@/components/ui/page-transition";
+
 export default function AuditLogPage() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -81,7 +83,9 @@ export default function AuditLogPage() {
   const totalPages = Math.ceil(filtered.length / perPage);
 
   return (
-    <div className="space-y-6">
+    <PageTransition>
+      <SectionItem>
+      <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Audit Log</h1>
@@ -105,7 +109,7 @@ export default function AuditLogPage() {
               ]
             )
           }
-          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
         >
           <Download className="h-4 w-4" />
           Export log
@@ -196,5 +200,7 @@ export default function AuditLogPage() {
         onPageChange={(p) => setPage(p)}
       />
     </div>
+      </SectionItem>
+    </PageTransition>
   );
 }

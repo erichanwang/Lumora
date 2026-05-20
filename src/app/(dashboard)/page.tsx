@@ -14,7 +14,12 @@ import {
   TrendingUp,
   Activity,
   RefreshCw,
+  HeartPulse,
+  UserPlus,
+  Settings,
+  ArrowRight,
 } from "lucide-react";
+import Link from "next/link";
 
 const topProducts = [
   { name: "Enterprise Plan", revenue: "$45,200", growth: "+12.3%", color: "bg-indigo-500" },
@@ -114,6 +119,67 @@ export default function DashboardPage() {
             <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
           </div>
         ))}
+      </motion.div>
+
+      {/* Quick action cards */}
+      <motion.div variants={item} className="grid gap-4 sm:grid-cols-3">
+        <Link
+          href="/health"
+          className="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:border-indigo-200 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-600"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400">
+                <HeartPulse className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  System Health
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Check API status and latency</p>
+              </div>
+            </div>
+            <ArrowRight className="h-4 w-4 text-slate-300 transition-all group-hover:translate-x-0.5 group-hover:text-indigo-500 dark:text-slate-600" />
+          </div>
+        </Link>
+        <Link
+          href="/team"
+          className="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:border-indigo-200 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-600"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400">
+                <UserPlus className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  Invite Team Members
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Add collaborators to your workspace</p>
+              </div>
+            </div>
+            <ArrowRight className="h-4 w-4 text-slate-300 transition-all group-hover:translate-x-0.5 group-hover:text-indigo-500 dark:text-slate-600" />
+          </div>
+        </Link>
+        <Link
+          href="/settings"
+          className="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:border-indigo-200 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-600"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400">
+                <Settings className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  Workspace Settings
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Configure notifications, theme, language</p>
+              </div>
+            </div>
+            <ArrowRight className="h-4 w-4 text-slate-300 transition-all group-hover:translate-x-0.5 group-hover:text-indigo-500 dark:text-slate-600" />
+          </div>
+        </Link>
       </motion.div>
 
       {/* Chart & Transactions */}

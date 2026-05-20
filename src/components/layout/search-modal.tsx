@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import { Search, LayoutDashboard, BarChart3, Users, ShoppingCart, Settings, FileText, Receipt, UserPlus, Activity, ArrowRight, History } from "lucide-react";
+import { Search, LayoutDashboard, BarChart3, Users, ShoppingCart, Settings, FileText, Receipt, UserPlus, Activity, ArrowRight, History, HeartPulse } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +14,7 @@ const items = [
   { name: "Team", href: "/team", icon: UserPlus, category: "Pages", shortcut: "G T" },
   { name: "Audit Log", href: "/audit", icon: Activity, category: "Pages", shortcut: "G L" },
   { name: "Reports", href: "/reports", icon: FileText, category: "Pages", shortcut: "G R" },
+  { name: "Health", href: "/health", icon: HeartPulse, category: "Pages", shortcut: "G H" },
   { name: "Settings", href: "/settings", icon: Settings, category: "Pages", shortcut: "⌘," },
 ];
 

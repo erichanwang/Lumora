@@ -9,6 +9,7 @@ import { Header } from "@/components/layout/header";
 import { MobileSidebar } from "@/components/layout/mobile-sidebar";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { KeyboardShortcuts, useKeyboardShortcuts } from "@/components/layout/keyboard-shortcuts";
+import { NotificationToaster } from "@/components/layout/notification-toaster";
 import { useTheme } from "@/lib/theme-context";
 
 export default function DashboardLayout({
@@ -71,6 +72,7 @@ export default function DashboardLayout({
 
       {/* Keyboard shortcuts modal */}
       <KeyboardShortcuts />
+      <NotificationToaster />
     </div>
   );
 }

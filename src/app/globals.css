@@ -114,3 +114,42 @@ body {
 }
 
 .animate-fade-in { animation: fade-in 0.3s ease-out; }
+
+/* Recharts dark mode transitions */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line,
+.recharts-cartesian-axis-tick-value,
+.recharts-text,
+.recharts-tooltip-wrapper,
+.recharts-layer {
+  transition: all 0.3s ease;
+}
+
+.recharts-area-curve {
+  transition: stroke 0.3s ease, fill 0.3s ease;
+}
+
+.recharts-surface {
+  transition: background-color 0.3s ease;
+}
+
+/* Checkbox animations */
+@keyframes check-pop {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-check-pop {
+  animation: check-pop 0.2s ease-out;
+}
+
+/* Bulk action bar slide-up */
+@keyframes bulk-slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-bulk-slide-up {
+  animation: bulk-slide-up 0.25s ease-out;
+}

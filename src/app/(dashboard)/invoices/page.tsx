@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Receipt, Download, Plus, Search, CheckCircle2, Clock, AlertCircle, FileText } from "lucide-react";
+import { Download, Plus, Search, CheckCircle2, Clock, AlertCircle, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { exportToCSV } from "@/lib/export";
+import { useToast } from "@/components/ui/toast";
 
 const invoices = [
   { id: "INV-2025-001", customer: "Acme Corp", email: "billing@acme.com", amount: 2499.00, status: "paid", date: "Mar 1, 2025", dueDate: "Mar 15, 2025" },
@@ -24,6 +25,8 @@ const statusConfig: Record<string, { label: string; icon: typeof CheckCircle2; c
 
 export default function InvoicesPage() {
   const [search, setSearch] = useState("");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const { toast } = useToast();
 
   const filtered = invoices.filter(
     (inv) =>
@@ -109,6 +112,20 @@ export default function InvoicesPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-100 dark:border-slate-700">
+                  <th className="w-12 px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={filtered.length > 0 && selectedIds.size === filtered.length}
+                      onChange={() => {
+                        if (selectedIds.size === filtered.length) {
+                          setSelectedIds(new Set());
+                        } else {
+                          setSelectedIds(new Set(filtered.map((inv) => inv.id)));
+                        }
+                      }}
+                      className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                    />
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Invoice</th>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Customer</th>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Amount</th>
@@ -122,7 +139,37 @@ export default function InvoicesPage() {
                 {filtered.map((inv) => {
                   const StatusIcon = statusConfig[inv.status].icon;
                   return (
-                    <tr key={inv.id} className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                    <tr
+                      key={inv.id}
+                      className={cn(
+                        "transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer",
+                        selectedIds.has(inv.id) && "bg-indigo-50/50 dark:bg-indigo-950/20"
+                      )}
+                      onClick={() => {
+                        setSelectedIds((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(inv.id)) next.delete(inv.id);
+                          else next.add(inv.id);
+                          return next;
+                        });
+                      }}
+                    >
+                      <td className="whitespace-nowrap px-4 py-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(inv.id)}
+                          onChange={() => {
+                            setSelectedIds((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(inv.id)) next.delete(inv.id);
+                              else next.add(inv.id);
+                              return next;
+                            });
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                        />
+                      </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <p className="text-sm font-medium text-slate-900 dark:text-white">{inv.id}</p>
                       </td>
@@ -158,7 +205,22 @@ export default function InvoicesPage() {
             return (
               <div key={inv.id} className="p-4">
                 <div className="flex items-start justify-between">
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{inv.id}</p>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(inv.id)}
+                      onChange={() => {
+                        setSelectedIds((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(inv.id)) next.delete(inv.id);
+                          else next.add(inv.id);
+                          return next;
+                        });
+                      }}
+                      className="h-4 w-4 rounded border-slate-300 text-indigo-600 dark:border-slate-600"
+                    />
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{inv.id}</p>
+                  </div>
                   <button className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-300">
                     <Download className="h-3.5 w-3.5" />PDF
                   </button>
@@ -181,6 +243,44 @@ export default function InvoicesPage() {
             );
           })}
         </div>
+
+        {/* Bulk action bar */}
+        {selectedIds.size > 0 && (
+          <div className="flex items-center justify-between border-t border-slate-100 bg-indigo-50/50 px-6 py-3 dark:border-slate-700 dark:bg-indigo-950/20">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                {selectedIds.size} selected
+              </span>
+              <button
+                onClick={() => setSelectedIds(new Set())}
+                className="text-xs text-slate-500 underline transition-colors hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              >Clear selection</button>
+            </div>
+            <button
+              onClick={() => {
+                const selectedInvoices = invoices.filter((inv) => selectedIds.has(inv.id));
+                exportToCSV(
+                  selectedInvoices,
+                  `lumora-selected-invoices-${new Date().toISOString().split("T")[0]}.csv`,
+                  [
+                    { key: "id", label: "Invoice ID" },
+                    { key: "customer", label: "Customer" },
+                    { key: "email", label: "Email" },
+                    { key: "amount", label: "Amount" },
+                    { key: "status", label: "Status" },
+                    { key: "date", label: "Issue Date" },
+                    { key: "dueDate", label: "Due Date" },
+                  ]
+                );
+                toast("Exported " + selectedIds.size + " invoices", "success");
+              }}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700"
+            >
+              <Download className="h-3.5 w-3.5" />
+              Export Selected
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

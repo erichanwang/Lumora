@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { exportToCSV } from "@/lib/export";
+import { useToast } from "@/components/ui/toast";
 
 const allOrders = [
   { id: "#ORD-7842", customer: "Olivia Martin", email: "olivia@example.com", items: 3, amount: 249.99, status: "delivered", payment: "paid", date: "Mar 1, 2025", eta: "Mar 3, 2025" },
@@ -44,6 +45,8 @@ export default function OrdersPage() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [page, setPage] = useState(0);
   const perPage = 5;
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const { toast } = useToast();
 
   const filtered = useMemo(() => {
     let result = allOrders.filter((o) => {
@@ -163,6 +166,20 @@ export default function OrdersPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-100 dark:border-slate-700">
+                  <th className="w-12 px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={paged.length > 0 && selectedIds.size === paged.length}
+                      onChange={() => {
+                        if (selectedIds.size === paged.length) {
+                          setSelectedIds(new Set());
+                        } else {
+                          setSelectedIds(new Set(paged.map((o) => o.id)));
+                        }
+                      }}
+                      className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                    />
+                  </th>
                   {[
                     { key: "id", label: "Order" },
                     { key: "customer", label: "Customer" },
@@ -187,7 +204,37 @@ export default function OrdersPage() {
                   const config = statusConfig[order.status];
                   const StatusIcon = config.icon;
                   return (
-                    <tr key={order.id} className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                    <tr
+                      key={order.id}
+                      className={cn(
+                        "transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer",
+                        selectedIds.has(order.id) && "bg-indigo-50/50 dark:bg-indigo-950/20"
+                      )}
+                      onClick={() => {
+                        setSelectedIds((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(order.id)) next.delete(order.id);
+                          else next.add(order.id);
+                          return next;
+                        });
+                      }}
+                    >
+                      <td className="whitespace-nowrap px-4 py-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(order.id)}
+                          onChange={() => {
+                            setSelectedIds((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(order.id)) next.delete(order.id);
+                              else next.add(order.id);
+                              return next;
+                            });
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                        />
+                      </td>
                       <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">{order.id}</td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <p className="text-sm font-medium text-slate-900 dark:text-white">{order.customer}</p>
@@ -218,7 +265,22 @@ export default function OrdersPage() {
             return (
               <div key={order.id} className="p-4">
                 <div className="flex items-start justify-between">
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{order.id}</p>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(order.id)}
+                      onChange={() => {
+                        setSelectedIds((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(order.id)) next.delete(order.id);
+                          else next.add(order.id);
+                          return next;
+                        });
+                      }}
+                      className="h-4 w-4 rounded border-slate-300 text-indigo-600 dark:border-slate-600"
+                    />
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{order.id}</p>
+                  </div>
                   <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium", config.className)}>
                     <StatusIcon className="h-3 w-3" />{config.label}
                   </span>
@@ -239,6 +301,44 @@ export default function OrdersPage() {
             );
           })}
         </div>
+
+        {/* Bulk action bar */}
+        {selectedIds.size > 0 && (
+          <div className="flex items-center justify-between border-t border-slate-100 bg-indigo-50/50 px-6 py-3 dark:border-slate-700 dark:bg-indigo-950/20">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                {selectedIds.size} selected
+              </span>
+              <button
+                onClick={() => setSelectedIds(new Set())}
+                className="text-xs text-slate-500 underline transition-colors hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              >Clear selection</button>
+            </div>
+            <button
+              onClick={() => {
+                const selectedOrders = allOrders.filter((o) => selectedIds.has(o.id));
+                exportToCSV(
+                  selectedOrders,
+                  `lumora-selected-orders-${new Date().toISOString().split("T")[0]}.csv`,
+                  [
+                    { key: "id", label: "Order ID" },
+                    { key: "customer", label: "Customer" },
+                    { key: "email", label: "Email" },
+                    { key: "items", label: "Items" },
+                    { key: "amount", label: "Amount" },
+                    { key: "status", label: "Status" },
+                    { key: "date", label: "Date" },
+                  ]
+                );
+                toast("Exported " + selectedIds.size + " orders", "success");
+              }}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700"
+            >
+              <Download className="h-3.5 w-3.5" />
+              Export Selected
+            </button>
+          </div>
+        )}
 
         {/* Pagination */}
         <div className="flex items-center justify-between border-t border-slate-100 px-6 py-3 dark:border-slate-700">

@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   FileText,
   Receipt,
+  Activity,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -23,6 +24,7 @@ const navigation = [
   { name: "Orders", href: "/orders", icon: ShoppingCart },
   { name: "Reports", href: "/reports", icon: FileText },
   { name: "Invoices", href: "/invoices", icon: Receipt },
+  { name: "Health", href: "/health", icon: Activity },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 

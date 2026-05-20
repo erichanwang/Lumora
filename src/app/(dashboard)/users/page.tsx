@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { exportToCSV } from "@/lib/export";
+import { useToast } from "@/components/ui/toast";
 
 const allUsers = [
   { id: 1, name: "Alex Morgan", email: "alex@lumora.io", role: "Admin", status: "active", plan: "Enterprise", location: "San Francisco, CA", avatar: "AM", joined: "Jan 2023", revenue: 12400 },
@@ -53,6 +54,8 @@ export default function UsersPage() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(0);
   const perPage = 5;
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const { toast } = useToast();
 
   const filtered = useMemo(() => {
     let result = allUsers.filter((u) => {
@@ -194,6 +197,20 @@ export default function UsersPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-100 dark:border-slate-700">
+                  <th className="w-12 px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={paged.length > 0 && selectedIds.size === paged.length}
+                      onChange={() => {
+                        if (selectedIds.size === paged.length) {
+                          setSelectedIds(new Set());
+                        } else {
+                          setSelectedIds(new Set(paged.map((u) => u.id)));
+                        }
+                      }}
+                      className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                    />
+                  </th>
                   {[
                     { key: "name", label: "User" },
                     { key: "role", label: "Role" },
@@ -218,7 +235,39 @@ export default function UsersPage() {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                 {paged.map((user) => (
-                  <tr key={user.id} className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                  <tr
+                    key={user.id}
+                    className={cn(
+                      "transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer",
+                      selectedIds.has(user.id) && "bg-indigo-50/50 dark:bg-indigo-950/20"
+                    )}
+                    onClick={(e) => {
+                      const target = e.target as HTMLElement;
+                      if (target.tagName === "INPUT" || target.tagName === "BUTTON") return;
+                      setSelectedIds((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(user.id)) next.delete(user.id);
+                        else next.add(user.id);
+                        return next;
+                      });
+                    }}
+                  >
+                    <td className="whitespace-nowrap px-4 py-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(user.id)}
+                        onChange={() => {
+                          setSelectedIds((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(user.id)) next.delete(user.id);
+                            else next.add(user.id);
+                            return next;
+                          });
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                      />
+                    </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-xs font-bold text-white">
@@ -260,6 +309,19 @@ export default function UsersPage() {
             <div key={user.id} className="p-4">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(user.id)}
+                    onChange={() => {
+                      setSelectedIds((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(user.id)) next.delete(user.id);
+                        else next.add(user.id);
+                        return next;
+                      });
+                    }}
+                    className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                  />
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-xs font-bold text-white">
                     {user.avatar}
                   </div>
@@ -278,6 +340,46 @@ export default function UsersPage() {
             </div>
           ))}
         </div>
+
+        {/* Bulk action bar */}
+        {selectedIds.size > 0 && (
+          <div className="flex items-center justify-between border-t border-slate-100 bg-indigo-50/50 px-6 py-3 dark:border-slate-700 dark:bg-indigo-950/20">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                {selectedIds.size} selected
+              </span>
+              <button
+                onClick={() => setSelectedIds(new Set())}
+                className="text-xs text-slate-500 underline transition-colors hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              >
+                Clear selection
+              </button>
+            </div>
+            <button
+              onClick={() => {
+                const selectedUsers = allUsers.filter((u) => selectedIds.has(u.id));
+                exportToCSV(
+                  selectedUsers,
+                  `lumora-selected-users-${new Date().toISOString().split("T")[0]}.csv`,
+                  [
+                    { key: "name", label: "Name" },
+                    { key: "email", label: "Email" },
+                    { key: "role", label: "Role" },
+                    { key: "status", label: "Status" },
+                    { key: "plan", label: "Plan" },
+                    { key: "revenue", label: "Revenue" },
+                    { key: "joined", label: "Joined" },
+                  ]
+                );
+                toast("Exported " + selectedIds.size + " users", "success");
+              }}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700"
+            >
+              <Download className="h-3.5 w-3.5" />
+              Export Selected
+            </button>
+          </div>
+        )}
 
         {/* Pagination */}
         <div className="flex items-center justify-between border-t border-slate-100 px-6 py-3 dark:border-slate-700">

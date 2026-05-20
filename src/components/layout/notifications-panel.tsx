@@ -174,7 +174,7 @@ export function NotificationsPanel({
               <div
                 key={notif.id}
                 className={cn(
-                  "flex items-start gap-3 border-b border-slate-50 px-5 py-3.5 transition-colors hover:bg-slate-50 dark:border-slate-700/50 dark:hover:bg-slate-700/50",
+                  "group flex items-start gap-3 border-b border-slate-50 px-5 py-3.5 transition-colors hover:bg-slate-50 dark:border-slate-700/50 dark:hover:bg-slate-700/50",
                   isUnread && "bg-indigo-50/50 dark:bg-indigo-950/20"
                 )}
               >
@@ -194,6 +194,21 @@ export function NotificationsPanel({
                         <span className="ml-2 inline-block h-2 w-2 rounded-full bg-indigo-500 animate-pulse-dot" />
                       )}
                     </p>
+                    {isUnread && (
+                      <button
+                        onClick={() => {
+                          setOptimisticIds((prev) => {
+                            const next = new Set(prev);
+                            next.add(notif.id);
+                            return next;
+                          });
+                        }}
+                        className="shrink-0 rounded p-1 text-slate-300 opacity-0 transition-all hover:bg-indigo-100 hover:text-indigo-600 group-hover:opacity-100 dark:text-slate-600 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400"
+                        title="Mark as read"
+                      >
+                        <CheckCheck className="h-3.5 w-3.5" />
+                      </button>
+                    )}
                   </div>
                   <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                     {notif.message}

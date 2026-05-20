@@ -8,6 +8,7 @@ import { Lightbulb, ArrowRight, Loader2, Check, Shield, AlertTriangle, Key, Eye,
 import { registerSchema } from "@/lib/validations";
 import type { RegisterInput } from "@/lib/validations";
 import { cn } from "@/lib/utils";
+import { AuthGradient } from "@/components/ui/auth-gradient";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -271,12 +272,7 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      <div className="hidden flex-1 bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 p-12 lg:flex lg:flex-col lg:justify-between">
-        <div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 backdrop-blur">
-            <Lightbulb className="h-5 w-5 text-white" />
-          </div>
-        </div>
+      <AuthGradient>
         <div className="max-w-md space-y-6">
           {[
             { title: "Beautiful dashboards", desc: "Real-time visualizations of your business metrics" },
@@ -294,7 +290,7 @@ export default function RegisterPage() {
             </div>
           ))}
         </div>
-      </div>
+      </AuthGradient>
     </div>
   );
 }

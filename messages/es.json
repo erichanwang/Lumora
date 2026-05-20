@@ -1,0 +1,50 @@
+{
+  "common": {
+    "appName": "Lumora",
+    "dashboard": "Panel",
+    "analytics": "Analíticas",
+    "users": "Usuarios",
+    "orders": "Pedidos",
+    "invoices": "Facturas",
+    "reports": "Informes",
+    "team": "Equipo",
+    "audit": "Registro de Auditoría",
+    "health": "Estado del Sistema",
+    "settings": "Configuración",
+    "search": "Buscar cualquier cosa...",
+    "loading": "Cargando...",
+    "save": "Guardar Cambios",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "confirm": "Confirmar",
+    "close": "Cerrar"
+  },
+  "auth": {
+    "welcomeBack": "Bienvenido de nuevo",
+    "signInToContinue": "Inicia sesión para continuar",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "signIn": "Iniciar sesión",
+    "signingIn": "Iniciando sesión...",
+    "createAccount": "Crear cuenta",
+    "noAccount": "¿No tienes una cuenta?",
+    "hasAccount": "¿Ya tienes una cuenta?",
+    "createOne": "Crear una",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "rememberMe": "Recuérdame",
+    "orContinueWith": "o continúa con",
+    "demoCredentials": "Credenciales de demostración",
+    "invalidCredentials": "Correo o contraseña inválidos"
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Administra la configuración de tu cuenta.",
+    "profile": "Perfil",
+    "notifications": "Notificaciones",
+    "appearance": "Apariencia",
+    "theme": "Tema",
+    "language": "Idioma",
+    "dangerZone": "Zona de Peligro",
+    "deleteAccount": "Eliminar Cuenta"
+  }
+}

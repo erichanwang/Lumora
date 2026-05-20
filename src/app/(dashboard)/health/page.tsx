@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CopyButton, useClipboard } from "@/lib/clipboard";
+import { useToast } from "@/lib/toast-context";
 import useSWR from "swr";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -47,12 +48,7 @@ export default function HealthPage() {
     refreshInterval: 10000,
   });
   const [selectedService, setSelectedService] = useState<string | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  const healthToast = (message: string, type?: "success" | "error" | "warning" | "info") => {
-    setToastMessage(message);
-    setTimeout(() => setToastMessage(null), 2000);
-  };
+  const { toast: healthToast } = useToast();
 
   const statusColor = data?.status === "healthy" ? "text-emerald-500" : "text-red-500";
   const statusBg = data?.status === "healthy" ? "bg-emerald-100 dark:bg-emerald-900/30" : "bg-red-100 dark:bg-red-900/30";
@@ -274,13 +270,6 @@ export default function HealthPage() {
           );
         })}
       </div>
-
-      {/* Toast */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 animate-[drawer-up_0.3s_ease-out] rounded-xl border border-slate-200 bg-white px-5 py-3 shadow-xl dark:border-slate-700 dark:bg-slate-800">
-          <p className="text-sm font-medium text-slate-900 dark:text-white">{toastMessage}</p>
-        </div>
-      )}
     </motion.div>
   );
 }

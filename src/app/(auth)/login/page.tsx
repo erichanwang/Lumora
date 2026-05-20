@@ -8,6 +8,7 @@ import { Lightbulb, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import { loginSchema } from "@/lib/validations";
 import type { LoginInput } from "@/lib/validations";
 import { cn } from "@/lib/utils";
+import { AuthGradient } from "@/components/ui/auth-gradient";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -235,27 +236,20 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="hidden flex-1 bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 p-12 lg:flex lg:flex-col lg:justify-between">
-        <div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 backdrop-blur">
-            <Lightbulb className="h-5 w-5 text-white" />
+      <AuthGradient>
+        <blockquote className="text-xl font-medium text-white">
+          "Lumora has transformed how we understand our business data. The insights are incredible."
+        </blockquote>
+        <div className="mt-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-sm font-bold text-white">
+            SC
+          </div>
+          <div>
+            <p className="text-sm font-medium text-white">Sarah Chen</p>
+            <p className="text-xs text-indigo-200">CTO, TechVentures Inc.</p>
           </div>
         </div>
-        <div className="max-w-md">
-          <blockquote className="text-xl font-medium text-white">
-            "Lumora has transformed how we understand our business data. The insights are incredible."
-          </blockquote>
-          <div className="mt-4 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-sm font-bold text-white">
-              SC
-            </div>
-            <div>
-              <p className="text-sm font-medium text-white">Sarah Chen</p>
-              <p className="text-xs text-indigo-200">CTO, TechVentures Inc.</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      </AuthGradient>
     </div>
   );
 }

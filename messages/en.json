@@ -1,0 +1,50 @@
+{
+  "common": {
+    "appName": "Lumora",
+    "dashboard": "Dashboard",
+    "analytics": "Analytics",
+    "users": "Users",
+    "orders": "Orders",
+    "invoices": "Invoices",
+    "reports": "Reports",
+    "team": "Team",
+    "audit": "Audit Log",
+    "health": "System Health",
+    "settings": "Settings",
+    "search": "Search anything...",
+    "loading": "Loading...",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "close": "Close"
+  },
+  "auth": {
+    "welcomeBack": "Welcome back",
+    "signInToContinue": "Sign in to your account to continue",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signingIn": "Signing in...",
+    "createAccount": "Create account",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "createOne": "Create one",
+    "forgotPassword": "Forgot password?",
+    "rememberMe": "Remember me",
+    "orContinueWith": "or continue with",
+    "demoCredentials": "Demo credentials",
+    "invalidCredentials": "Invalid email or password"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account settings and preferences.",
+    "profile": "Profile",
+    "notifications": "Notifications",
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "language": "Language",
+    "dangerZone": "Danger Zone",
+    "deleteAccount": "Delete Account"
+  }
+}

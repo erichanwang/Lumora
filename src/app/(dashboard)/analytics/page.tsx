@@ -36,7 +36,6 @@ const COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 interface ChartTooltipProps {
   active?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload?: Array<{ name: string; value: number; fill?: string; stroke?: string }>;
   label?: string;
 }
@@ -44,16 +43,16 @@ interface ChartTooltipProps {
 function BarTooltip({ active, payload, label }: ChartTooltipProps) {
   if (!active || !payload) return null;
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
-      <p className="mb-2 text-xs font-medium text-slate-500">{label}</p>
+    <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+      <p className="mb-2 text-xs font-medium text-slate-500 dark:text-slate-400">{label}</p>
       {payload.map((entry, index) => (
         <div key={index} className="flex items-center gap-2 text-sm">
           <span
             className="h-2 w-2 rounded-full"
             style={{ backgroundColor: entry.stroke ?? entry.fill ?? "#6366f1" }}
           />
-          <span className="text-slate-600">{entry.name}:</span>
-          <span className="font-semibold text-slate-900">
+          <span className="text-slate-600 dark:text-slate-400">{entry.name}:</span>
+          <span className="font-semibold text-slate-900 dark:text-white">
             {entry.value.toLocaleString()}
           </span>
         </div>
@@ -66,8 +65,8 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Analytics</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Track your website performance and traffic sources.
         </p>
       </div>
@@ -81,10 +80,10 @@ export default function AnalyticsPage() {
         ].map((stat) => (
           <div
             key={stat.label}
-            className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+            className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800"
           >
-            <p className="text-sm font-medium text-slate-500">{stat.label}</p>
-            <p className="mt-1 text-2xl font-bold text-slate-900">
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
+            <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
               {stat.value}
             </p>
             <p className="mt-1 text-sm font-medium text-emerald-600">
@@ -97,11 +96,11 @@ export default function AnalyticsPage() {
       {/* Charts */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Weekly traffic */}
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="mb-1 text-lg font-semibold text-slate-900">
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <h3 className="mb-1 text-lg font-semibold text-slate-900 dark:text-white">
             Weekly Traffic
           </h3>
-          <p className="mb-6 text-sm text-slate-500">
+          <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
             Page views vs unique visitors
           </p>
           <div className="h-72 min-w-0">
@@ -147,11 +146,11 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Traffic sources */}
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="mb-1 text-lg font-semibold text-slate-900">
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <h3 className="mb-1 text-lg font-semibold text-slate-900 dark:text-white">
             Traffic Sources
           </h3>
-          <p className="mb-6 text-sm text-slate-500">
+          <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
             Where your visitors come from
           </p>
           <div className="h-72 min-w-0">
@@ -180,7 +179,7 @@ export default function AnalyticsPage() {
                   iconType="circle"
                   iconSize={8}
                   formatter={(value: string) => (
-                    <span className="text-sm text-slate-600">{value}</span>
+                    <span className="text-sm text-slate-600 dark:text-slate-400">{value}</span>
                   )}
                 />
               </PieChart>

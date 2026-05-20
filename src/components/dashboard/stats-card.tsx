@@ -25,20 +25,20 @@ export function StatsCard({
   const isPositive = change >= 0;
 
   return (
-    <div className="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:border-indigo-200">
+    <div className="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:border-indigo-200 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-600">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-slate-500">{title}</p>
-        <div className={cn("rounded-lg p-2.5 transition-colors group-hover:scale-110 transition-transform", iconBg)}>
+        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
+        <div className={cn("rounded-lg p-2.5 transition-all duration-200 group-hover:scale-110 group-hover:rotate-3", iconBg)}>
           <Icon className={cn("h-4 w-4", iconColor)} />
         </div>
       </div>
       <div className="mt-3">
-        <p className="text-2xl font-bold text-slate-900">{value}</p>
+        <p className="text-2xl font-bold text-slate-900 dark:text-white">{value}</p>
         <div className="mt-1 flex items-center gap-1.5">
           <span
             className={cn(
               "inline-flex items-center gap-0.5 text-xs font-medium",
-              isPositive ? "text-emerald-600" : "text-red-600"
+              isPositive ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
             )}
           >
             {isPositive ? (
@@ -48,7 +48,7 @@ export function StatsCard({
             )}
             {Math.abs(change)}%
           </span>
-          <span className="text-xs text-slate-400">{changeLabel}</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500">{changeLabel}</span>
         </div>
       </div>
     </div>

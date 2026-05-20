@@ -153,3 +153,54 @@ body {
 .animate-bulk-slide-up {
   animation: bulk-slide-up 0.25s ease-out;
 }
+
+/* Pulse dot animation for live indicators */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Drawer slide-up for detail modals */
+@keyframes drawer-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes drawer-down {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(100%); opacity: 0; }
+}
+
+.animate-drawer-up { animation: drawer-up 0.3s ease-out; }
+.animate-drawer-down { animation: drawer-down 0.25s ease-in forwards; }
+
+/* Skeleton shimmer effect */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.dark .animate-shimmer {
+  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background-size: 200% 100%;
+}
+
+/* Table row hover highlight pulse */
+@keyframes row-highlight {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: rgba(99, 102, 241, 0.05); }
+}
+
+.animate-row-highlight {
+  animation: row-highlight 1s ease-in-out infinite;
+}

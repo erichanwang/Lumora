@@ -6,19 +6,18 @@ import {
   Users,
   Search,
   ChevronDown,
-  MoreHorizontal,
   Shield,
-  Mail,
-  Phone,
-  MapPin,
-  Star,
   UserPlus,
   Filter,
   Download,
+  Eye,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { exportToCSV } from "@/lib/export";
 import { useToast } from "@/components/ui/toast";
+import { DetailDrawer } from "@/components/ui/detail-drawer";
+import { EnhancedPagination } from "@/components/ui/pagination-enhanced";
+import { EmptyState } from "@/components/ui/empty-state";
 
 const allUsers = [
   { id: 1, name: "Alex Morgan", email: "alex@lumora.io", role: "Admin", status: "active", plan: "Enterprise", location: "San Francisco, CA", avatar: "AM", joined: "Jan 2023", revenue: 12400 },
@@ -60,6 +59,7 @@ export default function UsersPage() {
   const [page, setPage] = useState(Number(searchParams.get("page")) || 0);
   const perPage = 5;
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [detailUser, setDetailUser] = useState<(typeof allUsers)[number] | null>(null);
   const { toast } = useToast();
 
   const syncUrl = useCallback((params: Record<string, string>) => {
@@ -136,6 +136,9 @@ export default function UsersPage() {
       />
     );
   };
+
+  // Pagination state for enhanced pagination
+  const [perPageState, setPerPageState] = useState(perPage);
 
   return (
     <div className="space-y-6">
@@ -227,7 +230,14 @@ export default function UsersPage() {
         </select>
       </div>
 
-      {/* Users table — desktop */}
+      {/* Empty state for no results */}
+      {filtered.length === 0 ? (
+        <EmptyState
+          icon={Users}
+          title="No users found"
+          description={search ? "Try adjusting your search or filters." : "No users match the current filters."}
+        />
+      ) : (
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
         <div className="hidden sm:block">
           <div className="overflow-x-auto">
@@ -331,7 +341,15 @@ export default function UsersPage() {
                     <td className="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">{user.revenue > 0 ? `$${user.revenue.toLocaleString()}` : "—"}</td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{user.joined}</td>
                     <td className="whitespace-nowrap px-6 py-4 text-right">
-                      <button className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"><MoreHorizontal className="h-4 w-4" /></button>
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setDetailUser(user); }}
+                          className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+                          title="View details"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -367,7 +385,13 @@ export default function UsersPage() {
                     <p className="text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
                   </div>
                 </div>
-                <button className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"><MoreHorizontal className="h-4 w-4" /></button>
+                <button
+                  onClick={() => setDetailUser(user)}
+                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+                  title="View details"
+                >
+                  <Eye className="h-4 w-4" />
+                </button>
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-3">
                 <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium capitalize", statusStyles[user.status])}>{user.status}</span>
@@ -418,32 +442,57 @@ export default function UsersPage() {
           </div>
         )}
 
-        {/* Pagination */}
-        <div className="flex items-center justify-between border-t border-slate-100 px-6 py-3 dark:border-slate-700">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Showing {(page * perPage) + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length}
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => { setPage(Math.max(0, page - 1)); syncUrl({ page: String(Math.max(0, page - 1)) }); }}
-              disabled={page === 0}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-            >Previous</button>
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                onClick={() => { setPage(i); syncUrl({ page: String(i) }); }}
-                className={cn("rounded-lg px-3 py-1.5 text-xs font-medium transition-colors", page === i ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300" : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700")}
-              >{i + 1}</button>
-            ))}
-            <button
-              onClick={() => { setPage(Math.min(totalPages - 1, page + 1)); syncUrl({ page: String(Math.min(totalPages - 1, page + 1)) }); }}
-              disabled={page >= totalPages - 1}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-            >Next</button>
-          </div>
-        </div>
+        {/* Enhanced Pagination */}
+        <EnhancedPagination
+          page={page}
+          totalPages={totalPages}
+          total={filtered.length}
+          perPage={perPage}
+          onPageChange={(p) => { setPage(p); syncUrl({ page: String(p) }); }}
+        />
       </div>
+      )}
+
+      {/* Detail Drawer */}
+      <DetailDrawer
+        open={!!detailUser}
+        onClose={() => setDetailUser(null)}
+        title={detailUser?.name ?? ""}
+        subtitle={detailUser?.email}
+        badge={
+          detailUser && (
+            <span
+              className={cn(
+                "inline-flex rounded-full px-2.5 py-1 text-xs font-medium capitalize",
+                statusStyles[detailUser.status]
+              )}
+            >
+              {detailUser.status}
+            </span>
+          )
+        }
+        rows={
+          detailUser
+            ? [
+                { label: "Role", value: <span className={cn("font-medium", roleColors[detailUser.role])}>{detailUser.role}</span> },
+                { label: "Plan", value: detailUser.plan },
+                { label: "Revenue", value: detailUser.revenue > 0 ? `$${detailUser.revenue.toLocaleString()}` : "—" },
+                { label: "Location", value: detailUser.location },
+                { label: "Joined", value: detailUser.joined },
+              ]
+            : []
+        }
+        footer={
+          <button
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+          >
+            <Eye className="h-4 w-4" />
+            View Full Profile
+          </button>
+        }
+      />
+
+
     </div>
   );
 }

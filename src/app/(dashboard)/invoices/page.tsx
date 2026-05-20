@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Download, Plus, Search, CheckCircle2, Clock, AlertCircle, FileText, ChevronDown } from "lucide-react";
+import { Download, Plus, Search, CheckCircle2, Clock, AlertCircle, FileText, ChevronDown, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { exportToCSV } from "@/lib/export";
 import { useToast } from "@/components/ui/toast";
+import { DetailDrawer } from "@/components/ui/detail-drawer";
+import { EnhancedPagination } from "@/components/ui/pagination-enhanced";
+import { EmptyState } from "@/components/ui/empty-state";
 
 const invoices = [
   { id: "INV-2025-001", customer: "Acme Corp", email: "billing@acme.com", amount: 2499.00, status: "paid", date: "Mar 1, 2025", dueDate: "Mar 15, 2025" },
@@ -30,6 +33,7 @@ export default function InvoicesPage() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [page, setPage] = useState(0);
   const perPage = 5;
+  const [detailInvoice, setDetailInvoice] = useState<(typeof invoices)[number] | null>(null);
   const { toast } = useToast();
 
   const filtered = useMemo(() => {
@@ -137,7 +141,14 @@ export default function InvoicesPage() {
         </div>
       </div>
 
-      {/* Invoice table — desktop */}
+      {/* Empty state */}
+      {filtered.length === 0 ? (
+        <EmptyState
+          icon={FileText}
+          title="No invoices found"
+          description={search ? "Try adjusting your search." : "No invoices match the current filters."}
+        />
+      ) : (
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
         <div className="hidden sm:block">
           <div className="overflow-x-auto">
@@ -230,9 +241,18 @@ export default function InvoicesPage() {
                       <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{inv.date}</td>
                       <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{inv.dueDate}</td>
                       <td className="whitespace-nowrap px-6 py-4 text-right">
-                        <button className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600">
-                          <Download className="h-3.5 w-3.5" />PDF
-                        </button>
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setDetailInvoice(inv); }}
+                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+                            title="View details"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                          </button>
+                          <button className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600">
+                            <Download className="h-3.5 w-3.5" />PDF
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -265,9 +285,18 @@ export default function InvoicesPage() {
                     />
                     <p className="text-sm font-semibold text-slate-900 dark:text-white">{inv.id}</p>
                   </div>
-                  <button className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-300">
-                    <Download className="h-3.5 w-3.5" />PDF
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => setDetailInvoice(inv)}
+                      className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+                      title="View details"
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                    </button>
+                    <button className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-300">
+                      <Download className="h-3.5 w-3.5" />PDF
+                    </button>
+                  </div>
                 </div>
                 <div className="mt-2">
                   <p className="text-sm font-medium text-slate-900 dark:text-white">{inv.customer}</p>
@@ -326,32 +355,51 @@ export default function InvoicesPage() {
           </div>
         )}
 
-        {/* Pagination */}
-        <div className="flex items-center justify-between border-t border-slate-100 px-6 py-3 dark:border-slate-700">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Showing {(page * perPage) + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length}
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPage(Math.max(0, page - 1))}
-              disabled={page === 0}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-            >Previous</button>
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                onClick={() => setPage(i)}
-                className={cn("rounded-lg px-3 py-1.5 text-xs font-medium transition-colors", page === i ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300" : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700")}
-              >{i + 1}</button>
-            ))}
-            <button
-              onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
-              disabled={page >= totalPages - 1}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-            >Next</button>
-          </div>
-        </div>
+        {/* Enhanced Pagination */}
+        <EnhancedPagination
+          page={page}
+          totalPages={totalPages}
+          total={filtered.length}
+          perPage={perPage}
+          onPageChange={(p) => setPage(p)}
+        />
       </div>
+      )}
+
+      {/* Detail Drawer */}
+      <DetailDrawer
+        open={!!detailInvoice}
+        onClose={() => setDetailInvoice(null)}
+        title={detailInvoice?.id ?? ""}
+        subtitle={detailInvoice?.customer}
+        badge={
+          detailInvoice && (
+            <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium", statusConfig[detailInvoice.status].className)}>
+              {statusConfig[detailInvoice.status].label}
+            </span>
+          )
+        }
+        rows={
+          detailInvoice
+            ? [
+                { label: "Customer", value: detailInvoice.customer },
+                { label: "Email", value: detailInvoice.email },
+                { label: "Amount", value: `$${detailInvoice.amount.toLocaleString()}` },
+                { label: "Status", value: statusConfig[detailInvoice.status].label },
+                { label: "Issue Date", value: detailInvoice.date },
+                { label: "Due Date", value: detailInvoice.dueDate },
+              ]
+            : []
+        }
+        footer={
+          <button
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+          >
+            <Eye className="h-4 w-4" />
+            View Invoice Details
+          </button>
+        }
+      />
     </div>
   );
 }

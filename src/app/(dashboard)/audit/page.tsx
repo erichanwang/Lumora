@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   ScrollText,
   Filter,
@@ -11,7 +11,11 @@ import {
   FileText,
   LogOut,
   Download,
+  Search,
+  ChevronDown,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { exportToCSV } from "@/lib/export";
 import { EmptyState } from "@/components/ui/empty-state";
 
 interface AuditEntry {
@@ -48,10 +52,31 @@ const typeConfig: Record<AuditEntry["type"], { icon: typeof UserPlus; color: str
 
 export default function AuditLogPage() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(0);
+  const perPage = 7;
 
-  const filtered = typeFilter === "all"
-    ? auditLog
-    : auditLog.filter((e) => e.type === typeFilter);
+  const filtered = useMemo(() => {
+    let result = typeFilter === "all"
+      ? auditLog
+      : auditLog.filter((e) => e.type === typeFilter);
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (e) =>
+          e.user.toLowerCase().includes(q) ||
+          e.action.toLowerCase().includes(q) ||
+          e.resource.toLowerCase().includes(q) ||
+          e.ip.toLowerCase().includes(q)
+      );
+    }
+
+    return result;
+  }, [typeFilter, searchQuery]);
+
+  const paged = filtered.slice(page * perPage, (page + 1) * perPage);
+  const totalPages = Math.ceil(filtered.length / perPage);
 
   return (
     <div className="space-y-6">
@@ -62,28 +87,57 @@ export default function AuditLogPage() {
             Track every action taken across the platform.
           </p>
         </div>
-        <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+        <button
+          onClick={() =>
+            exportToCSV(
+              filtered as unknown as Record<string, unknown>[],
+              `lumora-audit-log-${new Date().toISOString().split("T")[0]}.csv`,
+              [
+                { key: "id", label: "ID" },
+                { key: "user", label: "User" },
+                { key: "action", label: "Action" },
+                { key: "resource", label: "Resource" },
+                { key: "ip", label: "IP Address" },
+                { key: "timestamp", label: "Timestamp" },
+                { key: "type", label: "Type" },
+              ]
+            )
+          }
+          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
           <Download className="h-4 w-4" />
           Export log
         </button>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Filter className="h-4 w-4 text-gray-400" />
-        <div className="flex flex-wrap gap-2">
-          {["all", "user", "settings", "auth", "billing", "content", "security"].map((type) => (
-            <button
-              key={type}
-              onClick={() => setTypeFilter(type)}
-              className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                typeFilter === type
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
-              }`}
-            >
-              {type === "all" ? "All events" : type.charAt(0).toUpperCase() + type.slice(1)}
-            </button>
-          ))}
+      {/* Search bar */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative flex-1 max-w-xs">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search audit log..."
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setPage(0); }}
+            className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm text-gray-900 outline-none transition-colors focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30"
+          />
+        </div>        <div className="flex items-center gap-2">
+          <Filter className="h-4 w-4 text-gray-400" />
+          <div className="flex flex-wrap gap-2">
+            {["all", "user", "settings", "auth", "billing", "content", "security"].map((type) => (
+              <button
+                key={type}
+                onClick={() => { setTypeFilter(type); setPage(0); }}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                  typeFilter === type
+                    ? "bg-indigo-600 text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                }`}
+              >
+                {type === "all" ? "All events" : type.charAt(0).toUpperCase() + type.slice(1)}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -91,11 +145,11 @@ export default function AuditLogPage() {
         <EmptyState
           icon={ScrollText}
           title="No audit entries found"
-          description="No events match the selected filter."
+          description={searchQuery ? "Try a different search term." : "No events match the selected filter."}
         />
       ) : (
         <div className="space-y-3">
-          {filtered.map((entry) => {
+          {paged.map((entry) => {
             const cfg = typeConfig[entry.type];
             const IconComponent = cfg.icon;
             return (
@@ -128,6 +182,34 @@ export default function AuditLogPage() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {filtered.length > perPage && (
+        <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-6 py-3 dark:border-gray-700 dark:bg-gray-800">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Showing {(page * perPage) + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(Math.max(0, page - 1))}
+              disabled={page === 0}
+              className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            >Previous</button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i)}
+                className={cn("rounded-lg px-3 py-1.5 text-xs font-medium transition-colors", page === i ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300" : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700")}
+              >{i + 1}</button>
+            ))}
+            <button
+              onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
+              disabled={page >= totalPages - 1}
+              className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            >Next</button>
+          </div>
         </div>
       )}
     </div>

@@ -70,54 +70,54 @@ const statusStyles = {
 
 export function RecentTransactions() {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-100 p-6">
-        <h3 className="text-lg font-semibold text-slate-900">
+    <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+      <div className="border-b border-slate-100 p-6 dark:border-slate-700">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
           Recent Transactions
         </h3>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           Latest 6 transactions from your account
         </p>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-slate-100">
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">
+            <tr className="border-b border-slate-100 dark:border-slate-700">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Invoice
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Customer
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Amount
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Date
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
             {transactions.map((tx) => (
               <tr
                 key={tx.id}
-                className="transition-colors hover:bg-slate-50"
+                className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50"
               >
-                <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900">
+                <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
                   {tx.id}
                 </td>
                 <td className="whitespace-nowrap px-6 py-4">
                   <div>
-                    <p className="text-sm font-medium text-slate-900">
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">
                       {tx.customer}
                     </p>
-                    <p className="text-xs text-slate-500">{tx.email}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{tx.email}</p>
                   </div>
                 </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-900">
+                <td className="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">
                   ${tx.amount.toLocaleString()}
                 </td>
                 <td className="whitespace-nowrap px-6 py-4">
@@ -130,7 +130,7 @@ export function RecentTransactions() {
                     {tx.status}
                   </span>
                 </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500">
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
                   {tx.date}
                 </td>
               </tr>

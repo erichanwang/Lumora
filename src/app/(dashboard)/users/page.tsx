@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   Users,
   Search,
@@ -47,15 +48,56 @@ const roleColors: Record<string, string> = {
 };
 
 export default function UsersPage() {
-  const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [sortField, setSortField] = useState("name");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
-  const [page, setPage] = useState(0);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const [search, setSearch] = useState(searchParams.get("q") || "");
+  const [roleFilter, setRoleFilter] = useState(searchParams.get("role") || "all");
+  const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "all");
+  const [sortField, setSortField] = useState(searchParams.get("sort") || "name");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">((searchParams.get("dir") as "asc" | "desc") || "asc");
+  const [page, setPage] = useState(Number(searchParams.get("page")) || 0);
   const perPage = 5;
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const { toast } = useToast();
+
+  const syncUrl = useCallback((params: Record<string, string>) => {
+    const sp = new URLSearchParams(searchParams);
+    Object.entries(params).forEach(([key, value]) => {
+      if (value && value !== "all") sp.set(key, value);
+      else sp.delete(key);
+    });
+    if (!sp.has("page") || params.page === undefined) sp.delete("page");
+    router.replace(`${pathname}?${sp.toString()}`, { scroll: false });
+  }, [searchParams, pathname, router]);
+
+  const setSearchAndSync = (val: string) => {
+    setSearch(val);
+    setPage(0);
+    syncUrl({ q: val, page: "0" });
+  };
+  const setRoleAndSync = (val: string) => {
+    setRoleFilter(val);
+    setPage(0);
+    syncUrl({ role: val, page: "0" });
+  };
+  const setStatusAndSync = (val: string) => {
+    setStatusFilter(val);
+    setPage(0);
+    syncUrl({ status: val, page: "0" });
+  };
+  const setSortAndSync = (field: string) => {
+    if (sortField === field) {
+      const newDir = sortDir === "asc" ? "desc" : "asc";
+      setSortDir(newDir);
+      syncUrl({ sort: field, dir: newDir });
+    } else {
+      setSortField(field);
+      setSortDir("asc");
+      syncUrl({ sort: field, dir: "asc" });
+    }
+  };
 
   const filtered = useMemo(() => {
     let result = allUsers.filter((u) => {
@@ -83,12 +125,7 @@ export default function UsersPage() {
   const totalPages = Math.ceil(filtered.length / perPage);
 
   const toggleSort = (field: string) => {
-    if (sortField === field) {
-      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    } else {
-      setSortField(field);
-      setSortDir("asc");
-    }
+    setSortAndSync(field);
   };
 
   const SortIcon = ({ field }: { field: string }) => {
@@ -163,14 +200,14 @@ export default function UsersPage() {
             type="text"
             placeholder="Search users..."
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+            onChange={(e) => { setSearchAndSync(e.target.value); }}
             className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-900 outline-none transition-colors focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30"
           />
         </div>
         <Filter className="h-4 w-4 text-slate-400" />
         <select
           value={roleFilter}
-          onChange={(e) => { setRoleFilter(e.target.value); setPage(0); }}
+          onChange={(e) => { setRoleAndSync(e.target.value); }}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
         >
           <option value="all">All Roles</option>
@@ -180,7 +217,7 @@ export default function UsersPage() {
         </select>
         <select
           value={statusFilter}
-          onChange={(e) => { setStatusFilter(e.target.value); setPage(0); }}
+          onChange={(e) => { setStatusAndSync(e.target.value); }}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
         >
           <option value="all">All Statuses</option>
@@ -388,19 +425,19 @@ export default function UsersPage() {
           </p>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setPage(Math.max(0, page - 1))}
+              onClick={() => { setPage(Math.max(0, page - 1)); syncUrl({ page: String(Math.max(0, page - 1)) }); }}
               disabled={page === 0}
               className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
             >Previous</button>
             {Array.from({ length: totalPages }, (_, i) => (
               <button
                 key={i}
-                onClick={() => setPage(i)}
+                onClick={() => { setPage(i); syncUrl({ page: String(i) }); }}
                 className={cn("rounded-lg px-3 py-1.5 text-xs font-medium transition-colors", page === i ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300" : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700")}
               >{i + 1}</button>
             ))}
             <button
-              onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
+              onClick={() => { setPage(Math.min(totalPages - 1, page + 1)); syncUrl({ page: String(Math.min(totalPages - 1, page + 1)) }); }}
               disabled={page >= totalPages - 1}
               className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
             >Next</button>

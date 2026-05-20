@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Download, Plus, Search, CheckCircle2, Clock, AlertCircle, FileText } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Download, Plus, Search, CheckCircle2, Clock, AlertCircle, FileText, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { exportToCSV } from "@/lib/export";
 import { useToast } from "@/components/ui/toast";
@@ -26,12 +26,44 @@ const statusConfig: Record<string, { label: string; icon: typeof CheckCircle2; c
 export default function InvoicesPage() {
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [sortField, setSortField] = useState("date");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [page, setPage] = useState(0);
+  const perPage = 5;
   const { toast } = useToast();
 
-  const filtered = invoices.filter(
-    (inv) =>
-      inv.customer.toLowerCase().includes(search.toLowerCase()) ||
-      inv.id.toLowerCase().includes(search.toLowerCase())
+  const filtered = useMemo(() => {
+    let result = invoices.filter(
+      (inv) =>
+        inv.customer.toLowerCase().includes(search.toLowerCase()) ||
+        inv.id.toLowerCase().includes(search.toLowerCase())
+    );
+
+    result.sort((a, b) => {
+      if (sortField === "amount") {
+        return sortDir === "asc" ? a.amount - b.amount : b.amount - a.amount;
+      }
+      const valA = (a as any)[sortField];
+      const valB = (b as any)[sortField];
+      if (typeof valA === "string") {
+        return sortDir === "asc" ? valA.localeCompare(valB) : valB.localeCompare(valA);
+      }
+      return 0;
+    });
+
+    return result;
+  }, [search, sortField, sortDir]);
+
+  const paged = filtered.slice(page * perPage, (page + 1) * perPage);
+  const totalPages = Math.ceil(filtered.length / perPage);
+
+  const toggleSort = (field: string) => {
+    if (sortField === field) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSortField(field); setSortDir("asc"); }
+  };
+
+  const SortIcon = ({ field }: { field: string }) => (
+    <ChevronDown className={cn("h-3 w-3 transition-transform", sortField === field ? (sortDir === "desc" ? "rotate-180" : "") : "opacity-0 group-hover:opacity-50")} />
   );
 
   const totalOutstanding = invoices
@@ -115,28 +147,40 @@ export default function InvoicesPage() {
                   <th className="w-12 px-4 py-3">
                     <input
                       type="checkbox"
-                      checked={filtered.length > 0 && selectedIds.size === filtered.length}
+                      checked={paged.length > 0 && selectedIds.size === paged.length}
                       onChange={() => {
-                        if (selectedIds.size === filtered.length) {
+                        if (selectedIds.size === paged.length) {
                           setSelectedIds(new Set());
                         } else {
-                          setSelectedIds(new Set(filtered.map((inv) => inv.id)));
+                          setSelectedIds(new Set(paged.map((inv) => inv.id)));
                         }
                       }}
                       className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Invoice</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Customer</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Amount</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Issue Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Due Date</th>
+                  <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer select-none" onClick={() => toggleSort("id")}>
+                    <div className="flex items-center gap-1">Invoice<SortIcon field="id" /></div>
+                  </th>
+                  <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer select-none" onClick={() => toggleSort("customer")}>
+                    <div className="flex items-center gap-1">Customer<SortIcon field="customer" /></div>
+                  </th>
+                  <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer select-none" onClick={() => toggleSort("amount")}>
+                    <div className="flex items-center gap-1">Amount<SortIcon field="amount" /></div>
+                  </th>
+                  <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer select-none" onClick={() => toggleSort("status")}>
+                    <div className="flex items-center gap-1">Status<SortIcon field="status" /></div>
+                  </th>
+                  <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer select-none" onClick={() => toggleSort("date")}>
+                    <div className="flex items-center gap-1">Issue Date<SortIcon field="date" /></div>
+                  </th>
+                  <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer select-none" onClick={() => toggleSort("dueDate")}>
+                    <div className="flex items-center gap-1">Due Date<SortIcon field="dueDate" /></div>
+                  </th>
                   <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                {filtered.map((inv) => {
+                {paged.map((inv) => {
                   const StatusIcon = statusConfig[inv.status].icon;
                   return (
                     <tr
@@ -200,7 +244,7 @@ export default function InvoicesPage() {
 
         {/* Cards — mobile */}
         <div className="divide-y divide-slate-100 sm:hidden dark:divide-slate-700">
-          {filtered.map((inv) => {
+          {paged.map((inv) => {
             const StatusIcon = statusConfig[inv.status].icon;
             return (
               <div key={inv.id} className="p-4">
@@ -281,6 +325,32 @@ export default function InvoicesPage() {
             </button>
           </div>
         )}
+
+        {/* Pagination */}
+        <div className="flex items-center justify-between border-t border-slate-100 px-6 py-3 dark:border-slate-700">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Showing {(page * perPage) + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(Math.max(0, page - 1))}
+              disabled={page === 0}
+              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+            >Previous</button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i)}
+                className={cn("rounded-lg px-3 py-1.5 text-xs font-medium transition-colors", page === i ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300" : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700")}
+              >{i + 1}</button>
+            ))}
+            <button
+              onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
+              disabled={page >= totalPages - 1}
+              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+            >Next</button>
+          </div>
+        </div>
       </div>
     </div>
   );

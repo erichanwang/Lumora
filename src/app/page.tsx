@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { useTheme } from "@/lib/theme-context";
-import { ArrowRight, BarChart3, Lightbulb, Shield, Zap, Users, Layers, Moon, Sun, Menu, X } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import { ArrowRight, BarChart3, Lightbulb, Shield, Zap, Users, Layers, Moon, Sun, Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 import { useState } from "react";
 
 export default function Home() {
   const { theme, toggle } = useTheme();
+  const { data: session, status } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const isAuthenticated = status === "authenticated";
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -39,12 +42,29 @@ export default function Home() {
             >
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
-            <Link
-              href="/analytics"
-              className="hidden rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 sm:inline-flex items-center gap-2"
-            >
-              Launch Dashboard <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                href="/analytics"
+                className="hidden rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 sm:inline-flex items-center gap-2"
+              >
+                <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
+              </Link>
+            ) : (
+              <div className="hidden items-center gap-2 sm:flex">
+                <Link
+                  href="/login"
+                  className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+                >
+                  Get Started
+                </Link>
+              </div>
+            )}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="p-2 text-slate-600 dark:text-slate-400 md:hidden"
@@ -59,12 +79,29 @@ export default function Home() {
               <a href="#features" className="text-sm font-medium text-slate-600 dark:text-slate-400">Features</a>
               <a href="#pricing" className="text-sm font-medium text-slate-600 dark:text-slate-400">Pricing</a>
               <a href="#testimonials" className="text-sm font-medium text-slate-600 dark:text-slate-400">Testimonials</a>
-              <Link
-                href="/analytics"
-                className="mt-2 inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white"
-              >
-                Launch Dashboard <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
+              {isAuthenticated ? (
+                <Link
+                  href="/analytics"
+                  className="mt-2 inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white"
+                >
+                  <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="mt-2 block text-sm font-medium text-slate-600 dark:text-slate-400"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="mt-2 inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Receipt, Download, Plus, Search, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { Receipt, Download, Plus, Search, CheckCircle2, Clock, AlertCircle, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { exportToCSV } from "@/lib/export";
 
 const invoices = [
   { id: "INV-2025-001", customer: "Acme Corp", email: "billing@acme.com", amount: 2499.00, status: "paid", date: "Mar 1, 2025", dueDate: "Mar 15, 2025" },
@@ -43,10 +44,33 @@ export default function InvoicesPage() {
             Manage and track all customer invoices
           </p>
         </div>
-        <button className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700">
-          <Plus className="h-4 w-4" />
-          New Invoice
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() =>
+              exportToCSV(
+                invoices,
+                `lumora-invoices-${new Date().toISOString().split("T")[0]}.csv`,
+                [
+                  { key: "id", label: "Invoice ID" },
+                  { key: "customer", label: "Customer" },
+                  { key: "email", label: "Email" },
+                  { key: "amount", label: "Amount" },
+                  { key: "status", label: "Status" },
+                  { key: "date", label: "Issue Date" },
+                  { key: "dueDate", label: "Due Date" },
+                ]
+              )
+            }
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+          >
+            <FileText className="h-4 w-4" />
+            Export CSV
+          </button>
+          <button className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700">
+            <Plus className="h-4 w-4" />
+            New Invoice
+          </button>
+        </div>
       </div>
 
       {/* Summary */}

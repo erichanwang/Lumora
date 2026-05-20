@@ -12,8 +12,10 @@ import {
   XCircle,
   Clock,
   Filter,
+  Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { exportToCSV } from "@/lib/export";
 
 const allOrders = [
   { id: "#ORD-7842", customer: "Olivia Martin", email: "olivia@example.com", items: 3, amount: 249.99, status: "delivered", payment: "paid", date: "Mar 1, 2025", eta: "Mar 3, 2025" },
@@ -88,6 +90,29 @@ export default function OrdersPage() {
             Track and manage all customer orders
           </p>
         </div>
+        <button
+          onClick={() =>
+            exportToCSV(
+              allOrders,
+              `lumora-orders-${new Date().toISOString().split("T")[0]}.csv`,
+              [
+                { key: "id", label: "Order ID" },
+                { key: "customer", label: "Customer" },
+                { key: "email", label: "Email" },
+                { key: "items", label: "Items" },
+                { key: "amount", label: "Amount" },
+                { key: "status", label: "Status" },
+                { key: "payment", label: "Payment" },
+                { key: "date", label: "Date" },
+                { key: "eta", label: "ETA" },
+              ]
+            )
+          }
+          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+        >
+          <Download className="h-4 w-4" />
+          Export CSV
+        </button>
       </div>
 
       {/* Stats */}

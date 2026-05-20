@@ -13,8 +13,10 @@ import {
   Star,
   UserPlus,
   Filter,
+  Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { exportToCSV } from "@/lib/export";
 
 const allUsers = [
   { id: 1, name: "Alex Morgan", email: "alex@lumora.io", role: "Admin", status: "active", plan: "Enterprise", location: "San Francisco, CA", avatar: "AM", joined: "Jan 2023", revenue: 12400 },
@@ -105,10 +107,34 @@ export default function UsersPage() {
             Manage team members, roles, and permissions
           </p>
         </div>
-        <button className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700">
-          <UserPlus className="h-4 w-4" />
-          Add User
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() =>
+              exportToCSV(
+                allUsers,
+                `lumora-users-${new Date().toISOString().split("T")[0]}.csv`,
+                [
+                  { key: "name", label: "Name" },
+                  { key: "email", label: "Email" },
+                  { key: "role", label: "Role" },
+                  { key: "status", label: "Status" },
+                  { key: "plan", label: "Plan" },
+                  { key: "location", label: "Location" },
+                  { key: "revenue", label: "Revenue" },
+                  { key: "joined", label: "Joined" },
+                ]
+              )
+            }
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+          >
+            <Download className="h-4 w-4" />
+            Export CSV
+          </button>
+          <button className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700">
+            <UserPlus className="h-4 w-4" />
+            Add User
+          </button>
+        </div>
       </div>
 
       {/* Stats */}

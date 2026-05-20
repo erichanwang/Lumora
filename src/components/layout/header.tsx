@@ -7,12 +7,15 @@ import { SearchModal } from "./search-modal";
 import { NotificationsPanel } from "./notifications-panel";
 import { UserDropdown } from "./user-dropdown";
 import { LocaleSwitcher } from "./locale-switcher";
+import { useNotifications } from "@/lib/swr";
 
 export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const { theme, toggle } = useTheme();
+  const { data: notifData } = useNotifications(true);
+  const unreadCount = notifData?.unreadCount ?? 0;
 
   return (
     <>
@@ -65,9 +68,11 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
               aria-label="Notifications"
             >
               <Bell className="h-5 w-5" />
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white ring-2 ring-white dark:ring-slate-900">
-                3
-              </span>
+              {unreadCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white ring-2 ring-white transition-transform dark:ring-slate-900">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
             </button>
             <NotificationsPanel open={notifOpen} onClose={() => setNotifOpen(false)} />
           </div>

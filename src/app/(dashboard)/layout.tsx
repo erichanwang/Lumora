@@ -10,6 +10,8 @@ import { MobileSidebar } from "@/components/layout/mobile-sidebar";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { KeyboardShortcuts, useKeyboardShortcuts } from "@/components/layout/keyboard-shortcuts";
 import { NotificationToaster } from "@/components/layout/notification-toaster";
+import { RouteLoader, dispatchRouteStart, dispatchRouteComplete } from "@/components/layout/route-loader";
+import { useToast } from "@/components/ui/toast";
 import { useTheme } from "@/lib/theme-context";
 
 export default function DashboardLayout({
@@ -23,6 +25,21 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const { toggle } = useTheme();
 
+  const { toast } = useToast();
+
+  const pageNames: Record<string, string> = {
+    "/": "Dashboard",
+    "/analytics": "Analytics",
+    "/users": "Users",
+    "/orders": "Orders",
+    "/reports": "Reports",
+    "/invoices": "Invoices",
+    "/team": "Team",
+    "/health": "Health",
+    "/audit": "Audit Log",
+    "/settings": "Settings",
+  };
+
   useKeyboardShortcuts({
     onSearch: () => {
       const event = new KeyboardEvent("keydown", { metaKey: true, key: "k" });
@@ -30,7 +47,13 @@ export default function DashboardLayout({
     },
     onToggleTheme: toggle,
     onToggleSidebar: () => setSidebarCollapsed((prev) => !prev),
-    onNavigate: (path) => router.push(path),
+    onNavigate: (path) => {
+      const name = pageNames[path] || path;
+      toast(`→ ${name}`, "info");
+      dispatchRouteStart();
+      router.push(path);
+      setTimeout(() => dispatchRouteComplete(), 500);
+    },
   });
 
   const pageVariants = {
@@ -80,6 +103,7 @@ export default function DashboardLayout({
       {/* Keyboard shortcuts modal */}
       <KeyboardShortcuts />
       <NotificationToaster />
+      <RouteLoader />
     </div>
   );
 }

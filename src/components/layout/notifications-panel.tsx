@@ -123,14 +123,14 @@ export function NotificationsPanel({
         <div className="flex items-center gap-1">
           <button
             onClick={handleRefresh}
-            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
             title="Refresh"
           >
             <RefreshCw className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
           >
             <X className="h-4 w-4" />
           </button>
@@ -142,7 +142,7 @@ export function NotificationsPanel({
         <div className="border-b border-slate-100 px-5 py-2 dark:border-slate-700">
           <button
             onClick={handleMarkAllRead}
-            className="flex w-full items-center justify-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950/30"
+            className="flex w-full items-center justify-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-50 active:scale-95 dark:text-indigo-400 dark:hover:bg-indigo-950/30"
           >
             <CheckCheck className="h-3.5 w-3.5" />
             Mark all as read

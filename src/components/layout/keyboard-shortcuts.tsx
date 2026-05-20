@@ -62,7 +62,7 @@ export function KeyboardShortcuts() {
           </div>
           <button
             onClick={() => setOpen(false)}
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 active:scale-90 dark:hover:bg-slate-700"
             aria-label="Close"
           >
             <span className="text-xs">ESC</span>

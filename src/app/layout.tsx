@@ -5,6 +5,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import { ThemeProvider } from "@/lib/theme-context";
 import { ToastProvider } from "@/lib/toast-context";
 import { AuthProvider } from "@/lib/auth-provider";
+import { SWRProvider } from "@/lib/swr-config";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -96,7 +97,9 @@ export default async function RootLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider>
             <AuthProvider>
-              <ToastProvider>{children}</ToastProvider>
+              <ToastProvider>
+                <SWRProvider>{children}</SWRProvider>
+              </ToastProvider>
             </AuthProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

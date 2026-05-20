@@ -1,7 +1,8 @@
 "use client";
 
 import { Bell, Search, Moon, Sun, Menu } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/theme-context";
 import { SearchModal } from "./search-modal";
 import { NotificationsPanel } from "./notifications-panel";
@@ -25,7 +26,7 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
           {/* Mobile menu button */}
           <button
             onClick={onMenuClick}
-            className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300 lg:hidden"
+            className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 active:scale-95 dark:hover:bg-slate-800 dark:hover:text-slate-300 lg:hidden"
             aria-label="Open menu"
           >
             <Menu className="h-5 w-5" />
@@ -35,7 +36,7 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
           <div className="max-w-md flex-1">
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex w-full items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-left text-sm text-slate-400 transition-all hover:border-indigo-400 hover:ring-2 hover:ring-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-500 dark:hover:ring-indigo-900/30"
+              className="flex w-full items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-left text-sm text-slate-400 transition-all hover:border-indigo-400 hover:ring-2 hover:ring-indigo-100 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-500 dark:hover:ring-indigo-900/30"
             >
               <Search className="h-4 w-4 shrink-0" />
               <span className="flex-1">Search anything...</span>
@@ -54,7 +55,7 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
           {/* Dark mode toggle */}
           <button
             onClick={toggle}
-            className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+            className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 active:scale-95 dark:hover:bg-slate-800 dark:hover:text-slate-300"
             aria-label={resolvedTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
           >
             {resolvedTheme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -64,10 +65,10 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
           <div className="relative">
             <button
               onClick={() => { setNotifOpen(!notifOpen); setUserOpen(false); }}
-              className="relative rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+              className="relative rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 active:scale-95 dark:hover:bg-slate-800 dark:hover:text-slate-300"
               aria-label="Notifications"
             >
-              <Bell className="h-5 w-5" />
+              <Bell className={cn("h-5 w-5 transition-transform", unreadCount > 0 && "animate-bell-ring")} />
               {unreadCount > 0 && (
                 <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white ring-2 ring-white transition-transform dark:ring-slate-900">
                   {unreadCount > 9 ? "9+" : unreadCount}
@@ -81,7 +82,7 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
           <div className="relative ml-1 sm:ml-2">
             <button
               onClick={() => { setUserOpen(!userOpen); setNotifOpen(false); }}
-              className="flex items-center gap-3 rounded-lg p-1.5 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="flex items-center gap-3 rounded-lg p-1.5 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-800"
             >
               <div className="hidden text-right sm:block">
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-300">

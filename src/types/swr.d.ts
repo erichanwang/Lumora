@@ -2,6 +2,7 @@ declare module "swr" {
   import type { ReactNode } from "react";
 
   interface SWRConfiguration<Data = unknown, Error = unknown> {
+    fetcher?: (...args: any[]) => any;
     fallback?: Record<string, Data>;
     revalidateOnFocus?: boolean;
     revalidateOnReconnect?: boolean;
@@ -21,7 +22,7 @@ declare module "swr" {
     keepPreviousData?: boolean;
     onLoadingSlow?: (key: string, config: SWRConfiguration<Data, Error>) => void;
     onSuccess?: (data: Data, key: string, config: SWRConfiguration<Data, Error>) => void;
-    onError?: (err: Error, key: string, config: SWRConfiguration<Data, Error>) => void;
+    onError?: (err: unknown, key: string, config: SWRConfiguration<Data, Error>) => void;
     onErrorRetry?: (
       err: Error,
       key: string,
@@ -41,6 +42,11 @@ declare module "swr" {
       shouldRevalidate?: boolean
     ) => Promise<Data | undefined>;
   }
+
+  export function SWRConfig(props: {
+    value: SWRConfiguration;
+    children?: ReactNode;
+  }): JSX.Element;
 
   export default function useSWR<Data = unknown, Error = unknown>(
     key: string | null | (() => string | null),

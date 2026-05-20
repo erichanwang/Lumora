@@ -9,16 +9,10 @@ import { NotificationsPanel } from "./notifications-panel";
 import { UserDropdown } from "./user-dropdown";
 
 export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
-  const [searchFocused, setSearchFocused] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const { theme, toggle } = useTheme();
-
-  const handleCmdK = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    setSearchOpen(true);
-  }, []);
 
   return (
     <>
@@ -37,11 +31,8 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
           {/* Search bar */}
           <div className="flex-1 max-w-md">
             <button
-              onClick={handleCmdK}
-              className={cn(
-                "flex w-full items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-left text-sm text-slate-400 transition-all dark:border-slate-700 dark:bg-slate-800",
-                searchFocused && "border-indigo-400 ring-2 ring-indigo-100 dark:border-indigo-500 dark:ring-indigo-900/30"
-              )}
+              onClick={() => setSearchOpen(true)}
+              className="flex w-full items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-left text-sm text-slate-400 transition-all hover:border-indigo-400 hover:ring-2 hover:ring-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-500 dark:hover:ring-indigo-900/30"
             >
               <Search className="h-4 w-4 shrink-0" />
               <span className="flex-1">Search anything...</span>

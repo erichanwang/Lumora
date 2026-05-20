@@ -15,7 +15,7 @@ const invoices = [
   { id: "INV-2025-008", customer: "Soylent Corp", email: "billing@soylent.com", amount: 1899.00, status: "paid", date: "Feb 28, 2025", dueDate: "Mar 14, 2025" },
 ];
 
-const statusConfig = {
+const statusConfig: Record<string, { label: string; icon: typeof CheckCircle2; className: string }> = {
   paid: { label: "Paid", icon: CheckCircle2, className: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400" },
   pending: { label: "Pending", icon: Clock, className: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400" },
   overdue: { label: "Overdue", icon: AlertCircle, className: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400" },

@@ -1,5 +1,7 @@
 "use client";
 
+import { CopyButton } from "@/lib/clipboard";
+import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 
 interface Transaction {
@@ -69,16 +71,19 @@ const statusStyles = {
 };
 
 export function RecentTransactions() {
+  const { toast } = useToast();
+
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-      <div className="border-b border-slate-100 p-6 dark:border-slate-700">
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-          Recent Transactions
-        </h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Latest 6 transactions from your account
-        </p>
-      </div>
+    <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">          <div className="flex items-center justify-between border-b border-slate-100 p-6 dark:border-slate-700">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                Recent Transactions
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Latest 6 transactions from your account
+              </p>
+            </div>
+          </div>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -104,10 +109,13 @@ export function RecentTransactions() {
             {transactions.map((tx) => (
               <tr
                 key={tx.id}
-                className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 group"
               >
                 <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
-                  {tx.id}
+                  <span className="inline-flex items-center gap-1.5">
+                    {tx.id}
+                    <CopyButton text={tx.id} toast={toast} />
+                  </span>
                 </td>
                 <td className="whitespace-nowrap px-6 py-4">
                   <div>

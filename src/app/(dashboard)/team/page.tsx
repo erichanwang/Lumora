@@ -14,9 +14,13 @@ import {
   X,
   Send,
   Loader2,
+  Eye,
 } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
-import { useToast } from "@/lib/toast-context";
+import { DetailDrawer } from "@/components/ui/detail-drawer";
+import { EnhancedPagination } from "@/components/ui/pagination-enhanced";
+import { CopyButton } from "@/lib/clipboard";
+import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 
 interface TeamMember {
@@ -26,21 +30,22 @@ interface TeamMember {
   role: "Admin" | "Editor" | "Viewer";
   status: "active" | "invited" | "inactive";
   joined: string;
+  lastActive?: string;
 }
 
 const members: TeamMember[] = [
-  { id: "1", name: "Alex Morgan", email: "alex@lumora.io", role: "Admin", status: "active", joined: "Jan 2023" },
-  { id: "2", name: "Sarah Chen", email: "sarah@example.com", role: "Editor", status: "active", joined: "Mar 2023" },
-  { id: "3", name: "Michael Kim", email: "michael@example.com", role: "Admin", status: "active", joined: "Aug 2022" },
-  { id: "4", name: "David Park", email: "david@example.com", role: "Editor", status: "invited", joined: "—" },
-  { id: "5", name: "Lisa Thompson", email: "lisa@example.com", role: "Viewer", status: "active", joined: "Mar 2025" },
+  { id: "1", name: "Alex Morgan", email: "alex@lumora.io", role: "Admin", status: "active", joined: "Jan 2023", lastActive: "2 min ago" },
+  { id: "2", name: "Sarah Chen", email: "sarah@example.com", role: "Editor", status: "active", joined: "Mar 2023", lastActive: "1 hour ago" },
+  { id: "3", name: "Michael Kim", email: "michael@example.com", role: "Admin", status: "active", joined: "Aug 2022", lastActive: "30 min ago" },
+  { id: "4", name: "David Park", email: "david@example.com", role: "Editor", status: "invited", joined: "—", lastActive: "—" },
+  { id: "5", name: "Lisa Thompson", email: "lisa@example.com", role: "Viewer", status: "active", joined: "Mar 2025", lastActive: "1 day ago" },
 ];
 
 const roleBadge = (role: TeamMember["role"]) => {
   const styles = {
     Admin: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300",
     Editor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-    Viewer: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+    Viewer: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
   };
   return styles[role];
 };
@@ -69,6 +74,9 @@ export default function TeamPage() {
   const [inviteRole, setInviteRole] = useState<TeamMember["role"]>("Editor");
   const [sending, setSending] = useState(false);
   const [emailErrors, setEmailErrors] = useState<Record<number, string>>({});
+  const [page, setPage] = useState(0);
+  const perPage = 5;
+  const [detailMember, setDetailMember] = useState<TeamMember | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
   const filtered = members.filter(
@@ -76,6 +84,9 @@ export default function TeamPage() {
       m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       m.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const paged = filtered.slice(page * perPage, (page + 1) * perPage);
+  const totalPages = Math.ceil(filtered.length / perPage);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -201,23 +212,24 @@ export default function TeamPage() {
           }
         />
       ) : (
-        <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+        <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
           {/* Desktop table */}
           <table className="hidden w-full sm:table">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400">
+              <tr className="border-b border-slate-100 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
                 <th className="px-6 py-3">Name</th>
                 <th className="px-6 py-3">Role</th>
                 <th className="px-6 py-3">Status</th>
                 <th className="px-6 py-3">Joined</th>
+                <th className="px-6 py-3">Last Active</th>
                 <th className="w-12 px-6 py-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
-              {filtered.map((member) => (
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+              {paged.map((member) => (
                 <tr
                   key={member.id}
-                  className="bg-white transition-colors hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800/50"
+                  className="bg-white transition-colors hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700/50"
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -225,11 +237,12 @@ export default function TeamPage() {
                         {member.name.split(" ").map((n) => n[0]).join("")}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900 dark:text-white">{member.name}</p>
-                        <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">{member.name}</p>
+                        <p className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
                           <Mail className="h-3 w-3" />
                           {member.email}
-                        </div>
+                          <CopyButton text={member.email} toast={toast} />
+                        </p>
                       </div>
                     </div>
                   </td>
@@ -240,15 +253,20 @@ export default function TeamPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                    <span className="inline-flex items-center gap-1 text-sm text-slate-600 dark:text-slate-400">
                       {statusIcon(member.status)}
                       {statusLabel(member.status)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{member.joined}</td>
+                  <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{member.joined}</td>
+                  <td className="px-6 py-4 text-sm text-slate-400 dark:text-slate-500">{member.lastActive || "—"}</td>
                   <td className="px-6 py-4">
-                    <button className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300">
-                      <MoreHorizontal className="h-4 w-4" />
+                    <button
+                      onClick={() => setDetailMember(member)}
+                      className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+                      title="View details"
+                    >
+                      <Eye className="h-4 w-4" />
                     </button>
                   </td>
                 </tr>
@@ -257,21 +275,25 @@ export default function TeamPage() {
           </table>
 
           {/* Mobile cards */}
-          <div className="divide-y divide-gray-200 sm:hidden dark:divide-gray-800">
-            {filtered.map((member) => (
-              <div key={member.id} className="bg-white p-4 dark:bg-gray-900">
+          <div className="divide-y divide-slate-100 sm:hidden dark:divide-slate-700">
+            {paged.map((member) => (
+              <div key={member.id} className="bg-white p-4 dark:bg-slate-800">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400">
                       {member.name.split(" ").map((n) => n[0]).join("")}
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{member.name}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{member.email}</p>
+                      <p className="text-sm font-medium text-slate-900 dark:text-white">{member.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{member.email}</p>
                     </div>
                   </div>
-                  <button className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
-                    <MoreHorizontal className="h-4 w-4" />
+                  <button
+                    onClick={() => setDetailMember(member)}
+                    className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+                    title="View details"
+                  >
+                    <Eye className="h-4 w-4" />
                   </button>
                 </div>
                 <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -279,15 +301,24 @@ export default function TeamPage() {
                     <Shield className="h-3 w-3" />
                     {member.role}
                   </span>
-                  <span className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                  <span className="inline-flex items-center gap-1 text-sm text-slate-600 dark:text-slate-400">
                     {statusIcon(member.status)}
                     {statusLabel(member.status)}
                   </span>
-                  <span className="text-sm text-gray-400">Joined {member.joined}</span>
+                  <span className="text-sm text-slate-400">Joined {member.joined}</span>
                 </div>
               </div>
             ))}
           </div>
+
+          {/* Enhanced Pagination */}
+          <EnhancedPagination
+            page={page}
+            totalPages={totalPages}
+            total={filtered.length}
+            perPage={perPage}
+            onPageChange={(p) => setPage(p)}
+          />
         </div>
       )}
 
@@ -395,6 +426,36 @@ export default function TeamPage() {
           </div>
         </div>
       )}
+      {/* Detail Drawer */}
+      <DetailDrawer
+        open={!!detailMember}
+        onClose={() => setDetailMember(null)}
+        title={detailMember?.name ?? ""}
+        subtitle={detailMember?.email}
+        badge={
+          detailMember && (
+            <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${roleBadge(detailMember.role)}`}>
+              {detailMember.role}
+            </span>
+          )
+        }
+        rows={
+          detailMember
+            ? [
+                { label: "Role", value: detailMember.role },
+                { label: "Status", value: statusLabel(detailMember.status) },
+                { label: "Joined", value: detailMember.joined },
+                { label: "Last Active", value: detailMember.lastActive || "—" },
+              ]
+            : []
+        }
+        footer={
+          <button className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700">
+            <Shield className="h-4 w-4" />
+            Manage Permissions
+          </button>
+        }
+      />
     </div>
   );
 }

@@ -12,11 +12,11 @@ import {
   LogOut,
   Download,
   Search,
-  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { exportToCSV } from "@/lib/export";
 import { EmptyState } from "@/components/ui/empty-state";
+import { EnhancedPagination } from "@/components/ui/pagination-enhanced";
 
 interface AuditEntry {
   id: string;
@@ -185,33 +185,14 @@ export default function AuditLogPage() {
         </div>
       )}
 
-      {/* Pagination */}
-      {filtered.length > perPage && (
-        <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-6 py-3 dark:border-gray-700 dark:bg-gray-800">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Showing {(page * perPage) + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length}
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPage(Math.max(0, page - 1))}
-              disabled={page === 0}
-              className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            >Previous</button>
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                onClick={() => setPage(i)}
-                className={cn("rounded-lg px-3 py-1.5 text-xs font-medium transition-colors", page === i ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300" : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700")}
-              >{i + 1}</button>
-            ))}
-            <button
-              onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
-              disabled={page >= totalPages - 1}
-              className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            >Next</button>
-          </div>
-        </div>
-      )}
+      {/* Enhanced Pagination */}
+      <EnhancedPagination
+        page={page}
+        totalPages={totalPages}
+        total={filtered.length}
+        perPage={perPage}
+        onPageChange={(p) => setPage(p)}
+      />
     </div>
   );
 }

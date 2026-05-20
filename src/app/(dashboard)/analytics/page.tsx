@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   BarChart,
   Bar,
@@ -13,6 +14,9 @@ import {
   Cell,
   Legend,
 } from "recharts";
+import { BarChart3, Users, Clock, RefreshCw } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useTheme } from "@/lib/theme-context";
 
 const barData = [
   { name: "Mon", pageViews: 4200, uniqueVisitors: 2800 },
@@ -62,35 +66,61 @@ function BarTooltip({ active, payload, label }: ChartTooltipProps) {
 }
 
 export default function AnalyticsPage() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setTimeout(() => setIsRefreshing(false), 800);
+  };
+
+  const gridStroke = isDark ? "#334155" : "#e2e8f0";
+  const axisStroke = isDark ? "#64748b" : "#94a3b8";
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Analytics</h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Track your website performance and traffic sources.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Analytics</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            Track your website performance and traffic sources.
+          </p>
+        </div>
+        <button
+          onClick={handleRefresh}
+          disabled={isRefreshing}
+          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+        >
+          <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
+          Refresh
+        </button>
       </div>
 
-      {/* Stats summary */}
+      {/* Stats with icons */}
       <div className="grid gap-4 sm:grid-cols-3">
         {[
-          { label: "Total Page Views", value: "29,500", change: "+12.3%" },
-          { label: "Unique Visitors", value: "18,700", change: "+8.1%" },
-          { label: "Avg. Session", value: "4m 32s", change: "+2.4%" },
-        ].map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800"
-          >
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
-            <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
-              {stat.value}
-            </p>
-            <p className="mt-1 text-sm font-medium text-emerald-600">
-              {stat.change}
-            </p>
-          </div>
-        ))}
+          { label: "Total Page Views", value: "29,500", change: "+12.3%", icon: BarChart3, color: "text-indigo-600", bg: "bg-indigo-100 dark:bg-indigo-900/40" },
+          { label: "Unique Visitors", value: "18,700", change: "+8.1%", icon: Users, color: "text-emerald-600", bg: "bg-emerald-100 dark:bg-emerald-900/40" },
+          { label: "Avg. Session", value: "4m 32s", change: "+2.4%", icon: Clock, color: "text-amber-600", bg: "bg-amber-100 dark:bg-amber-900/40" },
+        ].map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <div
+              key={stat.label}
+              className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md dark:border-slate-700 dark:bg-slate-800"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
+                <div className={cn("rounded-lg p-2", stat.bg)}>
+                  <Icon className={cn("h-4 w-4", stat.color)} />
+                </div>
+              </div>
+              <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
+              <p className="mt-1 text-sm font-medium text-emerald-600 dark:text-emerald-400">{stat.change}</p>
+            </div>
+          );
+        })}
       </div>
 
       {/* Charts */}
@@ -111,18 +141,18 @@ export default function AnalyticsPage() {
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="#e2e8f0"
+                  stroke={gridStroke}
                   vertical={false}
                 />
                 <XAxis
                   dataKey="name"
-                  stroke="#94a3b8"
+                  stroke={axisStroke}
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
                 />
                 <YAxis
-                  stroke="#94a3b8"
+                  stroke={axisStroke}
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
@@ -172,7 +202,14 @@ export default function AnalyticsPage() {
                     />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip content={({ active, payload }) =>
+                  active && payload?.length ? (
+                    <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+                      <p className="text-sm font-semibold text-slate-900 dark:text-white">{payload[0].name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{payload[0].value}% of traffic</p>
+                    </div>
+                  ) : null
+                } />
                 <Legend
                   verticalAlign="bottom"
                   height={36}

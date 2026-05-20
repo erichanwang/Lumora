@@ -38,8 +38,24 @@ export function ActivityFeed() {
           Failed to load activity. Using cached data.
         </div>
       ) : activities.length === 0 ? (
-        <div className="py-8 text-center text-sm text-slate-400">
-          {isValidating ? "Loading activity..." : "No recent activity"}
+        <div className="flex flex-col items-center justify-center py-10 text-center">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700">
+            <Clock className="h-6 w-6 text-slate-400 dark:text-slate-500" />
+          </div>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            {isValidating ? "Loading activity..." : "No recent activity"}
+          </p>
+          {!isValidating && (
+            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+              Activity will appear here as team members take actions.
+            </p>
+          )}
+          {isValidating && (
+            <div className="mt-4 flex items-center gap-2">
+              <RefreshCw className="h-4 w-4 animate-spin text-indigo-400" />
+              <span className="text-xs text-slate-400 dark:text-slate-500">Fetching latest activity...</span>
+            </div>
+          )}
         </div>
       ) : (
         <div className="space-y-0">

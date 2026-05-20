@@ -5,7 +5,7 @@ import { useTheme } from "@/lib/theme-context";
 import { Moon, Sun, Globe, Bell, User, Save, Loader2, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { profileSchema, settingsSchema, type ProfileInput, type SettingsInput } from "@/lib/validations";
-import { useToast } from "@/lib/toast-context";
+import { useToast } from "@/components/ui/toast";
 
 type Tab = "profile" | "notifications" | "appearance";
 

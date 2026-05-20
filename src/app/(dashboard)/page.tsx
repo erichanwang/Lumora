@@ -5,6 +5,7 @@ import { StatsCard } from "@/components/dashboard/stats-card";
 import { RevenueChart } from "@/components/dashboard/revenue-chart";
 import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
+import { PageSkeleton } from "@/components/dashboard/skeleton";
 import { cn } from "@/lib/utils";
 import { useDashboardStats } from "@/lib/swr";
 import {
@@ -42,7 +43,11 @@ const item = {
 };
 
 export default function DashboardPage() {
-  const { data: stats, isValidating } = useDashboardStats();
+  const { data: stats, isValidating, error } = useDashboardStats();
+
+  if (isValidating && !stats && !error) {
+    return <PageSkeleton />;
+  }
 
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
@@ -56,7 +61,7 @@ export default function DashboardPage() {
             </p>
           </div>
           {isValidating && (
-            <RefreshCw className="h-4 w-4 animate-spin text-slate-400" />
+            <RefreshCw className="h-4 w-4 animate-spin text-indigo-500" />
           )}
         </div>
       </motion.div>

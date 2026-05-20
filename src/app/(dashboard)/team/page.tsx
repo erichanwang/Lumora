@@ -198,7 +198,7 @@ export default function TeamPage() {
         </div>
         <button
           onClick={() => setInviteOpen(true)}
-          className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+          className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95"
         >
           <Plus className="h-4 w-4" />
           Invite member
@@ -312,7 +312,7 @@ export default function TeamPage() {
                   <td className="px-6 py-4">
                     <button
                       onClick={(e) => { e.stopPropagation(); setDetailMember(member); }}
-                      className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+                      className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 active:scale-95 dark:hover:bg-slate-700 dark:hover:text-slate-300"
                       title="View details"
                     >
                       <Eye className="h-4 w-4" />
@@ -352,7 +352,7 @@ export default function TeamPage() {
                   </div>
                   <button
                     onClick={() => setDetailMember(member)}
-                    className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+                    className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
                     title="View details"
                   >
                     <Eye className="h-4 w-4" />
@@ -504,14 +504,14 @@ export default function TeamPage() {
             <div className="flex items-center justify-end gap-3 border-t border-slate-200 px-5 py-4 dark:border-slate-700">
               <button
                 onClick={() => setInviteOpen(false)}
-                className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+                className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 active:scale-95 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSendInvites}
                 disabled={sending}
-                className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95 disabled:opacity-60"
               >
                 {sending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -548,7 +548,7 @@ export default function TeamPage() {
             : []
         }
         footer={
-          <button className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700">
+          <button className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95">
             <Shield className="h-4 w-4" />
             Manage Permissions
           </button>

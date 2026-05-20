@@ -17,6 +17,7 @@ import {
 import { BarChart3, Users, Clock, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/theme-context";
+import { PageTransition, SectionItem } from "@/components/ui/page-transition";
 
 const barData = [
   { name: "Mon", pageViews: 4200, uniqueVisitors: 2800 },
@@ -79,7 +80,9 @@ export default function AnalyticsPage() {
   const axisStroke = isDark ? "#64748b" : "#94a3b8";
 
   return (
-    <div className="space-y-6">
+    <PageTransition>
+      <SectionItem>
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Analytics</h1>
@@ -90,7 +93,7 @@ export default function AnalyticsPage() {
         <button
           onClick={handleRefresh}
           disabled={isRefreshing}
-          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 active:scale-95 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
         >
           <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
           Refresh
@@ -225,5 +228,7 @@ export default function AnalyticsPage() {
         </div>
       </div>
     </div>
+      </SectionItem>
+    </PageTransition>
   );
 }

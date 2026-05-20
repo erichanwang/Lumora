@@ -293,7 +293,7 @@ export default function OrdersPage() {
                           <span className="text-sm text-slate-500 dark:text-slate-400">{order.eta}</span>
                           <button
                             onClick={(e) => { e.stopPropagation(); setDetailOrder(order); }}
-                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
                             title="View details"
                           >
                             <Eye className="h-3.5 w-3.5" />
@@ -355,7 +355,7 @@ export default function OrdersPage() {
                   <span>ETA: {order.eta}</span>
                   <button
                     onClick={() => setDetailOrder(order)}
-                    className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+                    className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
                   >
                     <Eye className="h-3.5 w-3.5" />
                   </button>
@@ -446,7 +446,7 @@ export default function OrdersPage() {
         }
         footer={
           <button
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95"
           >
             <Eye className="h-4 w-4" />
             View Order Details

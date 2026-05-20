@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import { Search, LayoutDashboard, BarChart3, Users, ShoppingCart, Settings, FileText, Receipt, UserPlus, Activity, ArrowRight, History, HeartPulse } from "lucide-react";
+import { Search, LayoutDashboard, BarChart3, Users, ShoppingCart, Settings, FileText, Receipt, UserPlus, Activity, ArrowRight, History, HeartPulse, Sun, Moon, PanelLeft, Keyboard, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/lib/theme-context";
 
 const items = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard, category: "Pages", shortcut: "G D" },
@@ -23,7 +24,45 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { resolvedTheme, toggle: toggleTheme } = useTheme();
   const router = useRouter();
+
+  // Quick actions
+  const quickActions = [
+    {
+      id: "theme",
+      label: resolvedTheme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode",
+      icon: resolvedTheme === "dark" ? Sun : Moon,
+      onActivate: () => { toggleTheme(); onClose(); },
+    },
+    {
+      id: "sidebar",
+      label: "Toggle Sidebar",
+      icon: PanelLeft,
+      onActivate: () => {
+        // Dispatch a custom event or keyboard shortcut
+        const e = new KeyboardEvent("keydown", { metaKey: true, key: "b" });
+        document.dispatchEvent(e);
+        onClose();
+      },
+    },
+    {
+      id: "shortcuts",
+      label: "View Keyboard Shortcuts",
+      icon: Keyboard,
+      onActivate: () => {
+        const e = new KeyboardEvent("keydown", { metaKey: true, key: "/" });
+        document.dispatchEvent(e);
+        onClose();
+      },
+    },
+    {
+      id: "settings",
+      label: "Open Settings",
+      icon: Settings,
+      onActivate: () => { router.push("/settings"); onClose(); },
+    },
+  ] as const;
 
   const filtered = items.filter(
     (item) =>
@@ -104,7 +143,8 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
         </div>
 
         {/* Results */}
-        <div className="max-h-80 overflow-y-auto p-2">
+        <div className="max-h-96 overflow-y-auto p-2">
+          {/* Recent searches */}
           {query === "" && recentSearches.length > 0 && (
             <>
               <div className="flex items-center gap-2 px-3 py-2">
@@ -130,6 +170,33 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
             </>
           )}
 
+          {/* Quick actions - show when no query */}
+          {query === "" && (
+            <>
+              <div className="flex items-center gap-2 px-3 py-2">
+                <Zap className="h-3 w-3 text-slate-400" />
+                <span className="text-xs font-medium uppercase tracking-wider text-slate-400">Quick Actions</span>
+              </div>
+              <div className="grid grid-cols-2 gap-1 px-2 pb-2">
+                {quickActions.map((action) => {
+                  const ActionIcon = action.icon;
+                  return (
+                    <button
+                      key={action.id}
+                      onClick={action.onActivate}
+                      className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-slate-700 transition-all hover:bg-slate-50 active:scale-[0.98] dark:text-slate-300 dark:hover:bg-slate-700/50"
+                    >
+                      <ActionIcon className="h-4 w-4 shrink-0 text-slate-400" />
+                      <span className="text-xs font-medium leading-tight">{action.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="mx-3 my-1 border-t border-slate-100 dark:border-slate-700" />
+            </>
+          )}
+
+          {/* Pages section */}
           <div className="flex items-center gap-2 px-3 py-2">
             <LayoutDashboard className="h-3 w-3 text-slate-400" />
             <span className="text-xs font-medium uppercase tracking-wider text-slate-400">Pages</span>

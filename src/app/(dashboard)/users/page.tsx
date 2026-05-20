@@ -192,7 +192,7 @@ export default function UsersPage() {
             <Download className="h-4 w-4" />
             Export CSV
           </button>
-          <button className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700">
+          <button className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95">
             <UserPlus className="h-4 w-4" />
             Add User
           </button>
@@ -366,7 +366,7 @@ export default function UsersPage() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={(e) => { e.stopPropagation(); setDetailUser(user); }}
-                          className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+                          className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
                           title="View details"
                         >
                           <Eye className="h-4 w-4" />
@@ -412,7 +412,7 @@ export default function UsersPage() {
                 </div>
                 <button
                   onClick={() => setDetailUser(user)}
-                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
                   title="View details"
                 >
                   <Eye className="h-4 w-4" />
@@ -511,7 +511,7 @@ export default function UsersPage() {
         }
         footer={
           <button
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95"
           >
             <Eye className="h-4 w-4" />
             View Full Profile

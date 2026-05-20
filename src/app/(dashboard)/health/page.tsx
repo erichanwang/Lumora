@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import {
   LineChart,
   Line,
@@ -30,6 +29,7 @@ import {
 import { cn } from "@/lib/utils";
 import { CopyButton, useClipboard } from "@/lib/clipboard";
 import { useToast } from "@/lib/toast-context";
+import { PageTransition, SectionItem } from "@/components/ui/page-transition";
 import useSWR from "swr";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -55,11 +55,9 @@ export default function HealthPage() {
   const StatusIcon = data?.status === "healthy" ? CheckCircle2 : XCircle;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
-    >
+    <PageTransition>
+      <SectionItem>
+      <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -75,7 +73,7 @@ export default function HealthPage() {
         <button
           onClick={() => mutate()}
           disabled={isValidating}
-          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
         >
           <RefreshCw className={cn("h-4 w-4", isValidating && "animate-spin")} />
           Refresh
@@ -270,6 +268,8 @@ export default function HealthPage() {
           );
         })}
       </div>
-    </motion.div>
+    </div>
+      </SectionItem>
+    </PageTransition>
   );
 }

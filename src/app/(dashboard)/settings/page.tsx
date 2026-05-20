@@ -8,6 +8,7 @@ import { profileSchema, type ProfileInput, type SettingsInput } from "@/lib/vali
 import { useToast } from "@/components/ui/toast";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useFormAutosave, AutosaveBadge } from "@/hooks/use-form-autosave";
+import { PageTransition, SectionItem } from "@/components/ui/page-transition";
 
 type Tab = "profile" | "notifications" | "appearance";
 
@@ -135,7 +136,9 @@ export default function SettingsPage() {
   const TabIcon = tabs.find((t) => t.id === activeTab)?.icon ?? User;
 
   return (
-    <div className="space-y-6">
+    <PageTransition>
+      <SectionItem>
+      <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Settings</h1>
@@ -386,7 +389,7 @@ export default function SettingsPage() {
                 <button
                   onClick={handleProfileSave}
                   disabled={saving === "profile"}
-                  className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving === "profile" ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -457,7 +460,7 @@ export default function SettingsPage() {
                 <button
                   onClick={handleNotifSave}
                   disabled={saving === "notifications"}
-                  className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving === "notifications" ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -593,7 +596,7 @@ export default function SettingsPage() {
                   <button
                     onClick={handleSettingsSave}
                     disabled={saving === "appearance"}
-                    className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {saving === "appearance" ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -626,5 +629,7 @@ export default function SettingsPage() {
         loading={deleting}
       />
     </div>
+      </SectionItem>
+    </PageTransition>
   );
 }

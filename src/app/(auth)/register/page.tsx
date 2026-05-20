@@ -4,7 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Lightbulb, ArrowRight, Loader2, Check } from "lucide-react";
+import { Lightbulb, ArrowRight, Loader2, Check, Shield, AlertTriangle, Key } from "lucide-react";
 import { registerSchema } from "@/lib/validations";
 import type { RegisterInput } from "@/lib/validations";
 import { cn } from "@/lib/utils";
@@ -150,6 +150,60 @@ export default function RegisterPage() {
                 )}
               />
               {errors.password && <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.password}</p>}
+              {/* Password strength indicator */}
+              {password.length > 0 && !errors.password && (
+                <div className="mt-2">
+                  <div className="flex items-center gap-2 mb-1">
+                    {(() => {
+                      const hasLower = /[a-z]/.test(password);
+                      const hasUpper = /[A-Z]/.test(password);
+                      const hasNumber = /[0-9]/.test(password);
+                      const hasSpecial = /[^a-zA-Z0-9]/.test(password);
+                      const score = [hasLower, hasUpper, hasNumber, hasSpecial].filter(Boolean).length;
+                      const bars = [
+                        { filled: hasLower || hasUpper, color: "bg-red-500" },
+                        { filled: hasNumber, color: "bg-amber-500" },
+                        { filled: hasSpecial || (hasUpper && hasNumber), color: "bg-yellow-500" },
+                        { filled: score >= 3 && password.length >= 8, color: "bg-emerald-500" },
+                      ];
+                      const labels = ["Weak", "Fair", "Good", "Strong"];
+                      const label = score <= 1 ? labels[0] : score === 2 ? labels[1] : score === 3 ? labels[2] : labels[3];
+                      const colors = ["text-red-500", "text-amber-500", "text-yellow-500", "text-emerald-500"];
+                      const colorIdx = score <= 1 ? 0 : score === 2 ? 1 : score === 3 ? 2 : 3;
+                      return (
+                        <>
+                          <div className="flex gap-1 flex-1">
+                            {bars.map((bar, i) => (
+                              <div
+                                key={i}
+                                className={cn(
+                                  "h-1.5 flex-1 rounded-full transition-colors",
+                                  bar.filled ? bar.color : "bg-slate-200 dark:bg-slate-700"
+                                )}
+                              />
+                            ))}
+                          </div>
+                          <span className={cn("text-xs font-medium", colors[colorIdx])}>{label}</span>
+                        </>
+                      );
+                    })()}
+                  </div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                    <span className={cn("flex items-center gap-1", /[a-z]/.test(password) ? "text-emerald-600" : "text-slate-400")}>
+                      <Key className="h-3 w-3" /> lowercase
+                    </span>
+                    <span className={cn("flex items-center gap-1", /[A-Z]/.test(password) ? "text-emerald-600" : "text-slate-400")}>
+                      <Key className="h-3 w-3" /> uppercase
+                    </span>
+                    <span className={cn("flex items-center gap-1", /[0-9]/.test(password) ? "text-emerald-600" : "text-slate-400")}>
+                      <Shield className="h-3 w-3" /> number
+                    </span>
+                    <span className={cn("flex items-center gap-1", /[^a-zA-Z0-9]/.test(password) ? "text-emerald-600" : "text-slate-400")}>
+                      <AlertTriangle className="h-3 w-3" /> special
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>

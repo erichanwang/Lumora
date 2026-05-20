@@ -18,6 +18,7 @@ import { useToast } from "@/components/ui/toast";
 import { DetailDrawer } from "@/components/ui/detail-drawer";
 import { EnhancedPagination } from "@/components/ui/pagination-enhanced";
 import { EmptyState } from "@/components/ui/empty-state";
+import { CopyButton } from "@/lib/clipboard";
 
 const allUsers = [
   { id: 1, name: "Alex Morgan", email: "alex@lumora.io", role: "Admin", status: "active", plan: "Enterprise", location: "San Francisco, CA", avatar: "AM", joined: "Jan 2023", revenue: 12400 },
@@ -322,7 +323,10 @@ export default function UsersPage() {
                         </div>
                         <div>
                           <p className="text-sm font-medium text-slate-900 dark:text-white">{user.name}</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            {user.email}
+                            <CopyButton text={user.email} toast={toast} />
+                          </p>
                         </div>
                       </div>
                     </td>
@@ -382,7 +386,10 @@ export default function UsersPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-900 dark:text-white">{user.name}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      {user.email}
+                      <CopyButton text={user.email} toast={toast} />
+                    </p>
                   </div>
                 </div>
                 <button

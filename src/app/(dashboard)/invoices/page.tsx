@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/toast";
 import { DetailDrawer } from "@/components/ui/detail-drawer";
 import { EnhancedPagination } from "@/components/ui/pagination-enhanced";
 import { EmptyState } from "@/components/ui/empty-state";
+import { CopyButton } from "@/lib/clipboard";
 
 const invoices = [
   { id: "INV-2025-001", customer: "Acme Corp", email: "billing@acme.com", amount: 2499.00, status: "paid", date: "Mar 1, 2025", dueDate: "Mar 15, 2025" },
@@ -226,11 +227,17 @@ export default function InvoicesPage() {
                         />
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">{inv.id}</p>
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">
+                          {inv.id}
+                          <CopyButton text={inv.id} toast={toast} />
+                        </p>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <p className="text-sm font-medium text-slate-900 dark:text-white">{inv.customer}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{inv.email}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          {inv.email}
+                          <CopyButton text={inv.email} toast={toast} />
+                        </p>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">${inv.amount.toLocaleString()}</td>
                       <td className="whitespace-nowrap px-6 py-4">
@@ -283,7 +290,10 @@ export default function InvoicesPage() {
                       }}
                       className="h-4 w-4 rounded border-slate-300 text-indigo-600 dark:border-slate-600"
                     />
-                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{inv.id}</p>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                      {inv.id}
+                      <CopyButton text={inv.id} toast={toast} />
+                    </p>
                   </div>
                   <div className="flex items-center gap-1">
                     <button

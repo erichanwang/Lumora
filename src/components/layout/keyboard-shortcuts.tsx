@@ -15,6 +15,12 @@ const shortcuts = [
   { keys: ["G", "A"], label: "Go to Analytics" },
   { keys: ["G", "U"], label: "Go to Users" },
   { keys: ["G", "O"], label: "Go to Orders" },
+  { keys: ["G", "I"], label: "Go to Invoices" },
+  { keys: ["G", "R"], label: "Go to Reports" },
+  { keys: ["G", "T"], label: "Go to Team" },
+  { keys: ["G", "H"], label: "Go to Health" },
+  { keys: ["G", "L"], label: "Go to Audit Log" },
+  { keys: ["G", "S"], label: "Go to Settings" },
 ];
 
 export function KeyboardShortcuts() {
@@ -160,6 +166,9 @@ export function useKeyboardShortcuts(handlers: {
           o: "/orders",
           r: "/reports",
           i: "/invoices",
+          t: "/team",
+          h: "/health",
+          l: "/audit",
           s: "/settings",
         };
         const path = navMap[e.key.toLowerCase()];

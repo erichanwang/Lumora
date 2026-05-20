@@ -21,6 +21,7 @@ import { useToast } from "@/components/ui/toast";
 import { DetailDrawer } from "@/components/ui/detail-drawer";
 import { EnhancedPagination } from "@/components/ui/pagination-enhanced";
 import { EmptyState } from "@/components/ui/empty-state";
+import { CopyButton } from "@/lib/clipboard";
 
 const allOrders = [
   { id: "#ORD-7842", customer: "Olivia Martin", email: "olivia@example.com", items: 3, amount: 249.99, status: "delivered", payment: "paid", date: "Mar 1, 2025", eta: "Mar 3, 2025" },
@@ -247,10 +248,16 @@ export default function OrdersPage() {
                           className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
                         />
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">{order.id}</td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
+                        {order.id}
+                        <CopyButton text={order.id} toast={toast} />
+                      </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <p className="text-sm font-medium text-slate-900 dark:text-white">{order.customer}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{order.email}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          {order.email}
+                          <CopyButton text={order.email} toast={toast} />
+                        </p>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{order.items} items</td>
                       <td className="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">${order.amount.toFixed(2)}</td>
@@ -302,7 +309,10 @@ export default function OrdersPage() {
                       }}
                       className="h-4 w-4 rounded border-slate-300 text-indigo-600 dark:border-slate-600"
                     />
-                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{order.id}</p>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                      {order.id}
+                      <CopyButton text={order.id} toast={toast} />
+                    </p>
                   </div>
                   <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium", config.className)}>
                     <StatusIcon className="h-3 w-3" />{config.label}
@@ -310,7 +320,10 @@ export default function OrdersPage() {
                 </div>
                 <div className="mt-2">
                   <p className="text-sm font-medium text-slate-900 dark:text-white">{order.customer}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">{order.email}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {order.email}
+                    <CopyButton text={order.email} toast={toast} />
+                  </p>
                 </div>
                 <div className="mt-2 flex items-center justify-between text-sm">
                   <span className="text-slate-600 dark:text-slate-300">{order.items} items</span>

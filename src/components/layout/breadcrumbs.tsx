@@ -12,6 +12,9 @@ const labelMap: Record<string, string> = {
   orders: "Orders",
   reports: "Reports",
   invoices: "Invoices",
+  team: "Team",
+  audit: "Audit Log",
+  health: "System Health",
   settings: "Settings",
 };
 

@@ -1,11 +1,13 @@
 "use client";
 
 import { Component, type ReactNode } from "react";
-import { AlertTriangle, RefreshCw } from "lucide-react";
+import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import Link from "next/link";
 
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
+  onRetry?: () => void;
 }
 
 interface State {
@@ -27,6 +29,14 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error("ErrorBoundary caught:", error, errorInfo);
   }
 
+  handleRetry = () => {
+    if (this.props.onRetry) {
+      this.props.onRetry();
+    } else {
+      this.setState({ hasError: false, error: null });
+    }
+  };
+
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
@@ -38,19 +48,28 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="rounded-full bg-red-100 p-4 dark:bg-red-900/30">
             <AlertTriangle className="h-8 w-8 text-red-600 dark:text-red-400" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
             Something went wrong
           </h2>
-          <p className="max-w-md text-gray-500 dark:text-gray-400">
+          <p className="max-w-md text-slate-500 dark:text-slate-400">
             {this.state.error?.message || "An unexpected error occurred."}
           </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
-          >
-            <RefreshCw className="h-4 w-4" />
-            Reload page
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={this.handleRetry}
+              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-indigo-700 active:scale-95"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Try again
+            </button>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-all hover:bg-slate-50 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+            >
+              <Home className="h-4 w-4" />
+              Go to Dashboard
+            </Link>
+          </div>
         </div>
       );
     }

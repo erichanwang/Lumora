@@ -15,7 +15,7 @@ import {
   Settings,
   Activity,
   UserPlus,
-  ClipboardList,
+  ScrollText,
 } from "lucide-react";
 
 const navigation = [
@@ -23,11 +23,11 @@ const navigation = [
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
   { name: "Users", href: "/users", icon: Users },
   { name: "Orders", href: "/orders", icon: ShoppingCart },
-  { name: "Reports", href: "/reports", icon: ClipboardList },
+  { name: "Reports", href: "/reports", icon: FileText },
   { name: "Invoices", href: "/invoices", icon: Receipt },
   { name: "Health", href: "/health", icon: Activity },
   { name: "Team", href: "/team", icon: UserPlus },
-  { name: "Audit", href: "/audit", icon: ClipboardList },
+  { name: "Audit", href: "/audit", icon: ScrollText },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 

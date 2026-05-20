@@ -27,3 +27,23 @@ export function formatDate(date: string): string {
     year: "numeric",
   }).format(parsed);
 }
+
+export function formatRelativeTime(date: string | Date): string {
+  const now = Date.now();
+  const parsed = typeof date === "string" ? new Date(date + (date.includes("T") ? "" : "T12:00:00")).getTime() : date.getTime();
+  const diff = now - parsed;
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (seconds < 60) return "just now";
+  if (minutes < 60) return `${minutes}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  if (days < 7) return `${days}d ago`;
+  return formatDate(typeof date === "string" ? date : date.toISOString());
+}
+
+export function formatPercentage(value: number, decimals: number = 1): string {
+  return `${value >= 0 ? "+" : ""}${value.toFixed(decimals)}%`;
+}

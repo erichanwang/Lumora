@@ -41,6 +41,13 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
+      {/* Skip-to-content link for keyboard users */}
+      <a
+        href="#main-content"
+        className="fixed left-2 top-2 z-[200] -translate-y-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-lg opacity-0 transition-all focus:translate-y-0 focus:opacity-100 focus:outline-none"
+      >
+        Skip to content
+      </a>
       {/* Desktop sidebar */}
       <div className="hidden lg:flex">
         <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed((prev) => !prev)} />
@@ -52,7 +59,7 @@ export default function DashboardLayout({
       {/* Main content */}
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header onMenuClick={() => setMobileOpen(true)} />
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <main id="main-content" className="flex-1 overflow-y-auto p-4 lg:p-6" tabIndex={-1}>
           <div className="mb-4 lg:mb-6">
             <Breadcrumbs />
           </div>

@@ -13,7 +13,7 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
-  const { theme, toggle } = useTheme();
+  const { resolvedTheme, toggle } = useTheme();
   const { data: notifData } = useNotifications(true);
   const unreadCount = notifData?.unreadCount ?? 0;
 
@@ -55,9 +55,9 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
           <button
             onClick={toggle}
             className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
-            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            aria-label={resolvedTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
           >
-            {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            {resolvedTheme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </button>
 
           {/* Notifications */}

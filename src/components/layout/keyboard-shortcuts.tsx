@@ -160,7 +160,7 @@ export function useKeyboardShortcuts(handlers: {
 
       if (gPressed && h.onNavigate) {
         const navMap: Record<string, string> = {
-          d: "/analytics",
+          d: "/",
           a: "/analytics",
           u: "/users",
           o: "/orders",

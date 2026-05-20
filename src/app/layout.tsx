@@ -18,9 +18,41 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lumora — Business Dashboard",
+  title: {
+    default: "Lumora — Business Dashboard",
+    template: "%s | Lumora",
+  },
   description:
     "Modern SaaS dashboard for monitoring your business performance, analytics, and growth.",
+  keywords: ["dashboard", "analytics", "saas", "business", "lumora"],
+  authors: [{ name: "Lumora" }],
+  openGraph: {
+    title: "Lumora — Business Dashboard",
+    description:
+      "Modern SaaS dashboard for monitoring your business performance, analytics, and growth.",
+    type: "website",
+    locale: "en_US",
+    siteName: "Lumora",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lumora — Business Dashboard",
+    description:
+      "Modern SaaS dashboard for monitoring your business performance, analytics, and growth.",
+  },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Lumora",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export default async function RootLayout({
@@ -38,13 +70,20 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+        <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 try {
                   var t = localStorage.getItem('lumora-theme');
-                  if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  var isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (t === 'dark' || (t === 'system' && isDark) || (!t && isDark)) {
                     document.documentElement.classList.add('dark');
                   }
                 } catch(e) {}

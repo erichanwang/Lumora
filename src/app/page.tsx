@@ -204,6 +204,151 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Pricing */}
+      <section id="pricing" className="border-t border-slate-200 bg-white py-20 dark:border-slate-800 dark:bg-slate-900">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
+              Simple, Transparent Pricing
+            </h2>
+            <p className="mt-3 text-slate-600 dark:text-slate-400">
+              Choose the plan that fits your needs. Upgrade anytime.
+            </p>
+          </div>
+          <div className="mt-16 grid gap-8 md:grid-cols-3">
+            {[
+              {
+                name: "Free",
+                price: "$0",
+                period: "/month",
+                desc: "Perfect for individuals getting started",
+                features: ["Basic dashboard", "3 team members", "7-day data history", "Email support"],
+                cta: "Get Started",
+                highlighted: false,
+              },
+              {
+                name: "Pro",
+                price: "$29",
+                period: "/month",
+                desc: "Best for growing teams and businesses",
+                features: ["Advanced analytics", "Unlimited team members", "90-day data history", "Priority support", "Custom reports", "API access"],
+                cta: "Start Free Trial",
+                highlighted: true,
+              },
+              {
+                name: "Enterprise",
+                price: "$99",
+                period: "/month",
+                desc: "For large organizations with advanced needs",
+                features: ["Everything in Pro", "Unlimited data history", "SSO & SSO", "Dedicated support", "Custom integrations", "SLA guarantee", "Audit logs", "Team training"],
+                cta: "Contact Sales",
+                highlighted: false,
+              },
+            ].map((plan) => (
+              <div
+                key={plan.name}
+                className={`relative rounded-2xl border-2 p-8 transition-all hover:shadow-xl ${
+                  plan.highlighted
+                    ? "border-indigo-500 bg-white shadow-lg shadow-indigo-100 dark:bg-slate-800 dark:shadow-indigo-900/20"
+                    : "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
+                }`}
+              >
+                {plan.highlighted && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-1 text-xs font-semibold text-white shadow-md">
+                    Most Popular
+                  </div>
+                )}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{plan.name}</h3>
+                  <div className="mt-2 flex items-baseline gap-1">
+                    <span className="text-4xl font-bold text-slate-900 dark:text-white">{plan.price}</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">{plan.period}</span>
+                  </div>
+                  <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{plan.desc}</p>
+                </div>
+                <ul className="mb-8 space-y-3">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                      <svg className="h-4 w-4 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href="/register"
+                  className={`flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-all ${
+                    plan.highlighted
+                      ? "bg-indigo-600 text-white shadow-md hover:bg-indigo-700"
+                      : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+                  }`}
+                >
+                  {plan.cta} <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section id="testimonials" className="border-t border-slate-200 bg-slate-50 py-20 dark:border-slate-800 dark:bg-slate-950">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
+              Trusted by Industry Leaders
+            </h2>
+            <p className="mt-3 text-slate-600 dark:text-slate-400">
+              See what our customers have to say about Lumora
+            </p>
+          </div>
+          <div className="mt-16 grid gap-8 md:grid-cols-3">
+            {[
+              {
+                quote: "Lumora completely transformed our analytics workflow. We went from spending hours on reports to getting instant insights.",
+                name: "Alex Morgan",
+                role: "CTO, TechVentures",
+                initials: "AM",
+              },
+              {
+                quote: "The real-time dashboard is incredible. We caught a critical issue before it affected our customers thanks to Lumora.",
+                name: "Sarah Chen",
+                role: "Engineering Lead, DataFlow",
+                initials: "SC",
+              },
+              {
+                quote: "We evaluated 8 analytics platforms and Lumora won on every metric. The AI insights feature is a game-changer.",
+                name: "Michael Kim",
+                role: "VP Product, CloudScale",
+                initials: "MK",
+              },
+            ].map((testimonial) => (
+              <div
+                key={testimonial.name}
+                className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+              >
+                <svg className="h-6 w-6 text-indigo-300" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zM0 21v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151C7.563 6.068 6 8.789 6 11h4v10H0z" />
+                </svg>
+                <p className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                  &ldquo;{testimonial.quote}&rdquo;
+                </p>
+                <div className="mt-6 flex items-center gap-3 border-t border-slate-100 pt-4 dark:border-slate-700">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400">
+                    {testimonial.initials}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">{testimonial.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{testimonial.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Stats */}
       <section className="border-t border-slate-200 bg-slate-50 py-16 dark:border-slate-800 dark:bg-slate-950">
         <div className="mx-auto max-w-7xl px-6">

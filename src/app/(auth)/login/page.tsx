@@ -5,6 +5,8 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Lightbulb, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+import { loginSchema } from "@/lib/validations";
+import type { LoginInput } from "@/lib/validations";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,15 +26,25 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
+    // Zod validation
+    const input: LoginInput = { email, password };
+    const result = loginSchema.safeParse(input);
+    if (!result.success) {
+      const firstError = result.error.issues[0];
+      setError(firstError?.message || "Please check your input");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const result = await signIn("credentials", {
-        email,
-        password,
+      const res = await signIn("credentials", {
+        email: result.data.email,
+        password: result.data.password,
         redirect: false,
       });
 
-      if (result?.error) {
-        setError("Invalid email or password. Try demo@lumora.io / demo1234");
+      if (res?.error) {
+        setError("Invalid email or password. Try alex@lumora.io / demo1234");
       } else {
         router.push("/");
         router.refresh();

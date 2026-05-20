@@ -189,9 +189,9 @@ export default function Home() {
             ].map((feature) => (
               <div
                 key={feature.title}
-                className="group rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-lg hover:border-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-800"
+                className="group rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-800"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 transition-colors group-hover:bg-indigo-600 group-hover:text-white dark:bg-indigo-900/50 dark:text-indigo-400 dark:group-hover:bg-indigo-600 dark:group-hover:text-white">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 transition-all duration-300 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white dark:bg-indigo-900/50 dark:text-indigo-400 dark:group-hover:bg-indigo-600 dark:group-hover:text-white">
                   <feature.icon className="h-6 w-6" />
                 </div>
                 <h3 className="mt-4 text-lg font-semibold text-slate-900 dark:text-white">
@@ -247,7 +247,7 @@ export default function Home() {
             ].map((plan) => (
               <div
                 key={plan.name}
-                className={`relative rounded-2xl border-2 p-8 transition-all hover:shadow-xl ${
+                className={`relative rounded-2xl border-2 p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
                   plan.highlighted
                     ? "border-indigo-500 bg-white shadow-lg shadow-indigo-100 dark:bg-slate-800 dark:shadow-indigo-900/20"
                     : "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"

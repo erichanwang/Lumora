@@ -14,6 +14,8 @@ import {
   FileText,
   Receipt,
   Activity,
+  UserCog,
+  ScrollText,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -21,9 +23,11 @@ const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
   { name: "Users", href: "/users", icon: Users },
+  { name: "Team", href: "/team", icon: UserCog },
   { name: "Orders", href: "/orders", icon: ShoppingCart },
   { name: "Reports", href: "/reports", icon: FileText },
   { name: "Invoices", href: "/invoices", icon: Receipt },
+  { name: "Audit Log", href: "/audit", icon: ScrollText },
   { name: "Health", href: "/health", icon: Activity },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
@@ -70,10 +74,11 @@ export function Sidebar({ collapsed: controlledCollapsed, onToggle }: { collapse
               key={item.name}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                 isActive
-                  ? "bg-indigo-500/10 text-indigo-400 dark:bg-indigo-500/20 dark:text-indigo-300"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900"
+                  ? "bg-indigo-500/10 text-indigo-400 shadow-sm dark:bg-indigo-500/20 dark:text-indigo-300"
+                  : "text-slate-400 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900",
+                collapsed && isActive && "ring-1 ring-indigo-500/30"
               )}
               title={collapsed ? item.name : undefined}
             >

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
+import { ClipboardCopy } from "lucide-react";
 
 /**
  * Copy text to clipboard and return whether it succeeded
@@ -74,7 +75,7 @@ export function CopyButton({
       className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300 ${className}`}
       title="Click to copy"
     >
-      📋
+      <ClipboardCopy className="h-3.5 w-3.5" />
     </button>
   );
 }

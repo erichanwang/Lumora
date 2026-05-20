@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { Moon, Sun, Globe, Bell, User, Save, Loader2, CheckCircle2, Key, Lock, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { profileSchema, settingsSchema, type ProfileInput, type SettingsInput } from "@/lib/validations";
+import { profileSchema, type ProfileInput, type SettingsInput } from "@/lib/validations";
 import { useToast } from "@/components/ui/toast";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 

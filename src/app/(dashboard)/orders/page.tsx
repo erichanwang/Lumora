@@ -21,6 +21,8 @@ import { useToast } from "@/components/ui/toast";
 import { DetailDrawer } from "@/components/ui/detail-drawer";
 import { EnhancedPagination } from "@/components/ui/pagination-enhanced";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ColumnToggle } from "@/components/ui/column-toggle";
+import { useDebounce } from "@/lib/use-debounce";
 import { CopyButton } from "@/lib/clipboard";
 
 const allOrders = [
@@ -52,13 +54,15 @@ export default function OrdersPage() {
   const perPage = 5;
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [detailOrder, setDetailOrder] = useState<(typeof allOrders)[number] | null>(null);
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(new Set(["id", "customer", "items", "amount", "status", "date"]));
   const { toast } = useToast();
+  const debouncedSearch = useDebounce(search, 300);
 
   const filtered = useMemo(() => {
     let result = allOrders.filter((o) => {
       const matchesSearch =
-        o.id.toLowerCase().includes(search.toLowerCase()) ||
-        o.customer.toLowerCase().includes(search.toLowerCase());
+        o.id.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        o.customer.toLowerCase().includes(debouncedSearch.toLowerCase());
       const matchesStatus = statusFilter === "all" || o.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
@@ -76,7 +80,7 @@ export default function OrdersPage() {
     });
 
     return result;
-  }, [search, statusFilter, sortField, sortDir]);
+  }, [debouncedSearch, statusFilter, sortField, sortDir]);
 
   const paged = filtered.slice(page * perPage, (page + 1) * perPage);
   const totalPages = Math.ceil(filtered.length / perPage);
@@ -99,29 +103,43 @@ export default function OrdersPage() {
             Track and manage all customer orders
           </p>
         </div>
-        <button
-          onClick={() =>
-            exportToCSV(
-              allOrders,
-              `lumora-orders-${new Date().toISOString().split("T")[0]}.csv`,
-              [
-                { key: "id", label: "Order ID" },
-                { key: "customer", label: "Customer" },
-                { key: "email", label: "Email" },
-                { key: "items", label: "Items" },
-                { key: "amount", label: "Amount" },
-                { key: "status", label: "Status" },
-                { key: "payment", label: "Payment" },
-                { key: "date", label: "Date" },
-                { key: "eta", label: "ETA" },
-              ]
-            )
-          }
-          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-        >
-          <Download className="h-4 w-4" />
-          Export CSV
-        </button>
+        <div className="flex items-center gap-2">
+          <ColumnToggle
+            columns={[
+              { key: "id", label: "Order" },
+              { key: "customer", label: "Customer" },
+              { key: "items", label: "Items" },
+              { key: "amount", label: "Amount" },
+              { key: "status", label: "Status" },
+              { key: "date", label: "Date" },
+            ]}
+            visibleColumns={visibleColumns}
+            onChange={setVisibleColumns}
+          />
+          <button
+            onClick={() =>
+              exportToCSV(
+                allOrders,
+                `lumora-orders-${new Date().toISOString().split("T")[0]}.csv`,
+                [
+                  { key: "id", label: "Order ID" },
+                  { key: "customer", label: "Customer" },
+                  { key: "email", label: "Email" },
+                  { key: "items", label: "Items" },
+                  { key: "amount", label: "Amount" },
+                  { key: "status", label: "Status" },
+                  { key: "payment", label: "Payment" },
+                  { key: "date", label: "Date" },
+                  { key: "eta", label: "ETA" },
+                ]
+              )
+            }
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+          >
+            <Download className="h-4 w-4" />
+            Export CSV
+          </button>
+        </div>
       </div>
 
       {/* Stats */}

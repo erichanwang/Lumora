@@ -17,6 +17,7 @@ import { useToast } from "@/components/ui/toast";
 import { DetailDrawer } from "@/components/ui/detail-drawer";
 import { EnhancedPagination } from "@/components/ui/pagination-enhanced";
 import { EmptyState } from "@/components/ui/empty-state";
+import { useDebounce } from "@/lib/use-debounce";
 import { CopyButton } from "@/lib/clipboard";
 
 const reports = [
@@ -52,14 +53,15 @@ export default function ReportsPage() {
   const perPage = 5;
   const [detailReport, setDetailReport] = useState<(typeof reports)[number] | null>(null);
   const { toast } = useToast();
+  const debouncedSearch = useDebounce(search, 300);
 
   const filtered = useMemo(() => {
     let result = reports.filter((r) => {
       const matchesSearch =
-        r.name.toLowerCase().includes(search.toLowerCase()) ||
-        r.id.toLowerCase().includes(search.toLowerCase()) ||
-        r.type.toLowerCase().includes(search.toLowerCase()) ||
-        r.author.toLowerCase().includes(search.toLowerCase());
+        r.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        r.id.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        r.type.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        r.author.toLowerCase().includes(debouncedSearch.toLowerCase());
       const matchesType = filter === "all" || r.type.toLowerCase() === filter;
       return matchesSearch && matchesType;
     });
@@ -77,7 +79,7 @@ export default function ReportsPage() {
     });
 
     return result;
-  }, [search, filter, sortField, sortDir]);
+  }, [debouncedSearch, filter, sortField, sortDir]);
 
   const paged = filtered.slice(page * perPage, (page + 1) * perPage);
   const totalPages = Math.ceil(filtered.length / perPage);

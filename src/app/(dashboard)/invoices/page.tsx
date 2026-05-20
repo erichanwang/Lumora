@@ -8,6 +8,8 @@ import { useToast } from "@/components/ui/toast";
 import { DetailDrawer } from "@/components/ui/detail-drawer";
 import { EnhancedPagination } from "@/components/ui/pagination-enhanced";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ColumnToggle } from "@/components/ui/column-toggle";
+import { useDebounce } from "@/lib/use-debounce";
 import { CopyButton } from "@/lib/clipboard";
 
 const invoices = [
@@ -35,13 +37,15 @@ export default function InvoicesPage() {
   const [page, setPage] = useState(0);
   const perPage = 5;
   const [detailInvoice, setDetailInvoice] = useState<(typeof invoices)[number] | null>(null);
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(new Set(["id", "customer", "amount", "status", "date", "dueDate"]));
   const { toast } = useToast();
+  const debouncedSearch = useDebounce(search, 300);
 
   const filtered = useMemo(() => {
     let result = invoices.filter(
       (inv) =>
-        inv.customer.toLowerCase().includes(search.toLowerCase()) ||
-        inv.id.toLowerCase().includes(search.toLowerCase())
+        inv.customer.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        inv.id.toLowerCase().includes(debouncedSearch.toLowerCase())
     );
 
     result.sort((a, b) => {
@@ -57,7 +61,7 @@ export default function InvoicesPage() {
     });
 
     return result;
-  }, [search, sortField, sortDir]);
+  }, [debouncedSearch, sortField, sortDir]);
 
   const paged = filtered.slice(page * perPage, (page + 1) * perPage);
   const totalPages = Math.ceil(filtered.length / perPage);
@@ -85,6 +89,18 @@ export default function InvoicesPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <ColumnToggle
+            columns={[
+              { key: "id", label: "Invoice" },
+              { key: "customer", label: "Customer" },
+              { key: "amount", label: "Amount" },
+              { key: "status", label: "Status" },
+              { key: "date", label: "Issue Date" },
+              { key: "dueDate", label: "Due Date" },
+            ]}
+            visibleColumns={visibleColumns}
+            onChange={setVisibleColumns}
+          />
           <button
             onClick={() =>
               exportToCSV(

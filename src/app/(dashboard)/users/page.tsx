@@ -18,6 +18,8 @@ import { useToast } from "@/components/ui/toast";
 import { DetailDrawer } from "@/components/ui/detail-drawer";
 import { EnhancedPagination } from "@/components/ui/pagination-enhanced";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ColumnToggle } from "@/components/ui/column-toggle";
+import { useDebounce } from "@/lib/use-debounce";
 import { CopyButton } from "@/lib/clipboard";
 
 const allUsers = [
@@ -61,7 +63,9 @@ export default function UsersPage() {
   const perPage = 5;
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [detailUser, setDetailUser] = useState<(typeof allUsers)[number] | null>(null);
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(new Set(["name", "role", "status", "plan", "revenue", "joined"]));
   const { toast } = useToast();
+  const debouncedSearch = useDebounce(search, 300);
 
   const syncUrl = useCallback((params: Record<string, string>) => {
     const sp = new URLSearchParams(searchParams);
@@ -103,8 +107,8 @@ export default function UsersPage() {
   const filtered = useMemo(() => {
     let result = allUsers.filter((u) => {
       const matchesSearch =
-        u.name.toLowerCase().includes(search.toLowerCase()) ||
-        u.email.toLowerCase().includes(search.toLowerCase());
+        u.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        u.email.toLowerCase().includes(debouncedSearch.toLowerCase());
       const matchesRole = roleFilter === "all" || u.role.toLowerCase() === roleFilter;
       const matchesStatus = statusFilter === "all" || u.status === statusFilter;
       return matchesSearch && matchesRole && matchesStatus;
@@ -120,7 +124,7 @@ export default function UsersPage() {
     });
 
     return result;
-  }, [search, roleFilter, statusFilter, sortField, sortDir]);
+  }, [debouncedSearch, roleFilter, statusFilter, sortField, sortDir]);
 
   const paged = filtered.slice(page * perPage, (page + 1) * perPage);
   const totalPages = Math.ceil(filtered.length / perPage);
@@ -152,6 +156,18 @@ export default function UsersPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <ColumnToggle
+            columns={[
+              { key: "name", label: "User" },
+              { key: "role", label: "Role" },
+              { key: "status", label: "Status" },
+              { key: "plan", label: "Plan" },
+              { key: "revenue", label: "Revenue" },
+              { key: "joined", label: "Joined" },
+            ]}
+            visibleColumns={visibleColumns}
+            onChange={setVisibleColumns}
+          />
           <button
             onClick={() =>
               exportToCSV(

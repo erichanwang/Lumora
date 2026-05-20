@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { exportToCSV } from "@/lib/export";
 import { EmptyState } from "@/components/ui/empty-state";
 import { EnhancedPagination } from "@/components/ui/pagination-enhanced";
+import { useDebounce } from "@/lib/use-debounce";
 
 interface AuditEntry {
   id: string;
@@ -55,14 +56,15 @@ export default function AuditLogPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
   const perPage = 7;
+  const debouncedSearch = useDebounce(searchQuery, 300);
 
   const filtered = useMemo(() => {
     let result = typeFilter === "all"
       ? auditLog
       : auditLog.filter((e) => e.type === typeFilter);
 
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
+    if (debouncedSearch.trim()) {
+      const q = debouncedSearch.toLowerCase();
       result = result.filter(
         (e) =>
           e.user.toLowerCase().includes(q) ||
@@ -73,7 +75,7 @@ export default function AuditLogPage() {
     }
 
     return result;
-  }, [typeFilter, searchQuery]);
+  }, [typeFilter, debouncedSearch]);
 
   const paged = filtered.slice(page * perPage, (page + 1) * perPage);
   const totalPages = Math.ceil(filtered.length / perPage);
@@ -82,8 +84,8 @@ export default function AuditLogPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Audit Log</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Audit Log</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Track every action taken across the platform.
           </p>
         </div>
@@ -103,7 +105,7 @@ export default function AuditLogPage() {
               ]
             )
           }
-          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
         >
           <Download className="h-4 w-4" />
           Export log
@@ -113,16 +115,16 @@ export default function AuditLogPage() {
       {/* Search bar */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             placeholder="Search audit log..."
             value={searchQuery}
             onChange={(e) => { setSearchQuery(e.target.value); setPage(0); }}
-            className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm text-gray-900 outline-none transition-colors focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30"
+            className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-900 outline-none transition-colors focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30"
           />
         </div>        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-gray-400" />
+          <Filter className="h-4 w-4 text-slate-400" />
           <div className="flex flex-wrap gap-2">
             {["all", "user", "settings", "auth", "billing", "content", "security"].map((type) => (
               <button
@@ -131,7 +133,7 @@ export default function AuditLogPage() {
                 className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
                   typeFilter === type
                     ? "bg-indigo-600 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
                 }`}
               >
                 {type === "all" ? "All events" : type.charAt(0).toUpperCase() + type.slice(1)}
@@ -155,26 +157,26 @@ export default function AuditLogPage() {
             return (
               <div
                 key={entry.id}
-                className="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-4 transition-colors hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-gray-800/50"
+                className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-4 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700/50"
               >
                 <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${cfg.bg}`}>
                   <IconComponent className={`h-5 w-5 ${cfg.color}`} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">
                       <span className="font-semibold">{entry.user}</span>{" "}
                       {entry.action}
                     </p>
-                    <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0">
+                    <span className="text-xs text-slate-400 dark:text-slate-500 shrink-0">
                       {entry.timestamp}
                     </span>
                   </div>
-                  <div className="mt-1 flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400">
-                    <span className="rounded-md bg-gray-100 px-2 py-0.5 dark:bg-gray-800">
+                  <div className="mt-1 flex flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-400">
+                    <span className="rounded-md bg-slate-100 px-2 py-0.5 dark:bg-slate-700">
                       {entry.resource}
                     </span>
-                    <span className="rounded-md bg-gray-100 px-2 py-0.5 dark:bg-gray-800">
+                    <span className="rounded-md bg-slate-100 px-2 py-0.5 dark:bg-slate-700">
                       IP: {entry.ip}
                     </span>
                   </div>

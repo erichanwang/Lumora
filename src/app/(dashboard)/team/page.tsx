@@ -15,12 +15,15 @@ import {
   Send,
   Loader2,
   Eye,
+  Download,
 } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { exportToCSV } from "@/lib/export";
 import { DetailDrawer } from "@/components/ui/detail-drawer";
 import { EnhancedPagination } from "@/components/ui/pagination-enhanced";
 import { CopyButton } from "@/lib/clipboard";
 import { useToast } from "@/components/ui/toast";
+import { useDebounce } from "@/lib/use-debounce";
 import { cn } from "@/lib/utils";
 
 interface TeamMember {
@@ -54,7 +57,7 @@ const statusIcon = (status: TeamMember["status"]) => {
   switch (status) {
     case "active": return <BadgeCheck className="h-4 w-4 text-emerald-500" />;
     case "invited": return <Clock className="h-4 w-4 text-amber-500" />;
-    case "inactive": return <XCircle className="h-4 w-4 text-gray-400" />;
+    case "inactive": return <XCircle className="h-4 w-4 text-slate-400" />;
   }
 };
 
@@ -69,6 +72,8 @@ const statusLabel = (status: TeamMember["status"]) => {
 export default function TeamPage() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const debouncedSearch = useDebounce(searchQuery, 300);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [emails, setEmails] = useState<string[]>([""]);
   const [inviteRole, setInviteRole] = useState<TeamMember["role"]>("Editor");
@@ -81,8 +86,8 @@ export default function TeamPage() {
 
   const filtered = members.filter(
     (m) =>
-      m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.email.toLowerCase().includes(searchQuery.toLowerCase())
+      m.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      m.email.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
 
   const paged = filtered.slice(page * perPage, (page + 1) * perPage);
@@ -169,23 +174,22 @@ export default function TeamPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Team</h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+    <div className="space-y-6">        <div>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Team</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Manage your team members and their roles.
         </p>
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             placeholder="Search members..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500 dark:focus:border-indigo-400"
+            onChange={(e) => { setSearchQuery(e.target.value); setPage(0); }}
+            className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-10 pr-4 text-sm text-slate-900 outline-none transition-colors focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30"
           />
         </div>
         <button
@@ -217,6 +221,20 @@ export default function TeamPage() {
           <table className="hidden w-full sm:table">
             <thead>
               <tr className="border-b border-slate-100 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:text-slate-400">
+                <th className="w-12 px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={paged.length > 0 && selectedIds.size === paged.length}
+                    onChange={() => {
+                      if (selectedIds.size === paged.length) {
+                        setSelectedIds(new Set());
+                      } else {
+                        setSelectedIds(new Set(paged.map((m) => m.id)));
+                      }
+                    }}
+                    className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                  />
+                </th>
                 <th className="px-6 py-3">Name</th>
                 <th className="px-6 py-3">Role</th>
                 <th className="px-6 py-3">Status</th>
@@ -229,8 +247,35 @@ export default function TeamPage() {
               {paged.map((member) => (
                 <tr
                   key={member.id}
-                  className="bg-white transition-colors hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700/50"
+                  className={cn(
+                    "transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer",
+                    selectedIds.has(member.id) && "bg-indigo-50/50 dark:bg-indigo-950/20"
+                  )}
+                  onClick={() => {
+                    setSelectedIds((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(member.id)) next.delete(member.id);
+                      else next.add(member.id);
+                      return next;
+                    });
+                  }}
                 >
+                  <td className="whitespace-nowrap px-4 py-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(member.id)}
+                      onChange={() => {
+                        setSelectedIds((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(member.id)) next.delete(member.id);
+                          else next.add(member.id);
+                          return next;
+                        });
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                    />
+                  </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400">
@@ -262,7 +307,7 @@ export default function TeamPage() {
                   <td className="px-6 py-4 text-sm text-slate-400 dark:text-slate-500">{member.lastActive || "—"}</td>
                   <td className="px-6 py-4">
                     <button
-                      onClick={() => setDetailMember(member)}
+                      onClick={(e) => { e.stopPropagation(); setDetailMember(member); }}
                       className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
                       title="View details"
                     >
@@ -279,7 +324,20 @@ export default function TeamPage() {
             {paged.map((member) => (
               <div key={member.id} className="bg-white p-4 dark:bg-slate-800">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(member.id)}
+                      onChange={() => {
+                        setSelectedIds((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(member.id)) next.delete(member.id);
+                          else next.add(member.id);
+                          return next;
+                        });
+                      }}
+                      className="h-4 w-4 rounded border-slate-300 text-indigo-600 dark:border-slate-600"
+                    />
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400">
                       {member.name.split(" ").map((n) => n[0]).join("")}
                     </div>
@@ -311,6 +369,42 @@ export default function TeamPage() {
             ))}
           </div>
 
+          {/* Bulk action bar */}
+          {selectedIds.size > 0 && (
+            <div className="flex items-center justify-between border-t border-slate-100 bg-indigo-50/50 px-6 py-3 dark:border-slate-700 dark:bg-indigo-950/20">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                  {selectedIds.size} selected
+                </span>
+                <button
+                  onClick={() => setSelectedIds(new Set())}
+                  className="text-xs text-slate-500 underline transition-colors hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                >Clear selection</button>
+              </div>
+              <button
+                onClick={() => {
+                  const selectedMembers = members.filter((m) => selectedIds.has(m.id));
+                  exportToCSV(
+                    selectedMembers as unknown as Record<string, unknown>[],
+                    `lumora-selected-team-${new Date().toISOString().split("T")[0]}.csv`,
+                    [
+                      { key: "name", label: "Name" },
+                      { key: "email", label: "Email" },
+                      { key: "role", label: "Role" },
+                      { key: "status", label: "Status" },
+                      { key: "joined", label: "Joined" },
+                    ]
+                  );
+                  toast("Exported " + selectedIds.size + " members", "success");
+                }}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700"
+              >
+                <Download className="h-3.5 w-3.5" />
+                Export Selected
+              </button>
+            </div>
+          )}
+
           {/* Enhanced Pagination */}
           <EnhancedPagination
             page={page}
@@ -327,15 +421,15 @@ export default function TeamPage() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div
             ref={modalRef}
-            className="mx-4 w-full max-w-md rounded-xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-800"
+            className="mx-4 w-full max-w-md rounded-xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-800"
           >
-            <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-700">
-              <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 dark:border-slate-700">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-white">
                 Invite Team Members
               </h2>
               <button
                 onClick={() => setInviteOpen(false)}
-                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -343,31 +437,31 @@ export default function TeamPage() {
 
             <div className="p-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Email addresses
                 </label>
                 <div className="space-y-2">
                   {emails.map((email, i) => (
                     <div key={i} className="flex items-center gap-2">
                       <div className="relative flex-1">
-                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                         <input
                           type="email"
                           value={email}
                           onChange={(e) => updateEmail(i, e.target.value)}
                           placeholder="colleague@company.com"
                           className={cn(
-                            "w-full rounded-lg border bg-white py-2 pl-9 pr-3 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:ring-2 dark:bg-gray-900 dark:text-white",
+                            "w-full rounded-lg border bg-white py-2 pl-9 pr-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:ring-2 dark:bg-slate-900 dark:text-white",
                             emailErrors[i]
                               ? "border-red-300 focus:border-red-400 focus:ring-red-100 dark:border-red-700"
-                              : "border-gray-200 focus:border-indigo-400 focus:ring-indigo-100 dark:border-gray-700 dark:focus:border-indigo-500"
+                              : "border-slate-200 focus:border-indigo-400 focus:ring-indigo-100 dark:border-slate-700 dark:focus:border-indigo-500"
                           )}
                         />
                       </div>
                       {emails.length > 1 && (
                         <button
                           onClick={() => removeEmailField(i)}
-                          className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700"
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -388,13 +482,13 @@ export default function TeamPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Role
                 </label>
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value as TeamMember["role"])}
-                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
                 >
                   <option value="Viewer">Viewer — Read-only access</option>
                   <option value="Editor">Editor — Can edit content</option>
@@ -403,10 +497,10 @@ export default function TeamPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 border-t border-gray-200 px-5 py-4 dark:border-gray-700">
+            <div className="flex items-center justify-end gap-3 border-t border-slate-200 px-5 py-4 dark:border-slate-700">
               <button
                 onClick={() => setInviteOpen(false)}
-                className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
+                className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 Cancel
               </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Users,
   Mail,
@@ -11,8 +11,13 @@ import {
   BadgeCheck,
   Clock,
   XCircle,
+  X,
+  Send,
+  Loader2,
 } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { useToast } from "@/lib/toast-context";
+import { cn } from "@/lib/utils";
 
 interface TeamMember {
   id: string;
@@ -57,13 +62,100 @@ const statusLabel = (status: TeamMember["status"]) => {
 };
 
 export default function TeamPage() {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [emails, setEmails] = useState<string[]>([""]);
+  const [inviteRole, setInviteRole] = useState<TeamMember["role"]>("Editor");
+  const [sending, setSending] = useState(false);
+  const [emailErrors, setEmailErrors] = useState<Record<number, string>>({});
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const filtered = members.filter(
     (m) =>
       m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       m.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (inviteOpen && modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        setInviteOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [inviteOpen]);
+
+  const addEmailField = () => {
+    setEmails((prev) => [...prev, ""]);
+  };
+
+  const removeEmailField = (index: number) => {
+    setEmails((prev) => prev.filter((_, i) => i !== index));
+    setEmailErrors((prev) => {
+      const next = { ...prev };
+      delete next[index];
+      return next;
+    });
+  };
+
+  const updateEmail = (index: number, value: string) => {
+    setEmails((prev) => {
+      const next = [...prev];
+      next[index] = value;
+      return next;
+    });
+    // Clear error on edit
+    if (emailErrors[index]) {
+      setEmailErrors((prev) => {
+        const next = { ...prev };
+        delete next[index];
+        return next;
+      });
+    }
+  };
+
+  const validateEmails = (): boolean => {
+    const errors: Record<number, string> = {};
+    const validEmails = emails.filter((e) => e.trim() !== "");
+
+    if (validEmails.length === 0) {
+      toast("Please enter at least one email address", "error");
+      return false;
+    }
+
+    emails.forEach((email, i) => {
+      if (email.trim() === "") return;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.trim())) {
+        errors[i] = "Invalid email format";
+      }
+    });
+
+    setEmailErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSendInvites = async () => {
+    if (!validateEmails()) return;
+
+    setSending(true);
+
+    // Simulate sending invites
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const validEmails = emails.filter((e) => e.trim() !== "");
+    toast(
+      `Invitation${validEmails.length > 1 ? "s" : ""} sent to ${validEmails.length} ${validEmails.length > 1 ? "recipients" : "recipient"} with ${inviteRole} role`,
+      "success"
+    );
+
+    setSending(false);
+    setInviteOpen(false);
+    setEmails([""]);
+    setEmailErrors({});
+  };
 
   return (
     <div className="space-y-6">
@@ -85,7 +177,10 @@ export default function TeamPage() {
             className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500 dark:focus:border-indigo-400"
           />
         </div>
-        <button className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700">
+        <button
+          onClick={() => setInviteOpen(true)}
+          className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+        >
           <Plus className="h-4 w-4" />
           Invite member
         </button>
@@ -97,14 +192,18 @@ export default function TeamPage() {
           title="No members found"
           description={searchQuery ? "Try a different search term." : "No team members yet. Invite your first member to get started."}
           action={
-            <button className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+            <button
+              onClick={() => setInviteOpen(true)}
+              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+            >
               Invite member
             </button>
           }
         />
       ) : (
         <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
-          <table className="w-full">
+          {/* Desktop table */}
+          <table className="hidden w-full sm:table">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400">
                 <th className="px-6 py-3">Name</th>
@@ -146,9 +245,7 @@ export default function TeamPage() {
                       {statusLabel(member.status)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                    {member.joined}
-                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{member.joined}</td>
                   <td className="px-6 py-4">
                     <button className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300">
                       <MoreHorizontal className="h-4 w-4" />
@@ -158,6 +255,144 @@ export default function TeamPage() {
               ))}
             </tbody>
           </table>
+
+          {/* Mobile cards */}
+          <div className="divide-y divide-gray-200 sm:hidden dark:divide-gray-800">
+            {filtered.map((member) => (
+              <div key={member.id} className="bg-white p-4 dark:bg-gray-900">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400">
+                      {member.name.split(" ").map((n) => n[0]).join("")}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">{member.name}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{member.email}</p>
+                    </div>
+                  </div>
+                  <button className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${roleBadge(member.role)}`}>
+                    <Shield className="h-3 w-3" />
+                    {member.role}
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                    {statusIcon(member.status)}
+                    {statusLabel(member.status)}
+                  </span>
+                  <span className="text-sm text-gray-400">Joined {member.joined}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Invite Modal */}
+      {inviteOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div
+            ref={modalRef}
+            className="mx-4 w-full max-w-md rounded-xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-800"
+          >
+            <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-700">
+              <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+                Invite Team Members
+              </h2>
+              <button
+                onClick={() => setInviteOpen(false)}
+                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Email addresses
+                </label>
+                <div className="space-y-2">
+                  {emails.map((email, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => updateEmail(i, e.target.value)}
+                          placeholder="colleague@company.com"
+                          className={cn(
+                            "w-full rounded-lg border bg-white py-2 pl-9 pr-3 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:ring-2 dark:bg-gray-900 dark:text-white",
+                            emailErrors[i]
+                              ? "border-red-300 focus:border-red-400 focus:ring-red-100 dark:border-red-700"
+                              : "border-gray-200 focus:border-indigo-400 focus:ring-indigo-100 dark:border-gray-700 dark:focus:border-indigo-500"
+                          )}
+                        />
+                      </div>
+                      {emails.length > 1 && (
+                        <button
+                          onClick={() => removeEmailField(i)}
+                          className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                {emailErrors[0] && (
+                  <p className="mt-1 text-xs text-red-500">{emailErrors[0]}</p>
+                )}
+                <button
+                  onClick={addEmailField}
+                  className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Add another email
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Role
+                </label>
+                <select
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value as TeamMember["role"])}
+                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                >
+                  <option value="Viewer">Viewer — Read-only access</option>
+                  <option value="Editor">Editor — Can edit content</option>
+                  <option value="Admin">Admin — Full access</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 border-t border-gray-200 px-5 py-4 dark:border-gray-700">
+              <button
+                onClick={() => setInviteOpen(false)}
+                className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSendInvites}
+                disabled={sending}
+                className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-60"
+              >
+                {sending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+                {sending ? "Sending..." : `Send Invite${emails.filter((e) => e.trim()).length > 1 ? "s" : ""}`}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

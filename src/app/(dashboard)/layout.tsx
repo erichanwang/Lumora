@@ -2,6 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { MobileSidebar } from "@/components/layout/mobile-sidebar";
@@ -17,6 +19,7 @@ export default function DashboardLayout({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const { toggle } = useTheme();
 
   useKeyboardShortcuts({
@@ -28,6 +31,12 @@ export default function DashboardLayout({
     onToggleSidebar: () => setSidebarCollapsed((prev) => !prev),
     onNavigate: (path) => router.push(path),
   });
+
+  const pageVariants = {
+    initial: { opacity: 0, y: 12 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+    exit: { opacity: 0, y: -12, transition: { duration: 0.2 } },
+  };
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
@@ -46,7 +55,17 @@ export default function DashboardLayout({
           <div className="mb-4 lg:mb-6">
             <Breadcrumbs />
           </div>
-          <div className="animate-fade-in">{children}</div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
 

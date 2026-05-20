@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Lightbulb, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import { loginSchema } from "@/lib/validations";
 import type { LoginInput } from "@/lib/validations";
+import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,24 +15,39 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [serverError, setServerError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (session) router.push("/");
   }, [session, router]);
 
+  const clearFieldError = (field: string) => {
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setErrors({});
+    setServerError("");
     setLoading(true);
 
-    // Zod validation
     const input: LoginInput = { email, password };
     const result = loginSchema.safeParse(input);
     if (!result.success) {
-      const firstError = result.error.issues[0];
-      setError(firstError?.message || "Please check your input");
+      const fieldErrors: Record<string, string> = {};
+      for (const issue of result.error.issues) {
+        const field = issue.path[0] as string;
+        if (!fieldErrors[field]) {
+          fieldErrors[field] = issue.message;
+        }
+      }
+      setErrors(fieldErrors);
       setLoading(false);
       return;
     }
@@ -44,13 +60,13 @@ export default function LoginPage() {
       });
 
       if (res?.error) {
-        setError("Invalid email or password. Try alex@lumora.io / demo1234");
+        setServerError("Invalid email or password. Try alex@lumora.io / demo1234");
       } else {
         router.push("/");
         router.refresh();
       }
     } catch {
-      setError("An unexpected error occurred");
+      setServerError("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -60,10 +76,8 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Left panel - form */}
       <div className="flex flex-1 items-center justify-center px-6 py-12 lg:px-8">
         <div className="w-full max-w-sm">
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-2 mb-10">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
               <Lightbulb className="h-4 w-4 text-white" />
@@ -78,10 +92,10 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {error && (
+          <form onSubmit={handleSubmit} noValidate className="space-y-5">
+            {serverError && (
               <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400">
-                {error}
+                {serverError}
               </div>
             )}
 
@@ -94,10 +108,18 @@ export default function LoginPage() {
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => { setEmail(e.target.value); clearFieldError("email"); }}
                 placeholder="alex@lumora.io"
-                className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30"
+                className={cn(
+                  "mt-1 block w-full rounded-lg border bg-white px-3 py-2.5 pr-10 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:ring-2 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500",
+                  errors.email
+                    ? "border-red-300 focus:border-red-400 focus:ring-red-100 dark:border-red-700 dark:focus:border-red-500 dark:focus:ring-red-900/30"
+                    : "border-slate-200 focus:border-indigo-400 focus:ring-indigo-100 dark:border-slate-600 dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30"
+                )}
               />
+              {errors.email && (
+                <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.email}</p>
+              )}
             </div>
 
             <div>
@@ -110,9 +132,14 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => { setPassword(e.target.value); clearFieldError("password"); }}
                   placeholder="Enter your password"
-                  className="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 pr-10 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30"
+                  className={cn(
+                    "block w-full rounded-lg border bg-white px-3 py-2.5 pr-10 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:ring-2 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500",
+                    errors.password
+                      ? "border-red-300 focus:border-red-400 focus:ring-red-100 dark:border-red-700 dark:focus:border-red-500 dark:focus:ring-red-900/30"
+                      : "border-slate-200 focus:border-indigo-400 focus:ring-indigo-100 dark:border-slate-600 dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30"
+                  )}
                 />
                 <button
                   type="button"
@@ -122,6 +149,9 @@ export default function LoginPage() {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              {errors.password && (
+                <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.password}</p>
+              )}
             </div>
 
             <div className="flex items-center justify-between">
@@ -167,7 +197,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right panel - branding */}
       <div className="hidden flex-1 bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 p-12 lg:flex lg:flex-col lg:justify-between">
         <div>
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 backdrop-blur">

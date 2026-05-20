@@ -131,91 +131,97 @@ export default function OrdersPage() {
         </select>
       </div>
 
-      {/* Table */}
+      {/* Table — desktop */}
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-slate-100 dark:border-slate-700">
-                {[
-                  { key: "id", label: "Order" },
-                  { key: "customer", label: "Customer" },
-                  { key: "items", label: "Items" },
-                  { key: "amount", label: "Amount" },
-                  { key: "status", label: "Status" },
-                  { key: "date", label: "Date" },
-                ].map((col) => (
-                  <th
-                    key={col.key}
-                    className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer select-none"
-                    onClick={() => toggleSort(col.key)}
-                  >
-                    <div className="flex items-center gap-1">
-                      {col.label}
-                      <SortIcon field={col.key} />
-                    </div>
-                  </th>
-                ))}
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">ETA</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-              {paged.map((order) => {
-                const config = statusConfig[order.status];
-                const StatusIcon = config.icon;
-                return (
-                  <tr key={order.id} className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                    <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">{order.id}</td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <p className="text-sm font-medium text-slate-900 dark:text-white">{order.customer}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{order.email}</p>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{order.items} items</td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">${order.amount.toFixed(2)}</td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium", config.className)}>
-                        <StatusIcon className="h-3 w-3" />
-                        {config.label}
-                      </span>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{order.date}</td>
-                    <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-slate-500 dark:text-slate-400">{order.eta}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="hidden sm:block">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-slate-100 dark:border-slate-700">
+                  {[
+                    { key: "id", label: "Order" },
+                    { key: "customer", label: "Customer" },
+                    { key: "items", label: "Items" },
+                    { key: "amount", label: "Amount" },
+                    { key: "status", label: "Status" },
+                    { key: "date", label: "Date" },
+                  ].map((col) => (
+                    <th
+                      key={col.key}
+                      className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer select-none"
+                      onClick={() => toggleSort(col.key)}
+                    >
+                      <div className="flex items-center gap-1">{col.label}<SortIcon field={col.key} /></div>
+                    </th>
+                  ))}
+                  <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">ETA</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                {paged.map((order) => {
+                  const config = statusConfig[order.status];
+                  const StatusIcon = config.icon;
+                  return (
+                    <tr key={order.id} className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">{order.id}</td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">{order.customer}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{order.email}</p>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{order.items} items</td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">${order.amount.toFixed(2)}</td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium", config.className)}>
+                          <StatusIcon className="h-3 w-3" />{config.label}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{order.date}</td>
+                      <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-slate-500 dark:text-slate-400">{order.eta}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Cards — mobile */}
+        <div className="divide-y divide-slate-100 sm:hidden dark:divide-slate-700">
+          {paged.map((order) => {
+            const config = statusConfig[order.status];
+            const StatusIcon = config.icon;
+            return (
+              <div key={order.id} className="p-4">
+                <div className="flex items-start justify-between">
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{order.id}</p>
+                  <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium", config.className)}>
+                    <StatusIcon className="h-3 w-3" />{config.label}
+                  </span>
+                </div>
+                <div className="mt-2">
+                  <p className="text-sm font-medium text-slate-900 dark:text-white">{order.customer}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{order.email}</p>
+                </div>
+                <div className="mt-2 flex items-center justify-between text-sm">
+                  <span className="text-slate-600 dark:text-slate-300">{order.items} items</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">${order.amount.toFixed(2)}</span>
+                </div>
+                <div className="mt-1 flex items-center justify-between text-xs text-slate-400">
+                  <span>{order.date}</span>
+                  <span>ETA: {order.eta}</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Pagination */}
         <div className="flex items-center justify-between border-t border-slate-100 px-6 py-3 dark:border-slate-700">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Showing {(page * perPage) + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length}
-          </p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Showing {(page * perPage) + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length}</p>
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPage(Math.max(0, page - 1))}
-              disabled={page === 0}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-            >
-              Previous
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                onClick={() => setPage(i)}
-                className={cn("rounded-lg px-3 py-1.5 text-xs font-medium transition-colors", page === i ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300" : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700")}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button
-              onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
-              disabled={page >= totalPages - 1}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-            >
-              Next
-            </button>
+            <button onClick={() => setPage(Math.max(0, page - 1))} disabled={page === 0} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">Previous</button>
+            {Array.from({ length: totalPages }, (_, i) => (<button key={i} onClick={() => setPage(i)} className={cn("rounded-lg px-3 py-1.5 text-xs font-medium transition-colors", page === i ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300" : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700")}>{i + 1}</button>))}
+            <button onClick={() => setPage(Math.min(totalPages - 1, page + 1))} disabled={page >= totalPages - 1} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">Next</button>
           </div>
         </div>
       </div>

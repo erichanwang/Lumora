@@ -78,55 +78,84 @@ export default function InvoicesPage() {
         </div>
       </div>
 
-      {/* Invoice table */}
+      {/* Invoice table — desktop */}
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-slate-100 dark:border-slate-700">
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Invoice</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Customer</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Amount</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Issue Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Due Date</th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-              {filtered.map((inv) => {
-                const StatusIcon = statusConfig[inv.status].icon;
-                return (
-                  <tr key={inv.id} className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <p className="text-sm font-medium text-slate-900 dark:text-white">{inv.id}</p>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <p className="text-sm font-medium text-slate-900 dark:text-white">{inv.customer}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{inv.email}</p>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">
-                      ${inv.amount.toLocaleString()}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium", statusConfig[inv.status].className)}>
-                        <StatusIcon className="h-3 w-3" />
-                        {statusConfig[inv.status].label}
-                      </span>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{inv.date}</td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{inv.dueDate}</td>
-                    <td className="whitespace-nowrap px-6 py-4 text-right">
-                      <button className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600">
-                        <Download className="h-3.5 w-3.5" />
-                        PDF
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="hidden sm:block">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-slate-100 dark:border-slate-700">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Invoice</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Customer</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Amount</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Issue Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Due Date</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                {filtered.map((inv) => {
+                  const StatusIcon = statusConfig[inv.status].icon;
+                  return (
+                    <tr key={inv.id} className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">{inv.id}</p>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">{inv.customer}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{inv.email}</p>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">${inv.amount.toLocaleString()}</td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium", statusConfig[inv.status].className)}>
+                          <StatusIcon className="h-3 w-3" />{statusConfig[inv.status].label}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{inv.date}</td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{inv.dueDate}</td>
+                      <td className="whitespace-nowrap px-6 py-4 text-right">
+                        <button className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600">
+                          <Download className="h-3.5 w-3.5" />PDF
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Cards — mobile */}
+        <div className="divide-y divide-slate-100 sm:hidden dark:divide-slate-700">
+          {filtered.map((inv) => {
+            const StatusIcon = statusConfig[inv.status].icon;
+            return (
+              <div key={inv.id} className="p-4">
+                <div className="flex items-start justify-between">
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{inv.id}</p>
+                  <button className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-300">
+                    <Download className="h-3.5 w-3.5" />PDF
+                  </button>
+                </div>
+                <div className="mt-2">
+                  <p className="text-sm font-medium text-slate-900 dark:text-white">{inv.customer}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{inv.email}</p>
+                </div>
+                <div className="mt-2 flex items-center justify-between">
+                  <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium", statusConfig[inv.status].className)}>
+                    <StatusIcon className="h-3 w-3" />{statusConfig[inv.status].label}
+                  </span>
+                  <span className="text-sm font-semibold text-slate-900 dark:text-white">${inv.amount.toLocaleString()}</span>
+                </div>
+                <div className="mt-1 flex items-center justify-between text-xs text-slate-400">
+                  <span>Issued: {inv.date}</span>
+                  <span>Due: {inv.dueDate}</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -2,10 +2,11 @@
 
 import { useState, useCallback } from "react";
 import { useTheme } from "@/lib/theme-context";
-import { Moon, Sun, Globe, Bell, User, Save, Loader2, CheckCircle2 } from "lucide-react";
+import { Moon, Sun, Globe, Bell, User, Save, Loader2, CheckCircle2, Key, Lock, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { profileSchema, settingsSchema, type ProfileInput, type SettingsInput } from "@/lib/validations";
 import { useToast } from "@/components/ui/toast";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type Tab = "profile" | "notifications" | "appearance";
 
@@ -44,6 +45,12 @@ export default function SettingsPage() {
     emailNotifications: true,
     pushNotifications: true,
   });
+
+  // Password change state
+  const [passwordForm, setPasswordForm] = useState({ current: "", newPass: "", confirm: "" });
+  const [passwordErrors, setPasswordErrors] = useState<Record<string, string>>({});
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // Notification toggles
   const [notifToggles, setNotifToggles] = useState({
@@ -84,6 +91,28 @@ export default function SettingsPage() {
     await new Promise((r) => setTimeout(r, 600));
     setSaving(null);
     toast("Notification preferences updated!", "success");
+  }, [toast]);
+
+  const handlePasswordChange = useCallback(async () => {
+    const errs: Record<string, string> = {};
+    if (!passwordForm.current) errs.current = "Current password is required";
+    if (passwordForm.newPass.length < 6) errs.newPass = "New password must be at least 6 characters";
+    if (passwordForm.newPass !== passwordForm.confirm) errs.confirm = "Passwords do not match";
+    if (Object.keys(errs).length > 0) { setPasswordErrors(errs); return; }
+    setPasswordErrors({});
+    setSaving("password");
+    await new Promise((r) => setTimeout(r, 800));
+    setSaving(null);
+    setPasswordForm({ current: "", newPass: "", confirm: "" });
+    toast("Password changed successfully!", "success");
+  }, [passwordForm, toast]);
+
+  const handleDeleteAccount = useCallback(async () => {
+    setDeleting(true);
+    await new Promise((r) => setTimeout(r, 1500));
+    setDeleting(false);
+    setShowDeleteConfirm(false);
+    toast("Account deleted. Redirecting...", "error");
   }, [toast]);
 
   const TabIcon = tabs.find((t) => t.id === activeTab)?.icon ?? User;
@@ -154,7 +183,11 @@ export default function SettingsPage() {
           <div className="mt-6 rounded-xl border border-red-200 bg-white p-5 shadow-sm dark:border-red-900 dark:bg-slate-800">
             <h3 className="text-sm font-semibold text-red-600 dark:text-red-400">Danger Zone</h3>
             <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">Irreversible actions</p>
-            <button className="w-full rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 dark:border-red-800 dark:bg-slate-800 dark:text-red-400 dark:hover:bg-red-950/30">
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 dark:border-red-800 dark:bg-slate-800 dark:text-red-400 dark:hover:bg-red-950/30"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
               Delete Account
             </button>
           </div>
@@ -246,8 +279,84 @@ export default function SettingsPage() {
                     value={profile.bio ?? ""}
                     onChange={(e) => setProfile((p) => ({ ...p, bio: e.target.value }))}
                     className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition-colors focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-indigo-500"
-                  />
-                  <p className="mt-1 text-xs text-slate-400">{(profile.bio ?? "").length}/500 characters</p>
+                  />                    <p className="mt-1 text-xs text-slate-400">{(profile.bio ?? "").length}/500 characters</p>
+                </div>
+              </div>
+
+              {/* Password change */}
+              <div className="mt-8 border-t border-slate-100 pt-8 dark:border-slate-700">
+                <div className="flex items-center gap-3 mb-1">
+                  <Lock className="h-5 w-5 text-slate-400" />
+                  <h4 className="text-base font-semibold text-slate-900 dark:text-white">Change Password</h4>
+                </div>
+                <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
+                  Update your password. Must be at least 6 characters.
+                </p>
+
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                      Current Password
+                    </label>
+                    <input
+                      type="password"
+                      value={passwordForm.current}
+                      onChange={(e) => { setPasswordForm((p) => ({ ...p, current: e.target.value })); setPasswordErrors((prev) => ({ ...prev, current: '' })); }}
+                      placeholder="Enter current password"
+                      className={cn(
+                        "mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition-colors focus:ring-2 dark:bg-slate-700 dark:text-white",
+                        passwordErrors.current ? "border-red-300 focus:border-red-400 focus:ring-red-100 dark:border-red-600" : "border-slate-200 focus:border-indigo-400 focus:ring-indigo-100 dark:border-slate-600"
+                      )}
+                    />
+                    {passwordErrors.current && <p className="mt-1 text-xs text-red-500">{passwordErrors.current}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                      New Password
+                    </label>
+                    <input
+                      type="password"
+                      value={passwordForm.newPass}
+                      onChange={(e) => { setPasswordForm((p) => ({ ...p, newPass: e.target.value })); setPasswordErrors((prev) => ({ ...prev, newPass: '' })); }}
+                      placeholder="At least 6 characters"
+                      className={cn(
+                        "mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition-colors focus:ring-2 dark:bg-slate-700 dark:text-white",
+                        passwordErrors.newPass ? "border-red-300 focus:border-red-400 focus:ring-red-100 dark:border-red-600" : "border-slate-200 focus:border-indigo-400 focus:ring-indigo-100 dark:border-slate-600"
+                      )}
+                    />
+                    {passwordErrors.newPass && <p className="mt-1 text-xs text-red-500">{passwordErrors.newPass}</p>}
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                      Confirm New Password
+                    </label>
+                    <input
+                      type="password"
+                      value={passwordForm.confirm}
+                      onChange={(e) => { setPasswordForm((p) => ({ ...p, confirm: e.target.value })); setPasswordErrors((prev) => ({ ...prev, confirm: '' })); }}
+                      placeholder="Confirm your new password"
+                      className={cn(
+                        "mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition-colors focus:ring-2 dark:bg-slate-700 dark:text-white",
+                        passwordErrors.confirm ? "border-red-300 focus:border-red-400 focus:ring-red-100 dark:border-red-600" : "border-slate-200 focus:border-indigo-400 focus:ring-indigo-100 dark:border-slate-600"
+                      )}
+                    />
+                    {passwordErrors.confirm && <p className="mt-1 text-xs text-red-500">{passwordErrors.confirm}</p>}
+                  </div>
+                </div>
+
+                <div className="mt-5 flex justify-end">
+                  <button
+                    onClick={handlePasswordChange}
+                    disabled={saving === "password"}
+                    className="inline-flex items-center gap-2 rounded-lg bg-slate-800 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-indigo-600 dark:hover:bg-indigo-700"
+                  >
+                    {saving === "password" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Key className="h-4 w-4" />
+                    )}
+                    {saving === "password" ? "Updating..." : "Update Password"}
+                  </button>
                 </div>
               </div>
 
@@ -442,6 +551,23 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
+
+      {/* Confirm delete dialog */}
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteAccount}
+        title="Delete Account?"
+        message={
+          <>
+            <p>This action cannot be undone. All of your data, team associations, and billing information will be permanently deleted.</p>
+            <p className="mt-2 font-medium text-red-600 dark:text-red-400">Are you sure you want to proceed?</p>
+          </>
+        }
+        confirmLabel={deleting ? "Deleting..." : "Delete Account"}
+        variant="danger"
+        loading={deleting}
+      />
     </div>
   );
 }

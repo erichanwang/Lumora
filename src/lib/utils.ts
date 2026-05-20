@@ -19,9 +19,11 @@ export function formatNumber(num: number): string {
 }
 
 export function formatDate(date: string): string {
+  // Parse date safely, using noon to avoid timezone offset issues
+  const parsed = new Date(date + (date.includes("T") ? "" : "T12:00:00"));
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
-  }).format(new Date(date));
+  }).format(parsed);
 }

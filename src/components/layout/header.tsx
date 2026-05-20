@@ -1,12 +1,12 @@
 "use client";
 
 import { Bell, Search, Moon, Sun, Menu } from "lucide-react";
-import { useState, useCallback } from "react";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { SearchModal } from "./search-modal";
 import { NotificationsPanel } from "./notifications-panel";
 import { UserDropdown } from "./user-dropdown";
+import { LocaleSwitcher } from "./locale-switcher";
 
 export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -18,7 +18,7 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
     <>
       <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-slate-900 lg:px-6">
         {/* Left: mobile menu + search */}
-        <div className="flex items-center gap-3 flex-1">
+        <div className="flex flex-1 items-center gap-3">
           {/* Mobile menu button */}
           <button
             onClick={onMenuClick}
@@ -29,7 +29,7 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
           </button>
 
           {/* Search bar */}
-          <div className="flex-1 max-w-md">
+          <div className="max-w-md flex-1">
             <button
               onClick={() => setSearchOpen(true)}
               className="flex w-full items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-left text-sm text-slate-400 transition-all hover:border-indigo-400 hover:ring-2 hover:ring-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-500 dark:hover:ring-indigo-900/30"
@@ -45,17 +45,16 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
 
         {/* Right side */}
         <div className="flex items-center gap-1 sm:gap-2">
+          {/* Locale switcher */}
+          <LocaleSwitcher />
+
           {/* Dark mode toggle */}
           <button
             onClick={toggle}
             className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
             aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
           >
-            {theme === "dark" ? (
-              <Sun className="h-5 w-5" />
-            ) : (
-              <Moon className="h-5 w-5" />
-            )}
+            {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </button>
 
           {/* Notifications */}
@@ -79,7 +78,7 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
               onClick={() => { setUserOpen(!userOpen); setNotifOpen(false); }}
               className="flex items-center gap-3 rounded-lg p-1.5 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
             >
-              <div className="text-right hidden sm:block">
+              <div className="hidden text-right sm:block">
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Alex Morgan
                 </p>

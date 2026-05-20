@@ -26,9 +26,19 @@ const navigation = [
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
-export function Sidebar() {
+export function Sidebar({ collapsed: controlledCollapsed, onToggle }: { collapsed?: boolean; onToggle?: () => void }) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
+  const [internalCollapsed, setInternalCollapsed] = useState(false);
+
+  const collapsed = controlledCollapsed ?? internalCollapsed;
+
+  const toggleCollapsed = () => {
+    if (onToggle) {
+      onToggle();
+    } else {
+      setInternalCollapsed(!internalCollapsed);
+    }
+  };
 
   return (
     <aside
@@ -75,7 +85,7 @@ export function Sidebar() {
       {/* Collapse button */}
       <div className="border-t border-slate-800 p-3 dark:border-slate-900">
         <button
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={toggleCollapsed}
           className={cn(
             "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900",
             collapsed && "justify-center"

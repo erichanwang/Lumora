@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { MobileSidebar } from "@/components/layout/mobile-sidebar";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { KeyboardShortcuts, useKeyboardShortcuts } from "@/components/layout/keyboard-shortcuts";
+import { useTheme } from "@/lib/theme-context";
 
 export default function DashboardLayout({
   children,
@@ -12,12 +15,25 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const router = useRouter();
+  const { toggle } = useTheme();
+
+  useKeyboardShortcuts({
+    onSearch: () => {
+      const event = new KeyboardEvent("keydown", { metaKey: true, key: "k" });
+      document.dispatchEvent(event);
+    },
+    onToggleTheme: toggle,
+    onToggleSidebar: () => setSidebarCollapsed((prev) => !prev),
+    onNavigate: (path) => router.push(path),
+  });
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
       {/* Desktop sidebar */}
       <div className="hidden lg:flex">
-        <Sidebar />
+        <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed((prev) => !prev)} />
       </div>
 
       {/* Mobile sidebar */}
@@ -33,6 +49,9 @@ export default function DashboardLayout({
           <div className="animate-fade-in">{children}</div>
         </main>
       </div>
+
+      {/* Keyboard shortcuts modal */}
+      <KeyboardShortcuts />
     </div>
   );
 }

@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 
 export default function NotFoundPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-slate-50 p-8 dark:bg-slate-950">
+    <div className="relative flex min-h-screen flex-col items-center justify-center gap-8 bg-slate-50 p-8 dark:bg-slate-950">
       {/* Animated logo entrance */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8, y: -10 }}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 export function RouteLoader() {
   const [loading, setLoading] = useState(false);
@@ -42,13 +43,14 @@ export function RouteLoader() {
       </div>
       {/* Lumora logo indicator */}
       <div className="flex justify-center">
-        <img
+        <Image
           src="/lumora-loading.svg"
           alt=""
           width={20}
           height={24}
           className="mt-1 opacity-60 animate-pulse"
           style={{ animationDuration: "1s" }}
+          unoptimized
         />
       </div>
     </div>

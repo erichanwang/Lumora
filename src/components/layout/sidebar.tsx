@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { Tooltip } from "@/components/ui/tooltip";
 import { useState } from "react";
 
 const navigation = [
@@ -129,6 +130,7 @@ export function Sidebar({ collapsed: controlledCollapsed, onToggle }: { collapse
             />
           </div>
         )}
+        <Tooltip content={collapsed ? "Expand sidebar" : "Collapse sidebar"} branded>
         <button
           onClick={toggleCollapsed}
           className={cn(
@@ -145,6 +147,7 @@ export function Sidebar({ collapsed: controlledCollapsed, onToggle }: { collapse
           />
           {!collapsed && <span>Collapse</span>}
         </button>
+        </Tooltip>
       </div>
     </aside>
   );

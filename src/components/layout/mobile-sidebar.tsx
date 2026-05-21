@@ -118,6 +118,15 @@ export function MobileSidebar({
 
         {/* User info */}
         <div className="absolute bottom-0 left-0 right-0 border-t border-slate-800 p-4 dark:border-slate-900">
+          <div className="flex items-center justify-center pb-3 opacity-15">
+            <Image
+              src="/lumora-icon-white.svg"
+              alt=""
+              width={12}
+              height={12}
+              unoptimized
+            />
+          </div>
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-sm font-semibold text-white">
               AM

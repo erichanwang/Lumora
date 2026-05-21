@@ -17,6 +17,7 @@ export async function GET() {
   await new Promise((r) => setTimeout(r, LOADING_DELAY_MS));
 
   return NextResponse.json({
+    app: "Lumora",
     data: dashboardStats,
     timestamp: new Date().toISOString(),
   });

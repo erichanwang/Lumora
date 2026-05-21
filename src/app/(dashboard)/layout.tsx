@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
@@ -11,6 +11,7 @@ import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { KeyboardShortcuts, useKeyboardShortcuts } from "@/components/layout/keyboard-shortcuts";
 import { NotificationToaster } from "@/components/layout/notification-toaster";
 import { RouteLoader, dispatchRouteStart, dispatchRouteComplete } from "@/components/layout/route-loader";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 import { useToast } from "@/components/ui/toast";
 import { useTheme } from "@/lib/theme-context";
 
@@ -104,6 +105,7 @@ export default function DashboardLayout({
       <KeyboardShortcuts />
       <NotificationToaster />
       <RouteLoader />
+      <ScrollToTop />
     </div>
   );
 }

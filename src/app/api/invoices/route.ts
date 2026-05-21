@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
     .reduce((sum, inv) => sum + inv.amount, 0);
 
   return NextResponse.json({
+    app: "Lumora",
     data: filtered,
     summary: {
       total: invoices.length,

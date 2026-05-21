@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return NextResponse.json({
+    app: "Lumora",
     data: filtered,
     unreadCount,
     total: notifications.length,
@@ -35,5 +36,5 @@ export async function PATCH() {
     n.read = true;
   });
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ app: "Lumora", success: true });
 }

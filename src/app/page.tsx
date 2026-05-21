@@ -520,33 +520,96 @@ export default function Home() {
       </motion.section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 bg-slate-50 py-8 dark:border-slate-800 dark:bg-slate-950">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 md:flex-row">
-          <div className="flex items-center gap-2">
-            <Image
-              src="/lumora-icon.svg"
-              alt="Lumora"
-              width={16}
-              height={16}
-              unoptimized
-            />
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-              Lumora
-            </span>
+      <footer className="border-t border-slate-200 bg-white py-16 dark:border-slate-800 dark:bg-slate-950">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="grid gap-10 md:grid-cols-5">
+            {/* Brand column */}
+            <div className="md:col-span-2">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
+                  <Image
+                    src="/lumora-icon-white.svg"
+                    alt="Lumora"
+                    width={20}
+                    height={20}
+                    unoptimized
+                  />
+                </div>
+                <span className="text-lg font-bold text-slate-900 dark:text-white">Lumora</span>
+              </div>
+              <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                Illuminate your business with powerful analytics, real-time dashboards, and AI-driven insights.
+              </p>
+              <div className="mt-6 flex items-center gap-4">
+                <Link
+                  href="/register"
+                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95"
+                >
+                  Get Started
+                </Link>
+                <Link
+                  href="/login"
+                  className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800"
+                >
+                  Sign In
+                </Link>
+              </div>
+            </div>
+
+            {/* Product */}
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Product</h4>
+              <ul className="mt-4 space-y-3">
+                <li><a href="#features" className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">Features</a></li>
+                <li><a href="#pricing" className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">Pricing</a></li>
+                <li><a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">Changelog</a></li>
+                <li><a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">Integrations</a></li>
+              </ul>
+            </div>
+
+            {/* Resources */}
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Resources</h4>
+              <ul className="mt-4 space-y-3">
+                <li><a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">Documentation</a></li>
+                <li><a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">API Reference</a></li>
+                <li><a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">Blog</a></li>
+                <li><a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">Support</a></li>
+              </ul>
+            </div>
+
+            {/* Company */}
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Company</h4>
+              <ul className="mt-4 space-y-3">
+                <li><a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">About</a></li>
+                <li><a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">Careers</a></li>
+                <li><a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">Privacy</a></li>
+                <li><a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400">Terms</a></li>
+              </ul>
+            </div>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-500">
-            &copy; {new Date().getFullYear()} Lumora. All rights reserved.
-          </p>
-          <div className="flex gap-6">
-            <a href="#" className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
-              Privacy
-            </a>
-            <a href="#" className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
-              Terms
-            </a>
-            <a href="#" className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
-              Contact
-            </a>
+
+          {/* Bottom bar */}
+          <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-100 pt-8 dark:border-slate-800 md:flex-row">
+            <div className="flex items-center gap-2">
+              <Image
+                src="/lumora-icon.svg"
+                alt=""
+                width={14}
+                height={14}
+                unoptimized
+                className="opacity-40"
+              />
+              <p className="text-xs text-slate-400 dark:text-slate-500">
+                &copy; {new Date().getFullYear()} Lumora. All rights reserved.
+              </p>
+            </div>
+            <div className="flex gap-6">
+              <a href="#" className="text-xs text-slate-400 transition-colors hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300">Privacy Policy</a>
+              <a href="#" className="text-xs text-slate-400 transition-colors hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300">Terms of Service</a>
+              <a href="#" className="text-xs text-slate-400 transition-colors hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300">Cookie Policy</a>
+            </div>
           </div>
         </div>
       </footer>

@@ -63,6 +63,7 @@ export async function GET(request: NextRequest) {
   const paged = filtered.slice(page * perPage, (page + 1) * perPage);
 
   return NextResponse.json({
+    app: "Lumora",
     data: paged,
     pagination: {
       page,

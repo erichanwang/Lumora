@@ -10,6 +10,7 @@ import { activities } from "@/lib/data";
  */
 export async function GET() {
   return NextResponse.json({
+    app: "Lumora",
     data: activities,
     total: activities.length,
   });

@@ -1,52 +1,52 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" width="120" height="140">
-  <defs>
-    <linearGradient id="lumora-grad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#6366f1" />
-      <stop offset="100%" stop-color="#8b5cf6" />
-    </linearGradient>
-    <linearGradient id="lumora-grad-vertical" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#6366f1" />
-      <stop offset="100%" stop-color="#4f46e5" />
-    </linearGradient>
-    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur1" />
-      <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur2" />
-      <feMerge>
-        <feMergeNode in="blur2" />
-        <feMergeNode in="blur1" />
-        <feMergeNode in="SourceGraphic" />
-      </feMerge>
-    </filter>
-  </defs>
-  <!-- Logo mark — centered and scaled -->
-  <g transform="translate(38, 8) scale(1.1)">
-      <!-- L Beam: vertical pillar -->
-      <rect x="9" y="5" width="10" height="24" rx="5" fill="url(#lumora-grad)" />
-      <!-- L Beam: horizontal base -->
-      <rect x="9" y="22" width="23" height="9" rx="5" fill="url(#lumora-grad)" />
-      <polygon points="29,3.5 36.5,12 29,12" fill="#a78bfa" opacity="0.55" />
-      <polygon points="29,12 36.5,12 29,20.5" fill="#7c3aed" opacity="0.45" />
-      <polygon points="21.5,12 29,12 29,20.5" fill="#4f46e5" opacity="0.35" />
-      <polyline points="21.5,12 29,3.5 36.5,12 29,20.5 21.5,12" fill="none" stroke="#c4b5fd" stroke-width="0.5" opacity="0.5" />
-      <circle cx="29" cy="3.5" r="5.5" fill="#a78bfa" opacity="0.22" filter="url(#glow)" />
-      <circle cx="29" cy="3.5" r="3" fill="#c4b5fd" opacity="0.45" filter="url(#glow)" />
-      <circle cx="29" cy="3.5" r="2" fill="#ffffff" />
-      <line x1="29" y1="5.5" x2="21" y2="17" stroke="#ffffff" stroke-width="0.6" opacity="0.25" />
-      <line x1="29" y1="5.5" x2="37" y2="13" stroke="#ffffff" stroke-width="0.6" opacity="0.2" />
-      <line x1="29" y1="5.5" x2="30" y2="22" stroke="#ffffff" stroke-width="0.5" opacity="0.15" />
-      <circle cx="35" cy="7.5" r="1" fill="#a78bfa" opacity="0.6" />
-      <circle cx="38" cy="11" r="1" fill="#a78bfa" opacity="0.6" />
-      <circle cx="34" cy="16" r="1" fill="#a78bfa" opacity="0.6" />
-  </g>
-  <!-- Wordmark -->
-  <text x="60" y="78" text-anchor="middle" font-family="Geist, system-ui, sans-serif"
-        font-weight="700" font-size="28" fill="#ffffff" letter-spacing="2">
-    Lumora
-  </text>
-  <!-- Tagline -->
-  <text x="60" y="98" text-anchor="middle" font-family="Geist, system-ui, sans-serif"
-        font-weight="500" font-size="10" fill="#ffffff" opacity="0.35"
-        letter-spacing="6">
-    BUSINESS DASHBOARD
-  </text>
+<defs>
+<linearGradient id="lumora-grad" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#6366f1" />
+<stop offset="100%" stop-color="#8b5cf6" />
+</linearGradient>
+<linearGradient id="lumora-grad-vertical" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#6366f1" />
+<stop offset="100%" stop-color="#4f46e5" />
+</linearGradient>
+<filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+<feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur1" />
+<feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur2" />
+<feMerge>
+<feMergeNode in="blur2" />
+<feMergeNode in="blur1" />
+<feMergeNode in="SourceGraphic" />
+</feMerge>
+</filter>
+</defs>
+<!-- Logo mark — centered and scaled -->
+<g transform="translate(38, 8) scale(1.1)">
+<!-- L Beam: vertical pillar -->
+<rect x="9" y="5" width="10" height="24" rx="5" fill="url(#lumora-grad)" />
+<!-- L Beam: horizontal base -->
+<rect x="9" y="22" width="23" height="9" rx="5" fill="url(#lumora-grad)" />
+<polygon points="29,3.5 36.5,12 29,12" fill="#a78bfa" opacity="0.55" />
+<polygon points="29,12 36.5,12 29,20.5" fill="#7c3aed" opacity="0.45" />
+<polygon points="21.5,12 29,12 29,20.5" fill="#4f46e5" opacity="0.35" />
+<polyline points="21.5,12 29,3.5 36.5,12 29,20.5 21.5,12" fill="none" stroke="#c4b5fd" stroke-width="0.5" opacity="0.5" />
+<circle cx="29" cy="3.5" r="5.5" fill="#a78bfa" opacity="0.22" filter="url(#glow)" />
+<circle cx="29" cy="3.5" r="3" fill="#c4b5fd" opacity="0.45" filter="url(#glow)" />
+<circle cx="29" cy="3.5" r="2" fill="#ffffff" />
+<line x1="29" y1="5.5" x2="21" y2="17" stroke="#ffffff" stroke-width="0.6" opacity="0.25" />
+<line x1="29" y1="5.5" x2="37" y2="13" stroke="#ffffff" stroke-width="0.6" opacity="0.2" />
+<line x1="29" y1="5.5" x2="30" y2="22" stroke="#ffffff" stroke-width="0.5" opacity="0.15" />
+<circle cx="35" cy="7.5" r="1" fill="#a78bfa" opacity="0.6" />
+<circle cx="38" cy="11" r="1" fill="#a78bfa" opacity="0.6" />
+<circle cx="34" cy="16" r="1" fill="#a78bfa" opacity="0.6" />
+</g>
+<!-- Wordmark -->
+<text x="60" y="78" text-anchor="middle" font-family="Geist, system-ui, sans-serif"
+font-weight="700" font-size="28" fill="#ffffff" letter-spacing="2">
+Lumora
+</text>
+<!-- Tagline -->
+<text x="60" y="98" text-anchor="middle" font-family="Geist, system-ui, sans-serif"
+font-weight="500" font-size="10" fill="#ffffff" opacity="0.35"
+letter-spacing="6">
+BUSINESS DASHBOARD
+</text>
 </svg>

@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lumora — Illuminate Your Business Performance
+
+A modern SaaS dashboard for monitoring business performance, analytics, and growth. Built with Next.js 15, TypeScript, and Tailwind CSS.
+
+## Brand
+
+**Lumora** combines *luminous* + *ora* (time/now) — a dashboard that illuminates real-time business insights. The logo features:
+
+- **The Beam** — A stylized "L" letterform representing structural data foundations
+- **The Prism** — A faceted crystal refracting light into actionable insight
+- **The Spark** — A luminous point at the apex representing the moment of clarity
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS 4
+- **Animation**: Framer Motion
+- **Auth**: NextAuth.js v5
+- **Data Fetching**: SWR
+- **Icons**: Lucide React
+- **i18n**: next-intl
+- **Testing**: Vitest + Playwright
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the dashboard.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Demo Credentials
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Email**: alex@lumora.io
+- **Password**: demo1234
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  app/               # Next.js App Router pages
+    (auth)/           # Login/Register pages
+    (dashboard)/      # Main dashboard + sub-pages
+    api/              # API route handlers
+  components/
+    dashboard/        # Dashboard-specific components
+    layout/           # Sidebar, header, navigation
+    ui/               # Reusable UI primitives
+  hooks/              # Custom React hooks
+  lib/                # Auth, SWR, theme, utilities
+  i18n/               # Internationalization messages
+medical-image-classifier/  # ML image classification pipeline (Python)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Logo Assets
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Run the logo generator to regenerate brand SVG assets:
 
-## Deploy on Vercel
+```bash
+python3 scripts/generate_logo.py
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This produces 8 SVG variants in `public/`:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| File | Usage |
+|------|-------|
+| `lumora-icon.svg` | Favicon, footer logo (light bg) |
+| `lumora-icon-white.svg` | Nav, auth headers (dark bg contexts) |
+| `lumora-logo.svg` | Hero, horizontal logo (light bg) |
+| `lumora-logo-white.svg` | Sidebar, auth gradient (dark bg) |
+| `lumora-loading.svg` | Dashboard loading (light mode) |
+| `lumora-loading-white.svg` | Dashboard loading (dark mode) |
+| `favicon.svg` | Browser tab icon (simplified) |
+| `apple-touch-icon.svg` | iOS home screen icon |
+
+## Scripts
+
+```bash
+npm run dev        # Development server
+npm run build      # Production build
+npm run start      # Production server
+npm run lint       # ESLint
+npm run typecheck  # TypeScript type-checking
+npm test           # Vitest unit tests
+npm run test:e2e   # Playwright end-to-end tests
+```
+
+## License
+
+MIT

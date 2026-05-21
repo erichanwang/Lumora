@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import Image from "next/image";
+import { RefreshCw, Home } from "lucide-react";
 import Link from "next/link";
 
 export default function ErrorPage({
@@ -17,9 +18,14 @@ export default function ErrorPage({
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-slate-50 p-8 dark:bg-slate-950">
-      <div className="rounded-full bg-red-100 p-5 dark:bg-red-900/30">
-        <AlertTriangle className="h-10 w-10 text-red-600 dark:text-red-400" />
-      </div>
+      <Image
+        src="/lumora-icon.svg"
+        alt="Lumora"
+        width={64}
+        height={64}
+        className="mb-2 opacity-40"
+        unoptimized
+      />
       <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
         Something went wrong
       </h1>

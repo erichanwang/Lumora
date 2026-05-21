@@ -119,6 +119,30 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-indigo-400/10 rounded-full blur-3xl dark:bg-indigo-600/10" />
         <div className="relative mx-auto max-w-7xl px-6 text-center">
+          {/* Hero logo — light mode */}
+          <div className="mx-auto mb-8 block dark:hidden">
+            <Image
+              src="/lumora-logo.svg"
+              alt="Lumora"
+              width={220}
+              height={44}
+              priority
+              unoptimized
+              className="mx-auto animate-fade-in"
+            />
+          </div>
+          {/* Hero logo — dark mode */}
+          <div className="mx-auto mb-8 hidden dark:block">
+            <Image
+              src="/lumora-logo-white.svg"
+              alt="Lumora"
+              width={220}
+              height={44}
+              priority
+              unoptimized
+              className="mx-auto animate-fade-in"
+            />
+          </div>
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">
             <Zap className="h-3.5 w-3.5" />
             New: AI-powered insights now available

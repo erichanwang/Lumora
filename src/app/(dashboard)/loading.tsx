@@ -1,17 +1,26 @@
 export default function DashboardLoading() {
   return (
     <div className="flex h-full min-h-[60vh] flex-col items-center justify-center gap-6">
-      {/* Animated logo */}
-      <div className="relative">
+      {/* Animated logo — light mode */}
+      <div className="relative block dark:hidden">
         <img
           src="/lumora-loading.svg"
           alt="Lumora"
           width={120}
           height={140}
           className="animate-pulse"
-          style={{
-            animationDuration: "2s",
-          }}
+          style={{ animationDuration: "2s" }}
+        />
+      </div>
+      {/* Animated logo — dark mode */}
+      <div className="relative hidden dark:block">
+        <img
+          src="/lumora-loading-white.svg"
+          alt="Lumora"
+          width={120}
+          height={140}
+          className="animate-pulse"
+          style={{ animationDuration: "2s" }}
         />
       </div>
       {/* Loading bar */}

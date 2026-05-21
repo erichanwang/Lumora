@@ -387,21 +387,33 @@ ASSETS = {
     "lumora-loading-white.svg":  generate_loading_logo_white_svg,
 }
 
+def _minify_svg(svg: str) -> str:
+    """Strip leading whitespace from each line to reduce file size."""
+    lines = []
+    for line in svg.splitlines():
+        lines.append(line.strip())
+    return "\n".join(lines)
+
+
 def generate_all():
     """Generate all Lumora logo SVG variants."""
     print("🎨  Generating Lumora brand assets...\n")
 
     PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
 
+    total_before = 0
     for filename, generator_fn in ASSETS.items():
         svg_content = generator_fn()
+        minified = _minify_svg(svg_content)
         path = PUBLIC_DIR / filename
         with open(path, "w") as f:
-            f.write(svg_content)
+            f.write(minified)
         size_kb = os.path.getsize(path) / 1024
+        total_before += size_kb
         print(f"  ✅  {filename:30s}  ({size_kb:5.1f} KB)")
 
     print(f"\n📁  All assets saved to: {PUBLIC_DIR}")
+    print(f"📦  Total size: {total_before:.1f} KB")
     print("✨  Done! Lumora logo generated.\n")
 
 

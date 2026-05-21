@@ -67,7 +67,7 @@ export default function DashboardLayout({
       {/* Skip-to-content link for keyboard users */}
       <a
         href="#main-content"
-        className="fixed left-2 top-2 z-[200] -translate-y-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-lg opacity-0 transition-all focus:translate-y-0 focus:opacity-100 focus:outline-none"
+        className="fixed left-4 top-4 z-[200] -translate-y-full rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-5 py-3 text-sm font-medium text-white shadow-xl opacity-0 transition-all focus:translate-y-0 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2"
       >
         Skip to content
       </a>

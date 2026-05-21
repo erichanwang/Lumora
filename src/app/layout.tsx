@@ -28,18 +28,27 @@ export const metadata: Metadata = {
   keywords: ["dashboard", "analytics", "saas", "business", "lumora"],
   authors: [{ name: "Lumora" }],
   openGraph: {
-    title: "Lumora — Business Dashboard",
+    title: "Lumora — Illuminate Your Business Performance",
     description:
-      "Modern SaaS dashboard for monitoring your business performance, analytics, and growth.",
+      "Modern SaaS dashboard for monitoring your business performance, analytics, and growth. Real-time insights powered by AI.",
     type: "website",
     locale: "en_US",
     siteName: "Lumora",
+    images: [
+      {
+        url: "/lumora-logo.svg",
+        width: 200,
+        height: 40,
+        alt: "Lumora — Business Dashboard",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lumora — Business Dashboard",
+    title: "Lumora — Illuminate Your Business Performance",
     description:
-      "Modern SaaS dashboard for monitoring your business performance, analytics, and growth.",
+      "Modern SaaS dashboard for monitoring your business performance, analytics, and growth. Real-time insights powered by AI.",
+    images: ["/lumora-logo.svg"],
   },
   icons: {
     icon: "/favicon.svg",
@@ -71,6 +80,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <meta name="theme-color" content="#6366f1" />
         <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
         <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />

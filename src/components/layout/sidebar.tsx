@@ -65,15 +65,20 @@ export function Sidebar({ collapsed: controlledCollapsed, onToggle }: { collapse
             unoptimized
           />
         ) : (
-          <Image
-            src="/lumora-logo-white.svg"
-            alt="Lumora"
-            width={160}
-            height={32}
-            className="shrink-0"
-            priority
-            unoptimized
-          />
+          <div className="flex flex-col gap-0.5">
+            <Image
+              src="/lumora-logo-white.svg"
+              alt="Lumora"
+              width={140}
+              height={28}
+              className="shrink-0"
+              priority
+              unoptimized
+            />
+            <span className="text-[10px] text-slate-500 font-mono tracking-wider">
+              Ctrl+/ for shortcuts
+            </span>
+          </div>
         )}
       </div>
 

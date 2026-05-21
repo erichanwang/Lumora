@@ -1,6 +1,7 @@
 "use client";
 
 import { Component, type ReactNode } from "react";
+import Image from "next/image";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import Link from "next/link";
 
@@ -45,9 +46,17 @@ export class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 p-8 text-center">
-          <div className="rounded-full bg-red-100 p-4 dark:bg-red-900/30">
+          <div className="rounded-full bg-red-100 p-5 dark:bg-red-900/30">
             <AlertTriangle className="h-8 w-8 text-red-600 dark:text-red-400" />
           </div>
+          <Image
+            src="/lumora-icon.svg"
+            alt="Lumora"
+            width={40}
+            height={40}
+            className="mb-1 opacity-30"
+            unoptimized
+          />
           <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
             Something went wrong
           </h2>

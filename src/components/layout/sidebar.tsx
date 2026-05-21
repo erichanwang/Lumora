@@ -15,6 +15,7 @@ import {
   Activity,
   UserCog,
   ScrollText,
+  Microscope,
 } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -23,6 +24,7 @@ import { useState } from "react";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Detection", href: "/detection", icon: Microscope },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
   { name: "Users", href: "/users", icon: Users },
   { name: "Team", href: "/team", icon: UserCog },

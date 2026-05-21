@@ -32,6 +32,7 @@ export default function DashboardLayout({
   const pageNames: Record<string, string> = {
     "/": "Dashboard",
     "/analytics": "Analytics",
+    "/detection": "Cancer Detection",
     "/users": "Users",
     "/orders": "Orders",
     "/reports": "Reports",

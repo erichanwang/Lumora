@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, type Variants } from "framer-motion";
-import type { ReactNode } from "react";
+import { motion, type Variants, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { useState, useEffect, type ReactNode } from "react";
 
 const defaultVariants: Variants = {
   hidden: { opacity: 0, y: 12 },
@@ -76,5 +77,63 @@ export function FadeIn({ children, className = "" }: PageTransitionProps) {
     >
       {children}
     </motion.div>
+  );
+}
+
+/**
+ * Page transition with a brief Lumora logo splash overlay.
+ * Wraps page content and shows logo briefly on mount.
+ */
+export function PageTransitionWithLogo({ children, className = "" }: PageTransitionProps) {
+  const [show, setShow] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShow(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <>
+      <AnimatePresence>
+        {show && (
+          <motion.div
+            key="logo-splash"
+            className="fixed inset-0 z-[300] flex items-center justify-center bg-white dark:bg-slate-950"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.6 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="flex flex-col items-center gap-4"
+            >
+              <Image
+                src="/lumora-loading.svg"
+                alt=""
+                width={80}
+                height={93}
+                className="animate-pulse"
+                style={{ animationDuration: "2s" }}
+                unoptimized
+              />
+              <div className="h-1 w-32 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                <div className="h-full w-full animate-progress-bar rounded-full bg-gradient-to-r from-indigo-500 to-violet-500" />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className={className}
+      >
+        {children}
+      </motion.div>
+    </>
   );
 }

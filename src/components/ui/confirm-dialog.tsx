@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { AlertTriangle, X } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface ConfirmDialogProps {
@@ -76,10 +77,20 @@ export function ConfirmDialog({
       <div
         ref={modalRef}
         className={cn(
-          "mx-4 w-full max-w-sm rounded-xl border bg-white shadow-2xl dark:bg-slate-800",
+          "relative mx-4 w-full max-w-sm overflow-hidden rounded-xl border bg-white shadow-2xl dark:bg-slate-800",
           styles.border
         )}
       >
+        {/* Subtle logo watermark */}
+        <div className="pointer-events-none absolute -right-6 -top-6 opacity-[0.04] dark:opacity-[0.03]">
+          <Image
+            src="/lumora-icon.svg"
+            alt=""
+            width={80}
+            height={80}
+            unoptimized
+          />
+        </div>
         <div className="flex items-start justify-between px-5 pt-5 pb-3">
           <div className="flex items-start gap-4">
             <div

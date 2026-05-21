@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight, Home } from "lucide-react";
+import Image from "next/image";
 import { useMemo } from "react";
 
 const labelMap: Record<string, string> = {
@@ -36,8 +37,16 @@ export function Breadcrumbs() {
     <nav className="flex items-center gap-1.5 text-sm" aria-label="Breadcrumb">
       <Link
         href="/"
-        className="flex items-center gap-1 text-slate-400 transition-colors hover:text-slate-600 dark:hover:text-slate-300"
+        className="flex items-center gap-1.5 text-slate-400 transition-colors hover:text-slate-600 dark:hover:text-slate-300"
       >
+        <Image
+          src="/favicon.svg"
+          alt="Lumora"
+          width={12}
+          height={12}
+          className="opacity-60"
+          unoptimized
+        />
         <Home className="h-3.5 w-3.5" />
       </Link>
       {segments.map((segment, index) => (

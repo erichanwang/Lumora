@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { RevenueChart } from "@/components/dashboard/revenue-chart";
 import { RecentTransactions } from "@/components/dashboard/recent-transactions";
@@ -13,7 +14,6 @@ import {
   Users,
   ShoppingCart,
   TrendingUp,
-  Activity,
   RefreshCw,
   HeartPulse,
   UserPlus,
@@ -55,7 +55,25 @@ export default function DashboardPage() {
       <motion.div variants={item}>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Dashboard</h1>
+            <div className="flex items-center gap-3 mb-1">
+              <Image
+                src="/lumora-icon.svg"
+                alt=""
+                width={28}
+                height={28}
+                className="shrink-0 dark:hidden"
+                unoptimized
+              />
+              <Image
+                src="/lumora-icon-white.svg"
+                alt=""
+                width={28}
+                height={28}
+                className="shrink-0 hidden dark:block"
+                unoptimized
+              />
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Dashboard</h1>
+            </div>
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
               Welcome back, Alex! Here&apos;s what&apos;s happening with your business today.
             </p>

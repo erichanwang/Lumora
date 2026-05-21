@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import Image from "next/image";
 import { useTheme } from "@/lib/theme-context";
 import { revenueData } from "@/lib/data";
 
@@ -46,7 +47,17 @@ export function RevenueChart() {
   const isDark = theme === "dark";
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-colors dark:border-slate-700 dark:bg-slate-800">
+    <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-colors dark:border-slate-700 dark:bg-slate-800">
+      {/* Subtle logo watermark */}
+      <div className="pointer-events-none absolute -bottom-8 -right-8 opacity-[0.03] dark:opacity-[0.02]">
+        <Image
+          src="/lumora-icon.svg"
+          alt=""
+          width={120}
+          height={140}
+          unoptimized
+        />
+      </div>
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
           Revenue Overview

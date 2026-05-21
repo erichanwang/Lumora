@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
 
 interface StatsCardProps {
@@ -25,7 +26,17 @@ export function StatsCard({
   const isPositive = change >= 0;
 
   return (
-    <div className="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:border-indigo-200 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-600">
+    <div className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:border-indigo-200 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-600">
+      {/* Subtle logo watermark on hover */}
+      <div className="pointer-events-none absolute -bottom-4 -right-4 opacity-0 transition-opacity duration-300 group-hover:opacity-[0.04] dark:group-hover:opacity-[0.03]">
+        <Image
+          src="/lumora-icon.svg"
+          alt=""
+          width={60}
+          height={60}
+          unoptimized
+        />
+      </div>
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
         <div className={cn("rounded-lg p-2.5 transition-all duration-200 group-hover:scale-110 group-hover:rotate-3", iconBg)}>

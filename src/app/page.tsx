@@ -2,16 +2,31 @@
 
 import Link from "next/link";
 import { useTheme } from "@/lib/theme-context";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { ArrowRight, BarChart3, Lightbulb, Shield, Zap, Users, Layers, Moon, Sun, Menu, X, LogOut, LayoutDashboard } from "lucide-react";
-import { useState } from "react";
+import { ArrowRight, BarChart3, Lightbulb, Shield, Zap, Users, Layers, Moon, Sun, Menu, X, LayoutDashboard } from "lucide-react";
+import { motion, useScroll, useTransform, type Variants } from "framer-motion";
+import { useState, useRef } from "react";
+
+const fadeInUp: Variants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+const staggerContainer: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.12 } },
+};
 
 export default function Home() {
   const { theme, toggle } = useTheme();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
   const isAuthenticated = status === "authenticated";
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, 150]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -115,12 +130,36 @@ export default function Home() {
       </nav>
 
       {/* Hero */}
-      <section className="relative overflow-hidden py-20 md:py-32">
+      <motion.section
+        ref={heroRef}
+        className="relative overflow-hidden py-20 md:py-32"
+      >
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-indigo-400/10 rounded-full blur-3xl dark:bg-indigo-600/10" />
-        <div className="relative mx-auto max-w-7xl px-6 text-center">
+        {/* Floating orbs for visual depth */}
+        <motion.div
+          className="absolute top-20 left-[10%] h-6 w-6 rounded-full bg-indigo-300/30 dark:bg-indigo-500/20"
+          animate={{ y: [0, -20, 0], opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute top-40 right-[15%] h-4 w-4 rounded-full bg-purple-300/30 dark:bg-purple-500/20"
+          animate={{ y: [0, -30, 0], opacity: [0.3, 0.8, 0.3] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        />
+        <motion.div
+          className="absolute bottom-20 left-[20%] h-5 w-5 rounded-full bg-pink-300/20 dark:bg-pink-500/15"
+          animate={{ y: [0, -15, 0], opacity: [0.2, 0.7, 0.2] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        />
+        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="relative mx-auto max-w-7xl px-6 text-center">
           {/* Hero logo — light mode */}
-          <div className="mx-auto mb-8 block dark:hidden">
+          <motion.div
+            className="mx-auto mb-8 block dark:hidden"
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
             <Image
               src="/lumora-logo.svg"
               alt="Lumora"
@@ -128,11 +167,16 @@ export default function Home() {
               height={44}
               priority
               unoptimized
-              className="mx-auto animate-fade-in"
+              className="mx-auto"
             />
-          </div>
+          </motion.div>
           {/* Hero logo — dark mode */}
-          <div className="mx-auto mb-8 hidden dark:block">
+          <motion.div
+            className="mx-auto mb-8 hidden dark:block"
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
             <Image
               src="/lumora-logo-white.svg"
               alt="Lumora"
@@ -140,52 +184,79 @@ export default function Home() {
               height={44}
               priority
               unoptimized
-              className="mx-auto animate-fade-in"
+              className="mx-auto"
             />
-          </div>
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">
+          </motion.div>
+          <motion.div
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             <Zap className="h-3.5 w-3.5" />
             New: AI-powered insights now available
-          </div>
-          <h1 className="mx-auto max-w-4xl text-4xl font-bold tracking-tight text-slate-900 md:text-6xl dark:text-white">
+          </motion.div>
+          <motion.h1
+            className="mx-auto max-w-4xl text-4xl font-bold tracking-tight text-slate-900 md:text-6xl dark:text-white"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+          >
             Illuminate Your{" "}
             <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Business Performance
             </span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-400">
+          </motion.h1>
+          <motion.p
+            className="mx-auto mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-400"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
             Lumora brings clarity to your data with beautiful dashboards, real-time analytics,
             and actionable insights. Make informed decisions faster.
-          </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          </motion.p>
+          <motion.div
+            className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+          >
             <Link
               href="/analytics"
-              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-200 dark:shadow-indigo-900/30 dark:hover:shadow-indigo-900/50"
+              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-200 dark:shadow-indigo-900/30 dark:hover:shadow-indigo-900/50 active:scale-95"
             >
               Get Started Free <ArrowRight className="h-4 w-4" />
             </Link>
             <a
               href="#features"
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-8 py-3.5 text-base font-semibold text-slate-700 transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-8 py-3.5 text-base font-semibold text-slate-700 transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 active:scale-95"
             >
               View Features
             </a>
-          </div>
-        </div>
-      </section>
+          </motion.div>
+        </motion.div>
+      </motion.section>
 
       {/* Features */}
-      <section id="features" className="border-t border-slate-200 bg-white py-20 dark:border-slate-800 dark:bg-slate-900">
+      <motion.section
+        id="features"
+        className="border-t border-slate-200 bg-white py-20 dark:border-slate-800 dark:bg-slate-900"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-80px" }}
+        variants={staggerContainer}
+      >
         <div className="mx-auto max-w-7xl px-6">
-          <div className="text-center">
+          <motion.div className="text-center" variants={fadeInUp}>
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
               Everything You Need
             </h2>
             <p className="mt-3 text-slate-600 dark:text-slate-400">
               Powerful features to help you understand and grow your business
             </p>
-          </div>
-          <div className="mt-16 grid gap-8 md:grid-cols-3">
+          </motion.div>
+          <motion.div className="mt-16 grid gap-8 md:grid-cols-3" variants={staggerContainer}>
             {[
               {
                 icon: BarChart3,
@@ -218,8 +289,9 @@ export default function Home() {
                 desc: "Smart alerts and predictive analytics powered by machine learning.",
               },
             ].map((feature) => (
-              <div
+              <motion.div
                 key={feature.title}
+                variants={fadeInUp}
                 className="group rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-800"
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 transition-all duration-300 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white dark:bg-indigo-900/50 dark:text-indigo-400 dark:group-hover:bg-indigo-600 dark:group-hover:text-white">
@@ -229,24 +301,31 @@ export default function Home() {
                   {feature.title}
                 </h3>
                 <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{feature.desc}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Pricing */}
-      <section id="pricing" className="border-t border-slate-200 bg-white py-20 dark:border-slate-800 dark:bg-slate-900">
+      <motion.section
+        id="pricing"
+        className="border-t border-slate-200 bg-white py-20 dark:border-slate-800 dark:bg-slate-900"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-80px" }}
+        variants={staggerContainer}
+      >
         <div className="mx-auto max-w-7xl px-6">
-          <div className="text-center">
+          <motion.div className="text-center" variants={fadeInUp}>
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
               Simple, Transparent Pricing
             </h2>
             <p className="mt-3 text-slate-600 dark:text-slate-400">
               Choose the plan that fits your needs. Upgrade anytime.
             </p>
-          </div>
-          <div className="mt-16 grid gap-8 md:grid-cols-3">
+          </motion.div>
+          <motion.div className="mt-16 grid gap-8 md:grid-cols-3" variants={staggerContainer}>
             {[
               {
                 name: "Free",
@@ -276,8 +355,9 @@ export default function Home() {
                 highlighted: false,
               },
             ].map((plan) => (
-              <div
+              <motion.div
                 key={plan.name}
+                variants={fadeInUp}
                 className={`relative rounded-2xl border-2 p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
                   plan.highlighted
                     ? "border-indigo-500 bg-white shadow-lg shadow-indigo-100 dark:bg-slate-800 dark:shadow-indigo-900/20"
@@ -317,24 +397,31 @@ export default function Home() {
                 >
                   {plan.cta} <ArrowRight className="h-4 w-4" />
                 </Link>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Testimonials */}
-      <section id="testimonials" className="border-t border-slate-200 bg-slate-50 py-20 dark:border-slate-800 dark:bg-slate-950">
+      <motion.section
+        id="testimonials"
+        className="border-t border-slate-200 bg-slate-50 py-20 dark:border-slate-800 dark:bg-slate-950"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-80px" }}
+        variants={staggerContainer}
+      >
         <div className="mx-auto max-w-7xl px-6">
-          <div className="text-center">
+          <motion.div className="text-center" variants={fadeInUp}>
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
               Trusted by Industry Leaders
             </h2>
             <p className="mt-3 text-slate-600 dark:text-slate-400">
               See what our customers have to say about Lumora
             </p>
-          </div>
-          <div className="mt-16 grid gap-8 md:grid-cols-3">
+          </motion.div>
+          <motion.div className="mt-16 grid gap-8 md:grid-cols-3" variants={staggerContainer}>
             {[
               {
                 quote: "Lumora completely transformed our analytics workflow. We went from spending hours on reports to getting instant insights.",
@@ -355,8 +442,9 @@ export default function Home() {
                 initials: "MK",
               },
             ].map((testimonial) => (
-              <div
+              <motion.div
                 key={testimonial.name}
+                variants={fadeInUp}
                 className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800"
               >
                 <svg className="h-6 w-6 text-indigo-300" fill="currentColor" viewBox="0 0 24 24">
@@ -374,34 +462,46 @@ export default function Home() {
                     <p className="text-xs text-slate-500 dark:text-slate-400">{testimonial.role}</p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Stats */}
-      <section className="border-t border-slate-200 bg-slate-50 py-16 dark:border-slate-800 dark:bg-slate-950">
+      <motion.section
+        className="border-t border-slate-200 bg-slate-50 py-16 dark:border-slate-800 dark:bg-slate-950"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-80px" }}
+        variants={staggerContainer}
+      >
         <div className="mx-auto max-w-7xl px-6">
-          <div className="grid gap-8 md:grid-cols-4">
+          <motion.div className="grid gap-8 md:grid-cols-4" variants={staggerContainer}>
             {[
               { label: "Active Users", value: "10,000+" },
               { label: "Revenue Tracked", value: "$2.4B+" },
               { label: "Data Points", value: "1.2M+" },
               { label: "Uptime SLA", value: "99.99%" },
             ].map((stat) => (
-              <div key={stat.label} className="text-center">
+              <motion.div key={stat.label} className="text-center" variants={fadeInUp}>
                 <p className="text-3xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{stat.label}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* CTA */}
-      <section className="border-t border-slate-200 bg-white py-20 dark:border-slate-800 dark:bg-slate-900">
-        <div className="mx-auto max-w-4xl px-6 text-center">
+      <motion.section
+        className="border-t border-slate-200 bg-white py-20 dark:border-slate-800 dark:bg-slate-900"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-80px" }}
+        variants={staggerContainer}
+      >
+        <motion.div className="mx-auto max-w-4xl px-6 text-center" variants={fadeInUp}>
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
             Ready to Illuminate Your Business?
           </h2>
@@ -416,8 +516,8 @@ export default function Home() {
               Launch Dashboard <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-slate-50 py-8 dark:border-slate-800 dark:bg-slate-950">

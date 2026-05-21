@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
+import Image from "next/image";
 
 interface DetailRow {
   label: string;
@@ -54,8 +55,18 @@ export function DetailDrawer({
     >
       <div
         ref={panelRef}
-        className="animate-drawer-up w-full max-w-lg rounded-t-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-800 sm:rounded-2xl"
+        className="animate-drawer-up relative w-full max-w-lg overflow-hidden rounded-t-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-800 sm:rounded-2xl"
       >
+        {/* Subtle logo watermark */}
+        <div className="pointer-events-none absolute -bottom-4 -right-4 opacity-[0.03] dark:opacity-[0.02]">
+          <Image
+            src="/lumora-icon.svg"
+            alt=""
+            width={100}
+            height={100}
+            unoptimized
+          />
+        </div>
         {/* Handle bar for mobile */}
         <div className="flex justify-center pt-2 sm:hidden">
           <div className="h-1.5 w-12 rounded-full bg-slate-300 dark:bg-slate-600" />

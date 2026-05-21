@@ -54,7 +54,15 @@ export class ErrorBoundary extends Component<Props, State> {
             alt="Lumora"
             width={40}
             height={40}
-            className="mb-1 opacity-30"
+            className="opacity-30 dark:hidden"
+            unoptimized
+          />
+          <Image
+            src="/lumora-icon-white.svg"
+            alt="Lumora"
+            width={40}
+            height={40}
+            className="hidden opacity-30 dark:block"
             unoptimized
           />
           <h2 className="text-xl font-semibold text-slate-900 dark:text-white">

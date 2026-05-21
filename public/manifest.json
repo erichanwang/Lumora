@@ -18,7 +18,7 @@
     },
     {
       "src": "/lumora-icon.svg",
-      "sizes": "48x48 96x96 128x128 256x256",
+      "sizes": "48x48 72x72 96x96 128x128 144x144 152x152 192x192 256x256 384x384 512x512",
       "type": "image/svg+xml",
       "purpose": "any"
     },
@@ -33,6 +33,12 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ],
   "screenshots": [],

@@ -229,7 +229,7 @@ export default function AnalyticsPage() {
                   return active && first ? (
                     <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-lg dark:border-slate-700 dark:bg-slate-800">
                       <p className="text-sm font-semibold text-slate-900 dark:text-white">{first.payload.name}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{first.value.toLocaleString()} detections</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{(first.value ?? 0).toLocaleString()} detections</p>
                       <p className={cn("text-xs font-medium mt-0.5", first.payload.status === "malignant" ? "text-red-600" : "text-emerald-600")}>
                         {first.payload.status === "malignant" ? "Malignant" : "Benign"}
                       </p>
@@ -263,7 +263,7 @@ export default function AnalyticsPage() {
                   return active && first ? (
                     <div className="rounded-lg border border-slate-200 bg-white p-2.5 shadow-lg dark:border-slate-700 dark:bg-slate-800">
                       <p className="text-xs text-slate-500 dark:text-slate-400">{first.payload.name}</p>
-                      <p className="text-sm font-semibold text-slate-900 dark:text-white">{first.value.toLocaleString()} detections</p>
+                      <p className="text-sm font-semibold text-slate-900 dark:text-white">{(first.value ?? 0).toLocaleString()} detections</p>
                     </div>
                   ) : null;
                 }} />

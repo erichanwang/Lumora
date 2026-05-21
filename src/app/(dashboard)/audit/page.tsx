@@ -13,6 +13,7 @@ import {
   Download,
   Search,
 } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { exportToCSV } from "@/lib/export";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -88,7 +89,25 @@ export default function AuditLogPage() {
       <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Audit Log</h1>
+          <div className="flex items-center gap-2">
+            <Image
+              src="/lumora-icon.svg"
+              alt=""
+              width={22}
+              height={22}
+              className="opacity-25 dark:hidden"
+              unoptimized
+            />
+            <Image
+              src="/lumora-icon-white.svg"
+              alt=""
+              width={22}
+              height={22}
+              className="hidden opacity-25 dark:block"
+              unoptimized
+            />
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Audit Log</h1>
+          </div>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Track every action taken across the platform.
           </p>

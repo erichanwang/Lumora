@@ -15,6 +15,7 @@ import {
   Legend,
 } from "recharts";
 import { BarChart3, Users, Clock, RefreshCw } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/theme-context";
 import { PageTransition, SectionItem } from "@/components/ui/page-transition";
@@ -85,7 +86,25 @@ export default function AnalyticsPage() {
       <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Analytics</h1>
+          <div className="flex items-center gap-2">
+            <Image
+              src="/lumora-icon.svg"
+              alt=""
+              width={22}
+              height={22}
+              className="opacity-25 dark:hidden"
+              unoptimized
+            />
+            <Image
+              src="/lumora-icon-white.svg"
+              alt=""
+              width={22}
+              height={22}
+              className="hidden opacity-25 dark:block"
+              unoptimized
+            />
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Analytics</h1>
+          </div>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Track your website performance and traffic sources.
           </p>

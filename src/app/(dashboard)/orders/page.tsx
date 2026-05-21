@@ -15,6 +15,7 @@ import {
   Download,
   Eye,
 } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { exportToCSV } from "@/lib/export";
 import { useToast } from "@/components/ui/toast";
@@ -101,7 +102,25 @@ export default function OrdersPage() {
       <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Orders</h1>
+          <div className="flex items-center gap-2">
+            <Image
+              src="/lumora-icon.svg"
+              alt=""
+              width={22}
+              height={22}
+              className="opacity-25 dark:hidden"
+              unoptimized
+            />
+            <Image
+              src="/lumora-icon-white.svg"
+              alt=""
+              width={22}
+              height={22}
+              className="hidden opacity-25 dark:block"
+              unoptimized
+            />
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Orders</h1>
+          </div>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Track and manage all customer orders
           </p>

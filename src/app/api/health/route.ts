@@ -71,6 +71,7 @@ export async function GET() {
   );
 
   return NextResponse.json({
+    app: "Lumora",
     status: "healthy",
     uptime: uptimeStr,
     uptimeSeconds: uptime,

@@ -17,6 +17,7 @@ import {
   Eye,
   Download,
 } from "lucide-react";
+import Image from "next/image";
 import { EmptyState } from "@/components/ui/empty-state";
 import { exportToCSV } from "@/lib/export";
 import { DetailDrawer } from "@/components/ui/detail-drawer";
@@ -179,7 +180,25 @@ export default function TeamPage() {
     <PageTransition>
       <SectionItem>
       <div className="space-y-6">        <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Team</h1>
+        <div className="flex items-center gap-2">
+          <Image
+            src="/lumora-icon.svg"
+            alt=""
+            width={22}
+            height={22}
+            className="opacity-25 dark:hidden"
+            unoptimized
+          />
+          <Image
+            src="/lumora-icon-white.svg"
+            alt=""
+            width={22}
+            height={22}
+            className="hidden opacity-25 dark:block"
+            unoptimized
+          />
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Team</h1>
+        </div>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Manage your team members and their roles.
         </p>

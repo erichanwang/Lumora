@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { useLocale } from "next-intl";
 import { Languages, ChevronDown, Check } from "lucide-react";
 import { useRouter, usePathname } from "@/i18n/navigation";
@@ -50,6 +51,16 @@ export function LocaleSwitcher() {
       </button>
       {open && (
         <div className="absolute right-0 mt-1.5 w-36 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+          <div className="flex items-center justify-center border-b border-slate-100 py-1.5 dark:border-slate-700">
+            <Image
+              src="/favicon.svg"
+              alt=""
+              width={12}
+              height={12}
+              className="opacity-20 dark:opacity-15"
+              unoptimized
+            />
+          </div>
           {routing.locales.map((loc) => (
             <button
               key={loc}

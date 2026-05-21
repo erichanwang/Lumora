@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { CopyButton } from "@/lib/clipboard";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
@@ -74,16 +75,35 @@ export function RecentTransactions() {
   const { toast } = useToast();
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">          <div className="flex items-center justify-between border-b border-slate-100 p-6 dark:border-slate-700">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                Recent Transactions
-              </h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Latest 6 transactions from your account
-              </p>
-            </div>
-          </div>
+    <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+      <div className="relative flex items-center justify-between border-b border-slate-100 p-6 dark:border-slate-700">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+            Recent Transactions
+          </h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Latest 6 transactions from your account
+          </p>
+        </div>
+        <div className="absolute right-4 top-4 opacity-[0.04] dark:opacity-[0.03]">
+          <Image
+            src="/lumora-icon.svg"
+            alt=""
+            width={40}
+            height={40}
+            className="dark:hidden"
+            unoptimized
+          />
+          <Image
+            src="/lumora-icon-white.svg"
+            alt=""
+            width={40}
+            height={40}
+            className="hidden dark:block"
+            unoptimized
+          />
+        </div>
+      </div>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>

@@ -1,6 +1,7 @@
 "use client";
 
 import { Clock, RefreshCw } from "lucide-react";
+import Image from "next/image";
 import { useActivity } from "@/lib/swr";
 
 const typeColors: Record<string, string> = {
@@ -40,7 +41,22 @@ export function ActivityFeed() {
       ) : activities.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-10 text-center">
           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700">
-            <Clock className="h-6 w-6 text-slate-400 dark:text-slate-500" />
+            <Image
+              src="/lumora-icon.svg"
+              alt=""
+              width={24}
+              height={24}
+              className="opacity-30 dark:hidden"
+              unoptimized
+            />
+            <Image
+              src="/lumora-icon-white.svg"
+              alt=""
+              width={24}
+              height={24}
+              className="hidden opacity-30 dark:block"
+              unoptimized
+            />
           </div>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             {isValidating ? "Loading activity..." : "No recent activity"}
@@ -84,6 +100,16 @@ export function ActivityFeed() {
 
       {data && !error && (
         <div className="mt-3 text-center">
+          <div className="mb-2 flex justify-center">
+            <Image
+              src="/favicon.svg"
+              alt=""
+              width={10}
+              height={10}
+              className="opacity-15 dark:opacity-10"
+              unoptimized
+            />
+          </div>
           <p className="text-[10px] text-slate-400">
             Auto-refreshes every 30s
           </p>

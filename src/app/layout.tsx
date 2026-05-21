@@ -42,8 +42,8 @@ export const metadata: Metadata = {
       "Modern SaaS dashboard for monitoring your business performance, analytics, and growth.",
   },
   icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    icon: "/favicon.svg",
+    apple: "/apple-touch-icon.svg",
   },
   manifest: "/manifest.json",
   appleWebApp: {

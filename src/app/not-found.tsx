@@ -1,11 +1,18 @@
 import Link from "next/link";
-import { Lightbulb, Home, ArrowLeft } from "lucide-react";
+import Image from "next/image";
+import { Home, ArrowLeft } from "lucide-react";
 
 export default function NotFoundPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-slate-50 p-8 dark:bg-slate-950">
       <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-200 dark:shadow-indigo-950">
-        <Lightbulb className="h-8 w-8 text-white" />
+        <Image
+          src="/lumora-icon-white.svg"
+          alt="Lumora"
+          width={36}
+          height={36}
+          unoptimized
+        />
       </div>
 
       <div className="text-center">

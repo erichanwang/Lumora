@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { notifications } from "@/lib/data";
 
+/**
+ * Notifications endpoint.
+ *
+ * GET returns notifications, optionally filtered to unread only.
+ * PATCH marks all notifications as read.
+ */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const unreadOnly = searchParams.get("unread") === "true";
@@ -18,6 +24,11 @@ export async function GET(request: NextRequest) {
   });
 }
 
+/**
+ * Mark all notifications as read.
+ *
+ * @returns JSON response confirming success
+ */
 export async function PATCH() {
   // Mark all as read
   notifications.forEach((n) => {

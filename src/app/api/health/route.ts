@@ -1,6 +1,16 @@
 import { NextResponse } from "next/server";
 
-const startTime = Date.now();
+/** Start time of the server for uptime calculation (ms since epoch). */
+const START_TIME_MS = Date.now();
+
+/** Number of seconds in a day */
+const SECONDS_PER_DAY = 86400;
+/** Number of seconds in an hour */
+const SECONDS_PER_HOUR = 3600;
+/** Number of seconds in a minute */
+const SECONDS_PER_MINUTE = 60;
+/** Milliseconds per second */
+const MS_PER_SECOND = 1000;
 
 const services = [
   { name: "API Gateway", status: "operational" as const, latency: 12 },
@@ -38,11 +48,19 @@ const latencyHistory = [
   { time: "23:00", latency: 9 },
 ];
 
+/**
+ * Health check endpoint.
+ *
+ * Returns system health status including uptime, average latency, and
+ * per-service operational status.
+ *
+ * @returns JSON response with health metrics
+ */
 export async function GET() {
-  const uptime = Math.floor((Date.now() - startTime) / 1000);
-  const days = Math.floor(uptime / 86400);
-  const hours = Math.floor((uptime % 86400) / 3600);
-  const minutes = Math.floor((uptime % 3600) / 60);
+  const uptime = Math.floor((Date.now() - START_TIME_MS) / MS_PER_SECOND);
+  const days = Math.floor(uptime / SECONDS_PER_DAY);
+  const hours = Math.floor((uptime % SECONDS_PER_DAY) / SECONDS_PER_HOUR);
+  const minutes = Math.floor((uptime % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
 
   const uptimeStr = days > 0
     ? `${days}d ${hours}h ${minutes}m`

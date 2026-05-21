@@ -1,9 +1,20 @@
 import { NextResponse } from "next/server";
 import { dashboardStats, type DashboardStats } from "@/lib/data";
 
+/** Simulated network delay in milliseconds for realistic loading state */
+const LOADING_DELAY_MS = 100;
+
+/**
+ * Dashboard stats endpoint.
+ *
+ * Returns aggregated dashboard statistics including revenue, users, orders,
+ * and growth metrics.
+ *
+ * @returns JSON response with dashboard stats and timestamp
+ */
 export async function GET() {
   // Simulate slight delay for realistic loading state
-  await new Promise((r) => setTimeout(r, 100));
+  await new Promise((r) => setTimeout(r, LOADING_DELAY_MS));
 
   return NextResponse.json({
     data: dashboardStats,

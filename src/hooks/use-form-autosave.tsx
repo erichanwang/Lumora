@@ -3,6 +3,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useDebounce } from "@/lib/use-debounce";
 
+/** Default autosave delay before persisting to localStorage */
+const DEFAULT_AUTOSAVE_DELAY_MS = 1000;
+/** Additional buffer delay after the debounced value settles */
+const SAVE_BUFFER_MS = 300;
+/** How long to show "Saved" status before resetting to idle */
+const SAVED_DISPLAY_MS = 3000;
+
 type AutosaveStatus = "saved" | "saving" | "unsaved" | "idle";
 
 interface UseFormAutosaveOptions<T> {
@@ -28,7 +35,7 @@ interface UseFormAutosaveReturn<T> {
 export function useFormAutosave<T>({
   key,
   data,
-  delay = 1000,
+  delay = DEFAULT_AUTOSAVE_DELAY_MS,
   onSave,
 }: UseFormAutosaveOptions<T>): UseFormAutosaveReturn<T> {
   const [status, setStatus] = useState<AutosaveStatus>("idle");
@@ -67,14 +74,15 @@ export function useFormAutosave<T>({
         setStatus("saved");
         onSave?.(debouncedData);
 
-        // Reset to idle after 3s
+        // Reset to idle after display period
         setTimeout(() => {
           setStatus((s) => (s === "saved" ? "idle" : s));
-        }, 3000);
-      } catch {
+        }, SAVED_DISPLAY_MS);
+      } catch (err) {
+        console.error(`[useFormAutosave] Failed to save draft "${key}":`, err);
         setStatus("idle");
       }
-    }, 300);
+    }, SAVE_BUFFER_MS);
 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,8 +94,9 @@ export function useFormAutosave<T>({
       setLastSaved(new Date());
       setStatus("saved");
       onSave?.(data);
-      setTimeout(() => setStatus("idle"), 3000);
-    } catch {
+      setTimeout(() => setStatus("idle"), SAVED_DISPLAY_MS);
+    } catch (err) {
+      console.error(`[useFormAutosave] Failed to force save draft "${key}":`, err);
       setStatus("idle");
     }
   }, [data, key, onSave]);

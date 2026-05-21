@@ -1,11 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { orders, type Order } from "@/lib/data/orders";
 
+/** Maximum number of items per page */
+const MAX_PER_PAGE = 50;
+/** Minimum number of items per page */
+const MIN_PER_PAGE = 1;
+/** Default number of items per page */
+const DEFAULT_PER_PAGE = 10;
+/** Number of days to add for estimated delivery (ETA) */
+const ETA_DAYS = 7;
+/** Milliseconds in a day */
+const MS_PER_DAY = 86400000;
+
+/**
+ * Orders endpoint.
+ *
+ * GET returns paginated, sorted, and filtered order list.
+ * POST creates a new order with default values.
+ */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
   const page = Math.max(0, parseInt(searchParams.get("page") ?? "0"));
-  const perPage = Math.min(50, Math.max(1, parseInt(searchParams.get("perPage") ?? "10")));
+  const perPage = Math.min(MAX_PER_PAGE, Math.max(MIN_PER_PAGE, parseInt(searchParams.get("perPage") ?? String(DEFAULT_PER_PAGE))));
   const search = (searchParams.get("search") ?? "").toLowerCase();
   const statusFilter = searchParams.get("status") ?? "all";
   const sortField = searchParams.get("sortField") ?? "date";
@@ -30,8 +47,8 @@ export async function GET(request: NextRequest) {
     if (sortField === "amount") {
       return sortDir === "asc" ? a.amount - b.amount : b.amount - a.amount;
     }
-    const aVal = (a as unknown as Record<string, unknown>)[sortField];
-    const bVal = (b as unknown as Record<string, unknown>)[sortField];
+    const aVal: unknown = a[sortField as keyof Order];
+    const bVal: unknown = b[sortField as keyof Order];
     if (typeof aVal === "string" && typeof bVal === "string") {
       return sortDir === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
     }
@@ -58,6 +75,15 @@ export async function GET(request: NextRequest) {
   });
 }
 
+/**
+ * Create a new order.
+ *
+ * Parses the JSON body and creates an order with sensible defaults.
+ * Logs the error on failure rather than swallowing it.
+ *
+ * @param request - The incoming HTTP request with JSON body
+ * @returns JSON response with the created order or error
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -71,11 +97,12 @@ export async function POST(request: NextRequest) {
       status: "processing",
       payment: "pending",
       date: new Date().toISOString().split("T")[0],
-      eta: new Date(Date.now() + 7 * 86400000).toISOString().split("T")[0],
+      eta: new Date(Date.now() + ETA_DAYS * MS_PER_DAY).toISOString().split("T")[0],
     };
     orders.unshift(newOrder);
     return NextResponse.json({ data: newOrder }, { status: 201 });
-  } catch {
+  } catch (err) {
+    console.error("[POST /api/orders] Failed to parse request body:", err);
     return NextResponse.json(
       { error: "Invalid request body" },
       { status: 400 }

@@ -3,12 +3,19 @@ import useSWRMutation from "swr/mutation";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
+/** Default refresh interval for dashboard stats: 30 seconds */
+const DASHBOARD_REFRESH_MS = 30000;
+/** Default refresh interval for notifications: 15 seconds */
+const NOTIFICATION_REFRESH_MS = 15000;
+/** Number of times to retry failed SWR fetches */
+const ERROR_RETRY_COUNT = 3;
+
 // Generic hook for fetching data with auto-refresh
 export function useApi<T>(url: string, refreshInterval?: number) {
   return useSWR<T>(url, fetcher, {
     refreshInterval,
     revalidateOnFocus: true,
-    errorRetryCount: 3,
+    errorRetryCount: ERROR_RETRY_COUNT,
   });
 }
 
@@ -25,7 +32,7 @@ export function useDashboardStats() {
       avgSession: string;
     };
     timestamp: string;
-  }>("/api/stats", 30000); // Refresh every 30s
+  }>("/api/stats", DASHBOARD_REFRESH_MS);
 }
 
 // Users with pagination and filters
@@ -114,7 +121,7 @@ export function useNotifications(unreadOnly?: boolean) {
     }>;
     unreadCount: number;
     total: number;
-  }>(`/api/notifications${unreadOnly ? "?unread=true" : ""}`, 15000);
+  }>(`/api/notifications${unreadOnly ? "?unread=true" : ""}`, NOTIFICATION_REFRESH_MS);
 }
 
 // Mark all notifications as read
@@ -143,5 +150,5 @@ export function useActivity() {
   return useApi<{
     data: Array<Record<string, unknown>>;
     total: number;
-  }>("/api/activity", 30000);
+  }>("/api/activity", DASHBOARD_REFRESH_MS);
 }

@@ -1,0 +1,32 @@
+dataset:
+  name: isic
+  data_dir: ./data/HAM10000
+  image_size: 224
+  batch_size: 32
+  num_workers: 4
+  test_split: 0.15
+  val_split: 0.15
+
+model:
+  backbone: resnet50
+  num_classes: 7
+  pretrained: true
+
+training:
+  seed: 42
+  epochs: 30
+  head_epochs: 5
+  optimizer: adam
+  lr_head: 1e-4
+  lr_full: 1e-5
+  weight_decay: 1e-4
+  scheduler: cosine
+  early_stopping_patience: 7
+  checkpoint_dir: ./runs/
+
+evaluation:
+  results_dir: ./results/
+
+logging:
+  level: INFO
+  use_wandb: false

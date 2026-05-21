@@ -4,7 +4,8 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Lightbulb, ArrowRight, Loader2, Check, Shield, AlertTriangle, Key, Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Loader2, Check, Shield, AlertTriangle, Key, Eye, EyeOff } from "lucide-react";
 import { registerSchema } from "@/lib/validations";
 import type { RegisterInput } from "@/lib/validations";
 import { cn } from "@/lib/utils";
@@ -85,7 +86,13 @@ export default function RegisterPage() {
         <div className="w-full max-w-sm">
           <Link href="/" className="flex items-center gap-2 mb-10">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
-              <Lightbulb className="h-4 w-4 text-white" />
+              <Image
+                src="/lumora-icon-white.svg"
+                alt="Lumora"
+                width={18}
+                height={18}
+                unoptimized
+              />
             </div>
             <span className="text-lg font-bold text-slate-900 dark:text-white">Lumora</span>
           </Link>

@@ -9,7 +9,6 @@ import {
   Users,
   ShoppingCart,
   Settings,
-  Lightbulb,
   ChevronLeft,
   FileText,
   Receipt,
@@ -17,6 +16,7 @@ import {
   UserCog,
   ScrollText,
 } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 
 const navigation = [
@@ -55,11 +55,25 @@ export function Sidebar({ collapsed: controlledCollapsed, onToggle }: { collapse
     >
       {/* Logo */}
       <div className="flex h-16 items-center gap-3 border-b border-slate-800 px-4 dark:border-slate-900">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
-          <Lightbulb className="h-4 w-4 text-white" />
-        </div>
-        {!collapsed && (
-          <span className="text-lg font-bold tracking-tight">Lumora</span>
+        {collapsed ? (
+          <Image
+            src="/lumora-icon-white.svg"
+            alt="Lumora"
+            width={32}
+            height={32}
+            className="shrink-0"
+            unoptimized
+          />
+        ) : (
+          <Image
+            src="/lumora-logo-white.svg"
+            alt="Lumora"
+            width={160}
+            height={32}
+            className="shrink-0"
+            priority
+            unoptimized
+          />
         )}
       </div>
 

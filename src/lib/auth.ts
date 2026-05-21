@@ -1,5 +1,28 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import type { DefaultSession } from "next-auth";
+
+/**
+ * Extend the built-in session and user types to include the role field.
+ *
+ * NextAuth v5 uses @auth/core/jwt for JWT module augmentation.
+ */
+declare module "next-auth" {
+  interface Session {
+    user: {
+      role?: string;
+    } & DefaultSession["user"];
+  }
+  interface User {
+    role?: string;
+  }
+}
+
+declare module "@auth/core/jwt" {
+  interface JWT {
+    role?: string;
+  }
+}
 
 // Demo users - in production, use a database
 const demoUsers = [
@@ -49,16 +72,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    async jwt({ token, user }) {
+  callbacks: {      async jwt({ token, user }) {
       if (user) {
-        token.role = (user as { role?: string }).role;
+        token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as { role?: string }).role = token.role as string;
+        session.user.role = token.role;
       }
       return session;
     },

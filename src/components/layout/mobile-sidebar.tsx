@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { X, Lightbulb } from "lucide-react";
+import Image from "next/image";
+import { X } from "lucide-react";
 import {
   LayoutDashboard,
   BarChart3,
@@ -73,12 +74,15 @@ export function MobileSidebar({
         {/* Logo */}
         <div className="flex h-16 items-center justify-between border-b border-slate-800 px-4 dark:border-slate-900">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
-              <Lightbulb className="h-4 w-4 text-white" />
-            </div>
-            <span className="text-lg font-bold tracking-tight text-white">
-              Lumora
-            </span>
+            <Image
+              src="/lumora-logo-white.svg"
+              alt="Lumora"
+              width={140}
+              height={28}
+              className="shrink-0"
+              priority
+              unoptimized
+            />
           </div>
           <button
             onClick={onClose}

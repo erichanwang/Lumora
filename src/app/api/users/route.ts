@@ -1,11 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { users, type User } from "@/lib/data/users";
 
+/** Maximum number of items per page */
+const MAX_PER_PAGE = 50;
+/** Minimum number of items per page */
+const MIN_PER_PAGE = 1;
+/** Default number of items per page */
+const DEFAULT_PER_PAGE = 10;
+
+/**
+ * Users endpoint.
+ *
+ * GET returns paginated, sorted, and filtered user list.
+ * POST creates a new user with default values.
+ */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
   const page = Math.max(0, parseInt(searchParams.get("page") ?? "0"));
-  const perPage = Math.min(50, Math.max(1, parseInt(searchParams.get("perPage") ?? "10")));
+  const perPage = Math.min(MAX_PER_PAGE, Math.max(MIN_PER_PAGE, parseInt(searchParams.get("perPage") ?? String(DEFAULT_PER_PAGE))));
   const search = (searchParams.get("search") ?? "").toLowerCase();
   const roleFilter = searchParams.get("role") ?? "all";
   const statusFilter = searchParams.get("status") ?? "all";
@@ -37,8 +50,8 @@ export async function GET(request: NextRequest) {
 
   // Sort
   filtered.sort((a, b) => {
-    const aVal = (a as unknown as Record<string, unknown>)[sortField];
-    const bVal = (b as unknown as Record<string, unknown>)[sortField];
+    const aVal: unknown = a[sortField as keyof User];
+    const bVal: unknown = b[sortField as keyof User];
     if (typeof aVal === "string" && typeof bVal === "string") {
       return sortDir === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
     }
@@ -65,6 +78,15 @@ export async function GET(request: NextRequest) {
   });
 }
 
+/**
+ * Create a new user.
+ *
+ * Parses the JSON body and creates a user with sensible defaults.
+ * Logs the error on failure rather than swallowing it.
+ *
+ * @param request - The incoming HTTP request with JSON body
+ * @returns JSON response with the created user or error
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -86,7 +108,8 @@ export async function POST(request: NextRequest) {
     };
     users.push(newUser);
     return NextResponse.json({ data: newUser }, { status: 201 });
-  } catch {
+  } catch (err) {
+    console.error("[POST /api/users] Failed to parse request body:", err);
     return NextResponse.json(
       { error: "Invalid request body" },
       { status: 400 }

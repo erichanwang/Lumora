@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTheme } from "@/lib/theme-context";
 import { useSession, signOut } from "next-auth/react";
+import Image from "next/image";
 import { ArrowRight, BarChart3, Lightbulb, Shield, Zap, Users, Layers, Moon, Sun, Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 import { useState } from "react";
 
@@ -19,7 +20,13 @@ export default function Home() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
-              <Lightbulb className="h-4 w-4 text-white" />
+              <Image
+                src="/lumora-icon-white.svg"
+                alt="Lumora"
+                width={18}
+                height={18}
+                unoptimized
+              />
             </div>
             <span className="text-lg font-bold text-slate-900 dark:text-white">Lumora</span>
           </div>
@@ -392,7 +399,13 @@ export default function Home() {
       <footer className="border-t border-slate-200 bg-slate-50 py-8 dark:border-slate-800 dark:bg-slate-950">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 md:flex-row">
           <div className="flex items-center gap-2">
-            <Lightbulb className="h-4 w-4 text-indigo-600" />
+            <Image
+              src="/lumora-icon.svg"
+              alt="Lumora"
+              width={16}
+              height={16}
+              unoptimized
+            />
             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
               Lumora
             </span>

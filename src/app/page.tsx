@@ -511,10 +511,35 @@ export default function Home() {
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/analytics"
-              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-700 dark:shadow-indigo-900/30"
+              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-700 dark:shadow-indigo-900/30 active:scale-95"
             >
               Launch Dashboard <ArrowRight className="h-4 w-4" />
             </Link>
+          </div>
+        </motion.div>
+      </motion.section>
+
+      {/* Trusted By */}
+      <motion.section
+        className="border-t border-slate-200 bg-slate-50 py-16 dark:border-slate-800 dark:bg-slate-950"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-80px" }}
+        variants={staggerContainer}
+      >
+        <motion.div className="mx-auto max-w-7xl px-6" variants={fadeInUp}>
+          <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            Trusted by innovative teams worldwide
+          </p>
+          <div className="mt-8 grid grid-cols-2 items-center justify-items-center gap-8 opacity-40 grayscale dark:opacity-30 md:grid-cols-5">
+            {["TechVentures", "DataFlow", "CloudScale", "NexGen", "QuantumLabs"].map((name) => (
+              <div
+                key={name}
+                className="flex h-10 items-center justify-center rounded-lg border border-slate-200 bg-white px-6 dark:border-slate-700 dark:bg-slate-800"
+              >
+                <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">{name}</span>
+              </div>
+            ))}
           </div>
         </motion.div>
       </motion.section>

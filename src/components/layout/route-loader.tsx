@@ -40,14 +40,14 @@ export function RouteLoader() {
       <div className="h-1 w-full">
         <div className="h-full w-full animate-progress-bar rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500" />
       </div>
-      {/* Subtle logo indicator */}
+      {/* Lumora logo indicator */}
       <div className="flex justify-center">
         <img
-          src="/favicon.svg"
+          src="/lumora-loading.svg"
           alt=""
-          width={16}
-          height={16}
-          className="mt-1 opacity-50 animate-pulse"
+          width={20}
+          height={24}
+          className="mt-1 opacity-60 animate-pulse"
           style={{ animationDuration: "1s" }}
         />
       </div>

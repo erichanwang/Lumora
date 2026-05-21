@@ -55,18 +55,29 @@ export default function NotFoundPage() {
       >
         <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-indigo-700 hover:shadow-md"
+          className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-indigo-700 hover:shadow-md active:scale-95"
         >
           <Home className="h-4 w-4" />
           Go to Dashboard
         </Link>
         <button
           onClick={() => window.history.back()}
-          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 active:scale-95"
         >
           <ArrowLeft className="h-4 w-4" />
           Go Back
         </button>
+      </motion.div>
+
+      {/* Footer watermark */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+        className="absolute bottom-6 flex items-center gap-1.5 opacity-30"
+      >
+        <Image src="/favicon.svg" alt="" width={10} height={10} unoptimized />
+        <span className="text-xs text-slate-400 dark:text-slate-500">Powered by Lumora</span>
       </motion.div>
     </div>
   );

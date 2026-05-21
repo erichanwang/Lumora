@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { MobileSidebar } from "@/components/layout/mobile-sidebar";
@@ -94,10 +95,22 @@ export default function DashboardLayout({
               initial="initial"
               animate="animate"
               exit="exit"
+              className="min-h-full"
             >
               {children}
             </motion.div>
           </AnimatePresence>
+          {/* Powered by Lumora footer */}
+          <div className="mt-8 flex items-center justify-center gap-1.5 pb-4 opacity-30">
+            <Image
+              src="/favicon.svg"
+              alt=""
+              width={10}
+              height={10}
+              unoptimized
+            />
+            <span className="text-[11px] text-slate-400 dark:text-slate-500">Powered by Lumora</span>
+          </div>
         </main>
       </div>
 

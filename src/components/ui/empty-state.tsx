@@ -29,14 +29,24 @@ export function EmptyState({
       )}
     >
       {showLogo && (
-        <Image
-          src="/lumora-icon.svg"
-          alt=""
-          width={48}
-          height={48}
-          className="mb-1 opacity-20 dark:opacity-15"
-          unoptimized
-        />
+        <>
+          <Image
+            src="/lumora-icon.svg"
+            alt=""
+            width={48}
+            height={48}
+            className="mb-1 opacity-20 dark:hidden"
+            unoptimized
+          />
+          <Image
+            src="/lumora-icon-white.svg"
+            alt=""
+            width={48}
+            height={48}
+            className="mb-1 hidden opacity-15 dark:block"
+            unoptimized
+          />
+        </>
       )}
       <div className="rounded-full bg-gray-100 p-4 dark:bg-gray-800">
         <Icon className="h-8 w-8 text-gray-400 dark:text-gray-500" />

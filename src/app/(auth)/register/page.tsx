@@ -65,8 +65,19 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
         <div className="text-center">
+          <div className="mx-auto mb-4">
+            <Image
+              src="/lumora-loading.svg"
+              alt="Lumora"
+              width={64}
+              height={76}
+              className="mx-auto animate-pulse"
+              style={{ animationDuration: "2s" }}
+              unoptimized
+            />
+          </div>
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/40">
             <Check className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
           </div>

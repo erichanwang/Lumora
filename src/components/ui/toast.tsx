@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react";
+import Image from "next/image";
 import { CheckCircle2, XCircle, AlertCircle, Info, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -82,7 +83,17 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ toast: addToast }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-[300] flex flex-col gap-2">
+      <div className="fixed bottom-4 right-4 z-[300] flex flex-col items-end gap-2">
+        {/* Subtle Lumora logo watermark */}
+        <div className="pointer-events-none absolute -bottom-8 -right-8 opacity-[0.04] dark:opacity-[0.03]">
+          <Image
+            src="/lumora-icon.svg"
+            alt=""
+            width={80}
+            height={80}
+            unoptimized
+          />
+        </div>
         {toasts.length > 1 && (
           <button
             onClick={dismissAll}

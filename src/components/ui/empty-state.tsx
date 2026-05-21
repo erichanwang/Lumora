@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Inbox } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -8,6 +9,8 @@ interface EmptyStateProps {
   description?: string;
   action?: React.ReactNode;
   className?: string;
+  /** Show Lumora brand logo above the icon for branded empty states */
+  showLogo?: boolean;
 }
 
 export function EmptyState({
@@ -16,6 +19,7 @@ export function EmptyState({
   description,
   action,
   className,
+  showLogo = false,
 }: EmptyStateProps) {
   return (
     <div
@@ -24,6 +28,16 @@ export function EmptyState({
         className
       )}
     >
+      {showLogo && (
+        <Image
+          src="/lumora-icon.svg"
+          alt=""
+          width={48}
+          height={48}
+          className="mb-1 opacity-20 dark:opacity-15"
+          unoptimized
+        />
+      )}
       <div className="rounded-full bg-gray-100 p-4 dark:bg-gray-800">
         <Icon className="h-8 w-8 text-gray-400 dark:text-gray-500" />
       </div>

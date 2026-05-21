@@ -118,6 +118,17 @@ export function Sidebar({ collapsed: controlledCollapsed, onToggle }: { collapse
 
       {/* Collapse button */}
       <div className="border-t border-slate-800 p-3 dark:border-slate-900">
+        {!collapsed && (
+          <div className="flex items-center justify-center pb-2 opacity-15">
+            <Image
+              src="/lumora-icon-white.svg"
+              alt=""
+              width={14}
+              height={14}
+              unoptimized
+            />
+          </div>
+        )}
         <button
           onClick={toggleCollapsed}
           className={cn(

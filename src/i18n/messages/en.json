@@ -1,6 +1,8 @@
 {
   "common": {
     "appName": "Lumora",
+    "tagline": "Illuminate Your Business Performance",
+    "poweredBy": "Powered by Lumora",
     "dashboard": "Dashboard",
     "analytics": "Analytics",
     "users": "Users",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, type ReactNode } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 type TooltipPosition = "top" | "bottom" | "left" | "right";
@@ -11,6 +12,8 @@ interface TooltipProps {
   position?: TooltipPosition;
   delay?: number;
   className?: string;
+  /** Show a subtle Lumora icon next to the tooltip content */
+  branded?: boolean;
 }
 
 export function Tooltip({
@@ -19,6 +22,7 @@ export function Tooltip({
   position = "top",
   delay = 300,
   className,
+  branded = false,
 }: TooltipProps) {
   const [visible, setVisible] = useState(false);
   const [show, setShow] = useState(false);
@@ -68,7 +72,17 @@ export function Tooltip({
           )}
           role="tooltip"
         >
-          <div className="whitespace-nowrap rounded-md bg-slate-700 px-2.5 py-1.5 text-xs font-medium text-white shadow-lg dark:bg-slate-600">
+          <div className="whitespace-nowrap rounded-md bg-slate-700 px-2.5 py-1.5 text-xs font-medium text-white shadow-lg dark:bg-slate-600 flex items-center gap-1.5">
+            {branded && (
+              <Image
+                src="/lumora-icon-white.svg"
+                alt=""
+                width={10}
+                height={10}
+                className="opacity-50 shrink-0"
+                unoptimized
+              />
+            )}
             {content}
           </div>
           <div

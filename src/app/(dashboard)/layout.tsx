@@ -31,15 +31,15 @@ export default function DashboardLayout({
 
   const pageNames: Record<string, string> = {
     "/": "Dashboard",
-    "/analytics": "Analytics",
+    "/analytics": "Detection Analytics",
     "/detection": "Cancer Detection",
-    "/users": "Users",
-    "/orders": "Orders",
-    "/reports": "Reports",
-    "/invoices": "Invoices",
-    "/team": "Team",
-    "/health": "Health",
-    "/audit": "Audit Log",
+    "/users": "Patient Management",
+    "/orders": "Scan Queue",
+    "/reports": "Detection Reports",
+    "/invoices": "Billing",
+    "/team": "Clinical Team",
+    "/health": "Model Health",
+    "/audit": "Detection Audit Log",
     "/settings": "Settings",
   };
 

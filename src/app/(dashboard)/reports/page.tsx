@@ -10,6 +10,10 @@ import {
   BarChart3,
   TrendingUp,
   Filter,
+  Microscope,
+  FlaskConical,
+  Brain,
+  Activity,
 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -22,14 +26,14 @@ import { useDebounce } from "@/lib/use-debounce";
 import { CopyButton } from "@/lib/clipboard";
 
 const reports = [
-  { id: "RPT-001", name: "Monthly Revenue Report", type: "Financial", date: "Mar 1, 2025", status: "Ready", pages: 12, author: "Alex Morgan", description: "Comprehensive breakdown of monthly revenue streams, including subscription tiers, one-time purchases, and enterprise contracts." },
-  { id: "RPT-002", name: "User Growth Analysis", type: "Analytics", date: "Feb 28, 2025", status: "Generating", pages: 8, author: "Sarah Chen", description: "Deep dive into user acquisition channels, retention rates, and cohort analysis for Q1 2025." },
-  { id: "RPT-003", name: "Q1 Performance Summary", type: "Executive", date: "Feb 25, 2025", status: "Ready", pages: 24, author: "Emily Rodriguez", description: "Executive overview of Q1 2025 key performance indicators, milestones, and strategic recommendations." },
-  { id: "RPT-004", name: "Customer Churn Report", type: "Analytics", date: "Feb 20, 2025", status: "Ready", pages: 6, author: "David Park", description: "Analysis of customer churn patterns, at-risk segment identification, and retention strategy effectiveness." },
-  { id: "RPT-005", name: "Competitive Analysis", type: "Marketing", date: "Feb 18, 2025", status: "Failed", pages: 0, author: "Lisa Thompson", description: "Market positioning analysis comparing key features, pricing, and market share against top competitors." },
-  { id: "RPT-006", name: "Conversion Funnel Review", type: "Analytics", date: "Feb 15, 2025", status: "Ready", pages: 15, author: "Michael Kim", description: "End-to-end conversion funnel analysis with drop-off points, optimization opportunities, and A/B test results." },
-  { id: "RPT-007", name: "Infrastructure Cost Report", type: "Financial", date: "Feb 12, 2025", status: "Ready", pages: 10, author: "Priya Sharma", description: "Detailed breakdown of cloud infrastructure spending by service, region, and department." },
-  { id: "RPT-008", name: "Weekly Engagement Metrics", type: "Analytics", date: "Mar 1, 2025", status: "Ready", pages: 5, author: "Rachel Green", description: "Weekly snapshot of user engagement metrics including DAU, MAU, session duration, and feature adoption." },
+  { id: "RPT-001", name: "Melanoma Detection — Weekly Summary", type: "AI Analysis", date: "Mar 1, 2025", status: "Ready", pages: 12, author: "Dr. Sarah Chen", description: "Comprehensive weekly summary of melanoma detection across 847 scans. 99.2% sensitivity, 97.8% specificity. Includes breakdown by confidence tier and anatomical site.", model: "ResNet-50 v3.2", scans: 847, findings: 23 },
+  { id: "RPT-002", name: "Biopsy Correlation Study — Q1 2025", type: "Biopsy Report", date: "Feb 28, 2025", status: "Ready", pages: 8, author: "Dr. Michael Kim", description: "Correlation analysis between AI predictions and histopathological biopsy results for 156 confirmed cases. Agreement rate: 94.2%. Detailed discordance analysis for 9 cases.", model: "DenseNet-121 v2.7", scans: 156, findings: 11 },
+  { id: "RPT-003", name: "Model Performance Benchmark — February", type: "Performance", date: "Feb 25, 2025", status: "Ready", pages: 24, author: "Dr. Emily Rodriguez", description: "Monthly model performance benchmark across all 7 lesion types. ROC-AUC analysis, precision-recall curves, confusion matrices. ResNet-50 leads on melanoma (AUC 0.991), EfficientNet leads on BCC (AUC 0.987).", model: "All Models", scans: 5231, findings: 89 },
+  { id: "RPT-004", name: "Actinic Keratosis Screening — Regional Analysis", type: "AI Analysis", date: "Feb 20, 2025", status: "Ready", pages: 6, author: "Dr. David Park", description: "Regional analysis of actinic keratosis screening results across 12 clinical sites. Prevalence rate: 12.4%. Mean confidence: 91.3%. Identifies 3 high-prevalence regions for targeted outreach.", model: "EfficientNet-B3", scans: 3120, findings: 387 },
+  { id: "RPT-005", name: "Benign Nevi Classification Audit", type: "Audit", date: "Feb 18, 2025", status: "Generating", pages: 0, author: "Dr. Lisa Thompson", description: "Retrospective audit of benign nevi classifications. Reviewing false positive rates and confidence score calibration across 2,400+ nevus cases from the past 6 months.", model: "ResNet-50 v3.2", scans: 2400, findings: null },
+  { id: "RPT-006", name: "Basal Cell Carcinoma — Detection Trends", type: "AI Analysis", date: "Feb 15, 2025", status: "Ready", pages: 15, author: "Dr. Anna Novak", description: "Trend analysis of BCC detection rates over 12 months. Shows 8.3% month-over-month increase in early-stage detections. Confidence score distribution analysis indicates model calibration improvement.", model: "DenseNet-121 v2.7", scans: 9800, findings: 142 },
+  { id: "RPT-007", name: "Vascular Lesion Differentiation Study", type: "Biopsy Report", date: "Feb 12, 2025", status: "Ready", pages: 10, author: "Dr. Priya Sharma", description: "Study on AI differentiation between angiomas and angiokeratomas. 96.1% accuracy confirmed by dermatopathology. Sub-analysis by dermoscopic pattern type included.", model: "Ensemble v1.4", scans: 432, findings: 18 },
+  { id: "RPT-008", name: "Dermatofibroma Detection Accuracy — Clinical Validation", type: "Performance", date: "Mar 1, 2025", status: "Ready", pages: 5, author: "Dr. Rachel Green", description: "Clinical validation study for dermatofibroma detection. Multi-center trial with 8 dermatology departments. Sensitivity: 94.7%, Specificity: 98.1%, PPV: 91.3%.", model: "ResNet-50 v3.2", scans: 687, findings: 45 },
 ];
 
 const statusStyles: Record<string, string> = {
@@ -38,11 +42,18 @@ const statusStyles: Record<string, string> = {
   Failed: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400",
 };
 
+const typeIcons: Record<string, typeof Microscope> = {
+  "AI Analysis": Brain,
+  "Biopsy Report": FlaskConical,
+  "Performance": Activity,
+  "Audit": BarChart3,
+};
+
 const typeColors: Record<string, string> = {
-  Financial: "text-indigo-600 dark:text-indigo-400",
-  Analytics: "text-cyan-600 dark:text-cyan-400",
-  Executive: "text-purple-600 dark:text-purple-400",
-  Marketing: "text-rose-600 dark:text-rose-400",
+  "AI Analysis": "text-violet-600 dark:text-violet-400",
+  "Biopsy Report": "text-emerald-600 dark:text-emerald-400",
+  "Performance": "text-blue-600 dark:text-blue-400",
+  "Audit": "text-amber-600 dark:text-amber-400",
 };
 
 import { PageTransition, SectionItem } from "@/components/ui/page-transition";
@@ -65,7 +76,7 @@ export default function ReportsPage() {
         r.id.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
         r.type.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
         r.author.toLowerCase().includes(debouncedSearch.toLowerCase());
-      const matchesType = filter === "all" || r.type.toLowerCase() === filter;
+      const matchesType = filter === "all" || r.type.toLowerCase() === filter.toLowerCase().replace("-", " ");
       return matchesSearch && matchesType;
     });
 
@@ -120,10 +131,10 @@ export default function ReportsPage() {
               className="hidden opacity-25 dark:block"
               unoptimized
             />
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Reports</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Detection Reports</h1>
           </div>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Generate and download custom business reports
+            AI analysis reports, biopsy correlations, and model performance metrics
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -131,7 +142,7 @@ export default function ReportsPage() {
             onClick={() =>
               exportToCSV(
                 filtered,
-                `lumora-reports-${new Date().toISOString().split("T")[0]}.csv`,
+                `lumora-detection-reports-${new Date().toISOString().split("T")[0]}.csv`,
                 [
                   { key: "id", label: "Report ID" },
                   { key: "name", label: "Name" },
@@ -139,7 +150,7 @@ export default function ReportsPage() {
                   { key: "author", label: "Author" },
                   { key: "date", label: "Date" },
                   { key: "status", label: "Status" },
-                  { key: "pages", label: "Pages" },
+                  { key: "model", label: "Model" },
                 ]
               )
             }
@@ -159,11 +170,11 @@ export default function ReportsPage() {
       <div className="grid gap-4 sm:grid-cols-4">
         {[
           { label: "Total Reports", value: reports.length.toString(), icon: FileText, color: "text-indigo-600", bg: "bg-indigo-100 dark:bg-indigo-900/30" },
-          { label: "Ready to Download", value: reports.filter((r) => r.status === "Ready").length.toString(), icon: BarChart3, color: "text-emerald-600", bg: "bg-emerald-100 dark:bg-emerald-900/30" },
-          { label: "Avg Pages", value: `${Math.round(reports.reduce((s, r) => s + r.pages, 0) / reports.length)}`, icon: TrendingUp, color: "text-amber-600", bg: "bg-amber-100 dark:bg-amber-900/30" },
-          { label: "Report Types", value: [...new Set(reports.map((r) => r.type))].length.toString(), icon: Filter, color: "text-purple-600", bg: "bg-purple-100 dark:bg-purple-900/30" },
+          { label: "AI Analyses", value: reports.filter((r) => r.type === "AI Analysis").length.toString(), icon: Brain, color: "text-violet-600", bg: "bg-violet-100 dark:bg-violet-900/30" },
+          { label: "Biopsy Correlations", value: reports.filter((r) => r.type === "Biopsy Report").length.toString(), icon: FlaskConical, color: "text-emerald-600", bg: "bg-emerald-100 dark:bg-emerald-900/30" },
+          { label: "Total Scans Analyzed", value: reports.reduce((s, r) => s + r.scans, 0).toLocaleString(), icon: TrendingUp, color: "text-blue-600", bg: "bg-blue-100 dark:bg-blue-900/30" },
         ].map((stat) => (
-          <div key={stat.label} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <div key={stat.label} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 dark:border-slate-700 dark:bg-slate-800">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
               <div className={cn("rounded-lg p-2", stat.bg)}>
@@ -188,20 +199,25 @@ export default function ReportsPage() {
           />
         </div>
         <Filter className="h-4 w-4 text-slate-400" />
-        {["all", "financial", "analytics", "executive", "marketing"].map((f) => (
-          <button
-            key={f}
-            onClick={() => { setFilter(f); setPage(0); }}
-            className={cn(
-              "rounded-lg px-3 py-1.5 text-xs font-medium capitalize transition-colors",
-              filter === f
-                ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
-            )}
-          >
-            {f === "all" ? "All Types" : f}
-          </button>
-        ))}
+        {["all", "ai-analysis", "biopsy-report", "performance", "audit"].map((f) => {
+          const label = f === "all" ? "All Types" : f.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+          const TypeIcon = f === "all" ? Microscope : typeIcons[label as keyof typeof typeIcons] || BarChart3;
+          return (
+            <button
+              key={f}
+              onClick={() => { setFilter(f); setPage(0); }}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors",
+                filter === f
+                  ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
+              )}
+            >
+              {f !== "all" && <TypeIcon className="h-3 w-3" />}
+              {label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Empty state */}
@@ -221,9 +237,9 @@ export default function ReportsPage() {
                   {[
                     { key: "name", label: "Report" },
                     { key: "type", label: "Type" },
+                    { key: "model", label: "Model" },
                     { key: "date", label: "Date" },
                     { key: "status", label: "Status" },
-                    { key: "pages", label: "Pages" },
                   ].map((col) => (
                     <th
                       key={col.key}
@@ -240,53 +256,64 @@ export default function ReportsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                {paged.map((report) => (
-                  <tr
-                    key={report.id}
-                    className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer"
-                    onClick={() => setDetailReport(report)}
-                  >
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <p className="text-sm font-medium text-slate-900 dark:text-white">
-                        {report.name}
-                        <CopyButton text={report.id} label="Report ID" toast={toast} />
-                      </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{report.id} · {report.author}</p>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <span className={cn("text-sm font-medium", typeColors[report.type])}>{report.type}</span>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{report.date}</td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium", statusStyles[report.status])}>
-                        {report.status}
-                        {report.status === "Generating" && (
-                          <span className="ml-1.5 inline-block h-2 w-2 animate-pulse rounded-full bg-amber-500" />
-                        )}
-                      </span>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{report.pages}</td>
-                    <td className="whitespace-nowrap px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setDetailReport(report); }}
-                          className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
-                          title="View details"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button
-                          disabled={report.status !== "Ready"}
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
-                        >
-                          <Download className="h-3.5 w-3.5" />
-                          Download
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {paged.map((report) => {
+                  const TypeIcon = typeIcons[report.type as keyof typeof typeIcons] || BarChart3;
+                  return (
+                    <tr
+                      key={report.id}
+                      className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer"
+                      onClick={() => setDetailReport(report)}
+                    >
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">
+                          {report.name}
+                          <CopyButton text={report.id} label="Report ID" toast={toast} />
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{report.id} · {report.author}</p>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <span className={cn("inline-flex items-center gap-1.5 text-sm font-medium", typeColors[report.type])}>
+                          <TypeIcon className="h-3.5 w-3.5" />
+                          {report.type}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                          <Brain className="h-3 w-3" />
+                          {report.model}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{report.date}</td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium", statusStyles[report.status])}>
+                          {report.status}
+                          {report.status === "Generating" && (
+                            <span className="ml-1.5 inline-block h-2 w-2 animate-pulse rounded-full bg-amber-500" />
+                          )}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setDetailReport(report); }}
+                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
+                            title="View details"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button>
+                          <button
+                            disabled={report.status !== "Ready"}
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+                          >
+                            <Download className="h-3.5 w-3.5" />
+                            Download
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -294,40 +321,45 @@ export default function ReportsPage() {
 
         {/* Cards — mobile */}
         <div className="divide-y divide-slate-100 sm:hidden dark:divide-slate-700">
-          {paged.map((report) => (
-            <div key={report.id} className="p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{report.name}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">{report.id} · {report.author}</p>
+          {paged.map((report) => {
+            const TypeIcon = typeIcons[report.type as keyof typeof typeIcons] || BarChart3;
+            return (
+              <div key={report.id} className="p-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{report.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{report.id} · {report.author}</p>
+                  </div>
+                  <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium", statusStyles[report.status])}>
+                    {report.status}
+                  </span>
                 </div>
-                <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium", statusStyles[report.status])}>
-                  {report.status}
-                </span>
+                <div className="mt-2 flex items-center gap-3 text-sm">
+                  <span className={cn("inline-flex items-center gap-1 font-medium", typeColors[report.type])}>
+                    <TypeIcon className="h-3.5 w-3.5" />{report.type}
+                  </span>
+                  <span className="text-slate-500 dark:text-slate-400">{report.date}</span>
+                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-300">{report.model}</span>
+                </div>
+                <div className="mt-2 flex items-center gap-2">
+                  <button
+                    onClick={() => setDetailReport(report)}
+                    className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
+                    title="View details"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </button>
+                  <button
+                    disabled={report.status !== "Ready"}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-slate-700 dark:text-slate-300"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Download
+                  </button>
+                </div>
               </div>
-              <div className="mt-2 flex items-center gap-3 text-sm">
-                <span className={cn("font-medium", typeColors[report.type])}>{report.type}</span>
-                <span className="text-slate-500 dark:text-slate-400">{report.date}</span>
-                <span className="text-slate-500 dark:text-slate-400">{report.pages}p</span>
-              </div>
-              <div className="mt-2 flex items-center gap-2">
-                <button
-                  onClick={() => setDetailReport(report)}
-                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
-                  title="View details"
-                >
-                  <Eye className="h-4 w-4" />
-                </button>
-                <button
-                  disabled={report.status !== "Ready"}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-slate-700 dark:text-slate-300"
-                >
-                  <Download className="h-3.5 w-3.5" />
-                  Download
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Enhanced Pagination */}
@@ -357,9 +389,11 @@ export default function ReportsPage() {
         rows={
           detailReport
             ? [
-                { label: "Type", value: <span className={cn("font-medium", typeColors[detailReport.type])}>{detailReport.type}</span> },
+                { label: "Type", value: <span className={cn("inline-flex items-center gap-1 font-medium", typeColors[detailReport.type])}>{detailReport.type}</span> },
                 { label: "Author", value: detailReport.author },
-                { label: "Pages", value: String(detailReport.pages) },
+                { label: "AI Model", value: detailReport.model },
+                { label: "Scans Analyzed", value: detailReport.scans.toLocaleString() },
+                { label: "Key Findings", value: detailReport.findings?.toString() ?? "Pending" },
                 { label: "Date", value: detailReport.date },
                 { label: "Description", value: detailReport.description },
               ]

@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useTheme } from "@/lib/theme-context";
-import { Moon, Sun, Globe, Bell, User, Save, Loader2, CheckCircle2, Key, Lock, Trash2 } from "lucide-react";
+import { Moon, Sun, Globe, Bell, User, Save, Loader2, CheckCircle2, Key, Lock, Trash2, Brain, AlertTriangle, SlidersHorizontal, Activity } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { profileSchema, type ProfileInput, type SettingsInput } from "@/lib/validations";
@@ -11,10 +11,11 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useFormAutosave, AutosaveBadge } from "@/hooks/use-form-autosave";
 import { PageTransition, SectionItem } from "@/components/ui/page-transition";
 
-type Tab = "profile" | "notifications" | "appearance";
+type Tab = "profile" | "detection" | "notifications" | "appearance";
 
 const tabs: { id: Tab; label: string; icon: typeof User }[] = [
   { id: "profile", label: "Profile", icon: User },
+  { id: "detection", label: "Detection", icon: Brain },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "appearance", label: "Appearance", icon: Moon },
 ];
@@ -34,21 +35,20 @@ export default function SettingsPage() {
 
   // Profile form state
   const [profile, setProfile] = useState<ProfileInput>({
-    name: "Alex Morgan",
-    email: "alex@lumora.io",
+    name: "Dr. Sarah Chen",
+    email: "sarah.chen@lumora.io",
     location: "San Francisco, CA",
-    bio: "Full-stack developer and dashboard enthusiast. Building tools that make data beautiful.",
+    bio: "Board-certified dermatologist specializing in melanoma detection and AI-assisted dermoscopy. 2,847 cases reviewed.",
   });
   const [profileErrors, setProfileErrors] = useState<Partial<Record<keyof ProfileInput, string>>>({});
 
-  // Autosave profile to localStorage with debounce
+  // Autosave profile to localStorage
   const { status: autosaveStatus, lastSaved, loadDraft } = useFormAutosave({
     key: "settings-profile",
     data: profile,
     delay: 1200,
   });
 
-  // Load draft from localStorage on mount
   useEffect(() => {
     const draft = loadDraft();
     if (draft) {
@@ -65,6 +65,19 @@ export default function SettingsPage() {
     pushNotifications: true,
   });
 
+  // Detection settings
+  const [detectionSettings, setDetectionSettings] = useState({
+    melanomaThreshold: 0.90,
+    bccThreshold: 0.92,
+    akThreshold: 0.85,
+    nevusThreshold: 0.95,
+    autoFlagEnabled: true,
+    autoFlagThreshold: 0.85,
+    requireSecondOpinion: true,
+    secondOpinionThreshold: 0.75,
+    edgeCaseReview: true,
+  });
+
   // Password change state
   const [passwordForm, setPasswordForm] = useState({ current: "", newPass: "", confirm: "" });
   const [passwordErrors, setPasswordErrors] = useState<Record<string, string>>({});
@@ -77,6 +90,9 @@ export default function SettingsPage() {
     pushNotifications: true,
     weeklyDigest: true,
     productUpdates: false,
+    criticalFindings: true,
+    modelUpdates: true,
+    reviewReminders: true,
   });
 
   const handleProfileSave = useCallback(async () => {
@@ -92,11 +108,17 @@ export default function SettingsPage() {
     }
     setProfileErrors({});
     setSaving("profile");
-    // Simulate API call
     await new Promise((r) => setTimeout(r, 800));
     setSaving(null);
     toast("Profile updated successfully!", "success");
   }, [profile, toast]);
+
+  const handleDetectionSave = useCallback(async () => {
+    setSaving("detection");
+    await new Promise((r) => setTimeout(r, 600));
+    setSaving(null);
+    toast("Detection settings saved!", "success");
+  }, [toast]);
 
   const handleSettingsSave = useCallback(async () => {
     setSaving("appearance");
@@ -162,7 +184,7 @@ export default function SettingsPage() {
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Settings</h1>
         </div>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Manage your account settings and preferences.
+          Manage your account, detection preferences, and platform settings.
         </p>
       </div>
 
@@ -195,25 +217,25 @@ export default function SettingsPage() {
           <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
             <div className="flex flex-col items-center">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-xl font-bold text-white">
-                AM
+                SC
               </div>
               <h3 className="mt-3 text-lg font-semibold text-slate-900 dark:text-white">
-                Alex Morgan
+                Dr. Sarah Chen
               </h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Administrator</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Dermatologist</p>
             </div>
             <div className="mt-5 space-y-3 border-t border-slate-100 pt-5 dark:border-slate-700">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-400">Plan</span>
+                <span className="text-slate-500 dark:text-slate-400">Cases Reviewed</span>
+                <span className="font-medium text-slate-900 dark:text-white">2,847</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500 dark:text-slate-400">Detection Accuracy</span>
+                <span className="font-medium text-emerald-600 dark:text-emerald-400">98.7%</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500 dark:text-slate-400">License</span>
                 <span className="font-medium text-slate-900 dark:text-white">Enterprise</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-400">Team</span>
-                <span className="font-medium text-slate-900 dark:text-white">12 members</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-400">Storage</span>
-                <span className="font-medium text-slate-900 dark:text-white">45.2 GB / 100 GB</span>
               </div>
             </div>
           </div>
@@ -247,9 +269,9 @@ export default function SettingsPage() {
             <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Profile Information</h3>
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Clinician Profile</h3>
                   <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                    Update your personal details and public profile
+                    Update your professional details and credentials
                   </p>
                 </div>
                 <AutosaveBadge status={autosaveStatus} lastSaved={lastSaved} />
@@ -316,14 +338,15 @@ export default function SettingsPage() {
 
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Bio
+                    Professional Bio
                   </label>
                   <textarea
                     rows={3}
                     value={profile.bio ?? ""}
                     onChange={(e) => setProfile((p) => ({ ...p, bio: e.target.value }))}
                     className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition-colors focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-indigo-500"
-                  />                    <p className="mt-1 text-xs text-slate-400">{(profile.bio ?? "").length}/500 characters</p>
+                  />
+                  <p className="mt-1 text-xs text-slate-400">{(profile.bio ?? "").length}/500 characters</p>
                 </div>
               </div>
 
@@ -421,6 +444,171 @@ export default function SettingsPage() {
             </div>
           )}
 
+          {/* ===== DETECTION TAB ===== */}
+          {activeTab === "detection" && (
+            <div className="space-y-6">
+              {/* Confidence Thresholds */}
+              <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <div className="flex items-center gap-3 mb-2">
+                  <SlidersHorizontal className="h-5 w-5 text-indigo-500" />
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Confidence Thresholds</h3>
+                </div>
+                <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
+                  Set minimum confidence thresholds per lesion type. Scans below threshold require manual review.
+                </p>
+
+                <div className="space-y-5">
+                  {[
+                    { key: "melanomaThreshold" as const, label: "Melanoma / Melanocytic", desc: "Malignant melanoma detection", color: "rose" },
+                    { key: "bccThreshold" as const, label: "Basal Cell Carcinoma", desc: "BCC identification threshold", color: "amber" },
+                    { key: "akThreshold" as const, label: "Actinic Keratosis", desc: "Pre-cancerous lesion detection", color: "emerald" },
+                    { key: "nevusThreshold" as const, label: "Benign Nevi", desc: "Confidence for benign classification", color: "blue" },
+                  ].map((item) => (
+                    <div key={item.key} className="grid gap-3 sm:grid-cols-2 items-center">
+                      <div>
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">{item.label}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{item.desc}</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="range"
+                          min="0.5"
+                          max="0.99"
+                          step="0.01"
+                          value={detectionSettings[item.key]}
+                          onChange={(e) => setDetectionSettings((prev) => ({ ...prev, [item.key]: parseFloat(e.target.value) }))}
+                          className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-indigo-600 dark:bg-slate-600"
+                        />
+                        <span className="text-sm font-mono font-semibold text-indigo-600 dark:text-indigo-400 w-12 text-right">
+                          {Math.round(detectionSettings[item.key] * 100)}%
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Auto-Flag Rules */}
+              <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <div className="flex items-center gap-3 mb-2">
+                  <AlertTriangle className="h-5 w-5 text-amber-500" />
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Auto-Flag & Review Rules</h3>
+                </div>
+                <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
+                  Configure when scans should be auto-flagged for urgent review
+                </p>
+
+                <div className="space-y-4">
+                  {[
+                    {
+                      key: "autoFlagEnabled" as const,
+                      label: "Enable auto-flagging",
+                      desc: "Automatically flag high-risk scans for priority review",
+                    },
+                    {
+                      key: "requireSecondOpinion" as const,
+                      label: "Require second opinion",
+                      desc: "Mandate a second clinician review for flagged scans",
+                    },
+                    {
+                      key: "edgeCaseReview" as const,
+                      label: "Edge case review queue",
+                      desc: "Route borderline confidence (55-75%) scans to a specialized review queue",
+                    },
+                  ].map((item) => (
+                    <div
+                      key={item.key}
+                      className="flex items-center justify-between rounded-lg border border-slate-100 p-4 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-700/30"
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">{item.label}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{item.desc}</p>
+                      </div>
+                      <label className="relative inline-flex cursor-pointer items-center">
+                        <input
+                          type="checkbox"
+                          checked={detectionSettings[item.key]}
+                          onChange={() =>
+                            setDetectionSettings((prev) => ({ ...prev, [item.key]: !prev[item.key] }))
+                          }
+                          className="peer sr-only"
+                        />
+                        <div className="h-6 w-11 rounded-full bg-slate-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow-sm after:transition-all peer-checked:bg-indigo-600 peer-checked:after:translate-x-full dark:bg-slate-600 dark:after:bg-slate-300" />
+                      </label>
+                    </div>
+                  ))}
+
+                  {detectionSettings.autoFlagEnabled && (
+                    <div className="rounded-lg border border-slate-100 bg-slate-50 p-4 dark:border-slate-600 dark:bg-slate-700/30">
+                      <div className="flex items-center gap-3">
+                        <Activity className="h-4 w-4 text-indigo-500" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-slate-900 dark:text-white">Auto-flag confidence threshold</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">Flag all scans below this confidence for review</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="range"
+                            min="0.5"
+                            max="0.95"
+                            step="0.05"
+                            value={detectionSettings.autoFlagThreshold}
+                            onChange={(e) => setDetectionSettings((prev) => ({ ...prev, autoFlagThreshold: parseFloat(e.target.value) }))}
+                            className="h-2 w-24 cursor-pointer appearance-none rounded-lg bg-slate-200 accent-amber-500 dark:bg-slate-600"
+                          />
+                          <span className="text-sm font-mono font-semibold text-amber-600 dark:text-amber-400 w-10 text-right">
+                            {Math.round(detectionSettings.autoFlagThreshold * 100)}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {detectionSettings.requireSecondOpinion && (
+                    <div className="rounded-lg border border-slate-100 bg-slate-50 p-4 dark:border-slate-600 dark:bg-slate-700/30">
+                      <div className="flex items-center gap-3">
+                        <Activity className="h-4 w-4 text-rose-500" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-slate-900 dark:text-white">Second opinion threshold</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">Require a second clinician review below this confidence</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="range"
+                            min="0.5"
+                            max="0.90"
+                            step="0.05"
+                            value={detectionSettings.secondOpinionThreshold}
+                            onChange={(e) => setDetectionSettings((prev) => ({ ...prev, secondOpinionThreshold: parseFloat(e.target.value) }))}
+                            className="h-2 w-24 cursor-pointer appearance-none rounded-lg bg-slate-200 accent-rose-500 dark:bg-slate-600"
+                          />
+                          <span className="text-sm font-mono font-semibold text-rose-600 dark:text-rose-400 w-10 text-right">
+                            {Math.round(detectionSettings.secondOpinionThreshold * 100)}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-6 flex justify-end border-t border-slate-100 pt-6 dark:border-slate-700">
+                  <button
+                    onClick={handleDetectionSave}
+                    disabled={saving === "detection"}
+                    className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {saving === "detection" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Brain className="h-4 w-4" />
+                    )}
+                    {saving === "detection" ? "Saving..." : "Save Detection Settings"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* ===== NOTIFICATIONS TAB ===== */}
           {activeTab === "notifications" && (
             <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
@@ -442,9 +630,24 @@ export default function SettingsPage() {
                     desc: "Receive push notifications in browser",
                   },
                   {
+                    key: "criticalFindings" as const,
+                    label: "Critical findings alerts",
+                    desc: "Immediate alerts for high-confidence malignant detections",
+                  },
+                  {
                     key: "weeklyDigest" as const,
-                    label: "Weekly digest",
-                    desc: "Get a weekly summary of your activity",
+                    label: "Weekly detection digest",
+                    desc: "Get a weekly summary of detection statistics",
+                  },
+                  {
+                    key: "modelUpdates" as const,
+                    label: "Model updates",
+                    desc: "Notifications when AI models are updated",
+                  },
+                  {
+                    key: "reviewReminders" as const,
+                    label: "Review reminders",
+                    desc: "Reminders for pending scan reviews",
                   },
                   {
                     key: "productUpdates" as const,
@@ -495,7 +698,6 @@ export default function SettingsPage() {
           {/* ===== APPEARANCE TAB ===== */}
           {activeTab === "appearance" && (
             <div className="space-y-6">
-              {/* Theme */}
               <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Theme</h3>
                 <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
@@ -503,58 +705,10 @@ export default function SettingsPage() {
                 </p>
 
                 <div className="grid gap-4 sm:grid-cols-3">
-                  <button
-                    onClick={() => setTheme("light")}
-                    className={cn(
-                      "relative flex items-center gap-4 rounded-xl border-2 p-4 transition-all",
-                      theme === "light"
-                        ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20"
-                        : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:hover:border-slate-500"
-                    )}
-                  >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
-                      <Sun className="h-5 w-5" />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-sm font-medium text-slate-900 dark:text-white">Light</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">Clean and bright</p>
-                    </div>
-                    {theme === "light" && (
-                      <CheckCircle2 className="absolute right-3 top-3 h-5 w-5 text-indigo-500" />
-                    )}
-                  </button>
-
-                  <button
-                    onClick={() => setTheme("dark")}
-                    className={cn(
-                      "relative flex items-center gap-4 rounded-xl border-2 p-4 transition-all",
-                      theme === "dark"
-                        ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20"
-                        : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:hover:border-slate-500"
-                    )}
-                  >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-slate-600 dark:text-indigo-400">
-                      <Moon className="h-5 w-5" />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-sm font-medium text-slate-900 dark:text-white">Dark</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">Easy on the eyes</p>
-                    </div>
-                    {theme === "dark" && (
-                      <CheckCircle2 className="absolute right-3 top-3 h-5 w-5 text-indigo-500" />
-                    )}
-                  </button>
-
-                  <button
-                    onClick={() => setTheme("system")}
-                    className={cn(
-                      "relative flex items-center gap-4 rounded-xl border-2 p-4 transition-all",
-                      theme === "system"
-                        ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20"
-                        : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:hover:border-slate-500"
-                    )}
-                  >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-600 dark:text-slate-300">
+                  {[
+                    { value: "light" as const, label: "Light", desc: "Clean and bright", Icon: Sun, iconBg: "bg-amber-100 text-amber-600" },
+                    { value: "dark" as const, label: "Dark", desc: "Easy on the eyes", Icon: Moon, iconBg: "bg-indigo-100 text-indigo-600 dark:bg-slate-600 dark:text-indigo-400" },
+                    { value: "system" as const, label: "System", desc: "Follows device theme", Icon: () => (
                       <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="12" r="4" />
                         <path d="M12 2v2" />
@@ -566,15 +720,30 @@ export default function SettingsPage() {
                         <path d="m6.34 17.66-1.41 1.41" />
                         <path d="m19.07 4.93-1.41 1.41" />
                       </svg>
-                    </div>
-                    <div className="text-left">
-                      <p className="text-sm font-medium text-slate-900 dark:text-white">System</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">Follows device theme</p>
-                    </div>
-                    {theme === "system" && (
-                      <CheckCircle2 className="absolute right-3 top-3 h-5 w-5 text-indigo-500" />
-                    )}
-                  </button>
+                    ), iconBg: "bg-slate-100 text-slate-600 dark:bg-slate-600 dark:text-slate-300" },
+                  ].map((item) => (
+                    <button
+                      key={item.value}
+                      onClick={() => setTheme(item.value)}
+                      className={cn(
+                        "relative flex items-center gap-4 rounded-xl border-2 p-4 transition-all",
+                        theme === item.value
+                          ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20"
+                          : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:hover:border-slate-500"
+                      )}
+                    >
+                      <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg", item.iconBg)}>
+                        <item.Icon className="h-5 w-5" />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">{item.label}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{item.desc}</p>
+                      </div>
+                      {theme === item.value && (
+                        <CheckCircle2 className="absolute right-3 top-3 h-5 w-5 text-indigo-500" />
+                      )}
+                    </button>
+                  ))}
                 </div>
 
                 <p className="mt-3 text-xs text-slate-400 dark:text-slate-500">
@@ -639,7 +808,7 @@ export default function SettingsPage() {
         title="Delete Account?"
         message={
           <>
-            <p>This action cannot be undone. All of your data, team associations, and billing information will be permanently deleted.</p>
+            <p>This action cannot be undone. All of your data, clinical notes, and detection history will be permanently deleted.</p>
             <p className="mt-2 font-medium text-red-600 dark:text-red-400">Are you sure you want to proceed?</p>
           </>
         }

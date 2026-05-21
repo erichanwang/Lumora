@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Download, Plus, Search, CheckCircle2, Clock, AlertCircle, FileText, ChevronDown, Eye } from "lucide-react";
+import { Download, Plus, Search, CheckCircle2, Clock, AlertCircle, FileText, ChevronDown, Eye, CreditCard, Receipt } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { exportToCSV } from "@/lib/export";
@@ -14,14 +14,14 @@ import { useDebounce } from "@/lib/use-debounce";
 import { CopyButton } from "@/lib/clipboard";
 
 const invoices = [
-  { id: "INV-2025-001", customer: "Acme Corp", email: "billing@acme.com", amount: 2499.00, status: "paid", date: "Mar 1, 2025", dueDate: "Mar 15, 2025" },
-  { id: "INV-2025-002", customer: "Globex Inc", email: "finance@globex.io", amount: 5899.00, status: "pending", date: "Feb 28, 2025", dueDate: "Mar 14, 2025" },
-  { id: "INV-2025-003", customer: "Initech", email: "ap@initech.co", amount: 1299.00, status: "paid", date: "Feb 25, 2025", dueDate: "Mar 11, 2025" },
-  { id: "INV-2025-004", customer: "Hooli", email: "bills@hooli.xyz", amount: 8499.00, status: "overdue", date: "Jan 15, 2025", dueDate: "Feb 1, 2025" },
-  { id: "INV-2025-005", customer: "Stark Industries", email: "accounts@stark.com", amount: 12999.00, status: "paid", date: "Feb 20, 2025", dueDate: "Mar 6, 2025" },
-  { id: "INV-2025-006", customer: "Wayne Enterprises", email: "payables@wayne.org", amount: 3499.00, status: "pending", date: "Mar 2, 2025", dueDate: "Mar 16, 2025" },
-  { id: "INV-2025-007", customer: "Cyberdyne Systems", email: "finance@cyberdyne.net", amount: 6999.00, status: "overdue", date: "Dec 10, 2024", dueDate: "Dec 25, 2024" },
-  { id: "INV-2025-008", customer: "Soylent Corp", email: "billing@soylent.com", amount: 1899.00, status: "paid", date: "Feb 28, 2025", dueDate: "Mar 14, 2025" },
+  { id: "INV-DET-2025-001", patient: "Margaret Wilson", mrn: "MRN-2847", scans: 3, amount: 750.00, status: "paid", insurance: "Blue Cross", claimStatus: "Approved", date: "Mar 1, 2025", dueDate: "Mar 15, 2025", aiAssisted: true },
+  { id: "INV-DET-2025-002", patient: "James Harrison", mrn: "MRN-1556", scans: 5, amount: 1250.00, status: "pending", insurance: "Aetna", claimStatus: "Pending Review", date: "Feb 28, 2025", dueDate: "Mar 14, 2025", aiAssisted: true },
+  { id: "INV-DET-2025-003", patient: "Robert Chen", mrn: "MRN-3912", scans: 1, amount: 250.00, status: "paid", insurance: "UnitedHealth", claimStatus: "Approved", date: "Feb 25, 2025", dueDate: "Mar 11, 2025", aiAssisted: true },
+  { id: "INV-DET-2025-004", patient: "Carlos Mendez", mrn: "MRN-3356", scans: 8, amount: 2000.00, status: "overdue", insurance: "Cigna", claimStatus: "Denied", date: "Jan 15, 2025", dueDate: "Feb 1, 2025", aiAssisted: true },
+  { id: "INV-DET-2025-005", patient: "David Kowalski", mrn: "MRN-5621", scans: 2, amount: 500.00, status: "paid", insurance: "Blue Cross", claimStatus: "Approved", date: "Feb 20, 2025", dueDate: "Mar 6, 2025", aiAssisted: true },
+  { id: "INV-DET-2025-006", patient: "Anna Novak", mrn: "MRN-2190", scans: 1, amount: 250.00, status: "pending", insurance: "Humana", claimStatus: "Submitted", date: "Mar 2, 2025", dueDate: "Mar 16, 2025", aiAssisted: true },
+  { id: "INV-DET-2025-007", patient: "Tom Baker", mrn: "MRN-4033", scans: 4, amount: 1000.00, status: "overdue", insurance: "Medicare", claimStatus: "Appeal Filed", date: "Dec 10, 2024", dueDate: "Dec 25, 2024", aiAssisted: false },
+  { id: "INV-DET-2025-008", patient: "Emily Santos", mrn: "MRN-4783", scans: 1, amount: 250.00, status: "paid", insurance: "Self-pay", claimStatus: "N/A", date: "Feb 28, 2025", dueDate: "Mar 14, 2025", aiAssisted: true },
 ];
 
 const statusConfig: Record<string, { label: string; icon: typeof CheckCircle2; className: string }> = {
@@ -32,7 +32,7 @@ const statusConfig: Record<string, { label: string; icon: typeof CheckCircle2; c
 
 import { PageTransition, SectionItem } from "@/components/ui/page-transition";
 
-export default function InvoicesPage() {
+export default function BillingPage() {
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState("date");
@@ -40,20 +40,22 @@ export default function InvoicesPage() {
   const [page, setPage] = useState(0);
   const perPage = 5;
   const [detailInvoice, setDetailInvoice] = useState<(typeof invoices)[number] | null>(null);
-  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(new Set(["id", "customer", "amount", "status", "date", "dueDate"]));
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(new Set(["id", "patient", "scans", "amount", "status", "date", "insurance"]));
   const { toast } = useToast();
   const debouncedSearch = useDebounce(search, 300);
 
   const filtered = useMemo(() => {
     let result = invoices.filter(
       (inv) =>
-        inv.customer.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        inv.id.toLowerCase().includes(debouncedSearch.toLowerCase())
+        inv.patient.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        inv.id.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        inv.mrn.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        inv.insurance.toLowerCase().includes(debouncedSearch.toLowerCase())
     );
 
     result.sort((a, b) => {
-      if (sortField === "amount") {
-        return sortDir === "asc" ? a.amount - b.amount : b.amount - a.amount;
+      if (sortField === "amount" || sortField === "scans") {
+        return sortDir === "asc" ? a[sortField] - b[sortField] : b[sortField] - a[sortField];
       }
       const valA = (a as any)[sortField];
       const valB = (b as any)[sortField];
@@ -82,6 +84,8 @@ export default function InvoicesPage() {
     .filter((inv) => inv.status !== "paid")
     .reduce((sum, inv) => sum + inv.amount, 0);
 
+  const totalScans = invoices.reduce((sum, inv) => sum + inv.scans, 0);
+
   return (
     <PageTransition>
       <SectionItem>
@@ -105,21 +109,22 @@ export default function InvoicesPage() {
               className="hidden opacity-25 dark:block"
               unoptimized
             />
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Invoices</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Detection Billing</h1>
           </div>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Manage and track all customer invoices
+            Per-scan billing, insurance claims, and payment tracking
           </p>
         </div>
         <div className="flex items-center gap-2">
           <ColumnToggle
             columns={[
               { key: "id", label: "Invoice" },
-              { key: "customer", label: "Customer" },
+              { key: "patient", label: "Patient" },
+              { key: "scans", label: "Scans" },
               { key: "amount", label: "Amount" },
               { key: "status", label: "Status" },
               { key: "date", label: "Issue Date" },
-              { key: "dueDate", label: "Due Date" },
+              { key: "insurance", label: "Insurance" },
             ]}
             visibleColumns={visibleColumns}
             onChange={setVisibleColumns}
@@ -128,15 +133,18 @@ export default function InvoicesPage() {
             onClick={() =>
               exportToCSV(
                 invoices,
-                `lumora-invoices-${new Date().toISOString().split("T")[0]}.csv`,
+                `lumora-billing-${new Date().toISOString().split("T")[0]}.csv`,
                 [
                   { key: "id", label: "Invoice ID" },
-                  { key: "customer", label: "Customer" },
-                  { key: "email", label: "Email" },
+                  { key: "patient", label: "Patient" },
+                  { key: "mrn", label: "MRN" },
                   { key: "amount", label: "Amount" },
                   { key: "status", label: "Status" },
                   { key: "date", label: "Issue Date" },
                   { key: "dueDate", label: "Due Date" },
+                  { key: "insurance", label: "Insurance" },
+                  { key: "claimStatus", label: "Claim Status" },
+                  { key: "aiAssisted", label: "AI-Assisted" },
                 ]
               )
             }
@@ -155,13 +163,16 @@ export default function InvoicesPage() {
       {/* Summary */}
       <div className="grid gap-4 sm:grid-cols-4">
         {[
-          { label: "Total Invoices", value: invoices.length.toString(), color: "text-indigo-600" },
-          { label: "Paid", value: invoices.filter((i) => i.status === "paid").length.toString(), color: "text-emerald-600" },
-          { label: "Pending", value: invoices.filter((i) => i.status === "pending").length.toString(), color: "text-amber-600" },
-          { label: "Outstanding", value: `$${(totalOutstanding / 1000).toFixed(1)}K`, color: "text-red-600" },
+          { label: "Total Revenue", value: `$${invoices.reduce((s, i) => s + i.amount, 0).toLocaleString()}`, color: "text-indigo-600", icon: Receipt },
+          { label: "Paid Invoices", value: invoices.filter((i) => i.status === "paid").length.toString(), color: "text-emerald-600", icon: CheckCircle2 },
+          { label: "Outstanding", value: `$${totalOutstanding.toLocaleString()}`, color: "text-red-600", icon: AlertCircle },
+          { label: "AI-Assisted Scans", value: totalScans.toString(), color: "text-violet-600", icon: CreditCard },
         ].map((stat) => (
-          <div key={stat.label} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
+          <div key={stat.label} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 dark:border-slate-700 dark:bg-slate-800">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
+              <stat.icon className={cn("h-5 w-5", stat.color)} />
+            </div>
             <p className={cn("mt-2 text-2xl font-bold text-slate-900 dark:text-white", stat.color)}>{stat.value}</p>
           </div>
         ))}
@@ -212,8 +223,11 @@ export default function InvoicesPage() {
                   <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer select-none" onClick={() => toggleSort("id")}>
                     <div className="flex items-center gap-1">Invoice<SortIcon field="id" /></div>
                   </th>
-                  <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer select-none" onClick={() => toggleSort("customer")}>
-                    <div className="flex items-center gap-1">Customer<SortIcon field="customer" /></div>
+                  <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer select-none" onClick={() => toggleSort("patient")}>
+                    <div className="flex items-center gap-1">Patient<SortIcon field="patient" /></div>
+                  </th>
+                  <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer select-none" onClick={() => toggleSort("scans")}>
+                    <div className="flex items-center gap-1">Scans<SortIcon field="scans" /></div>
                   </th>
                   <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer select-none" onClick={() => toggleSort("amount")}>
                     <div className="flex items-center gap-1">Amount<SortIcon field="amount" /></div>
@@ -224,9 +238,7 @@ export default function InvoicesPage() {
                   <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer select-none" onClick={() => toggleSort("date")}>
                     <div className="flex items-center gap-1">Issue Date<SortIcon field="date" /></div>
                   </th>
-                  <th className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 cursor-pointer select-none" onClick={() => toggleSort("dueDate")}>
-                    <div className="flex items-center gap-1">Due Date<SortIcon field="dueDate" /></div>
-                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Insurance</th>
                   <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Action</th>
                 </tr>
               </thead>
@@ -266,18 +278,23 @@ export default function InvoicesPage() {
                         />
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">
-                          {inv.id}
-                          <CopyButton text={inv.id} toast={toast} />
-                        </p>
+                        <div>
+                          <p className="text-sm font-medium text-slate-900 dark:text-white">
+                            {inv.id}
+                            <CopyButton text={inv.id} toast={toast} />
+                          </p>
+                          {inv.aiAssisted && (
+                            <span className="inline-flex items-center gap-0.5 rounded bg-violet-50 px-1.5 py-0.5 text-xs font-medium text-violet-600 dark:bg-violet-900/30 dark:text-violet-400">
+                              AI Scan
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">{inv.customer}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          {inv.email}
-                          <CopyButton text={inv.email} toast={toast} />
-                        </p>
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">{inv.patient}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{inv.mrn}</p>
                       </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{inv.scans} scans</td>
                       <td className="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">${inv.amount.toLocaleString()}</td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium", statusConfig[inv.status].className)}>
@@ -285,7 +302,10 @@ export default function InvoicesPage() {
                         </span>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{inv.date}</td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{inv.dueDate}</td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <span className="text-sm text-slate-600 dark:text-slate-300">{inv.insurance}</span>
+                        <p className="text-xs text-slate-400 dark:text-slate-500">{inv.claimStatus}</p>
+                      </td>
                       <td className="whitespace-nowrap px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button
@@ -308,7 +328,7 @@ export default function InvoicesPage() {
           </div>
         </div>
 
-        {/* Cards — mobile */}
+        {/* Mobile cards */}
         <div className="divide-y divide-slate-100 sm:hidden dark:divide-slate-700">
           {paged.map((inv) => {
             const StatusIcon = statusConfig[inv.status].icon;
@@ -329,10 +349,17 @@ export default function InvoicesPage() {
                       }}
                       className="h-4 w-4 rounded border-slate-300 text-indigo-600 dark:border-slate-600"
                     />
-                    <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                      {inv.id}
-                      <CopyButton text={inv.id} toast={toast} />
-                    </p>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                        {inv.id}
+                        <CopyButton text={inv.id} toast={toast} />
+                      </p>
+                      {inv.aiAssisted && (
+                        <span className="inline-flex items-center gap-0.5 rounded bg-violet-50 px-1.5 py-0.5 text-xs font-medium text-violet-600 dark:bg-violet-900/30 dark:text-violet-400">
+                          AI Scan
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-1">
                     <button
@@ -348,8 +375,8 @@ export default function InvoicesPage() {
                   </div>
                 </div>
                 <div className="mt-2">
-                  <p className="text-sm font-medium text-slate-900 dark:text-white">{inv.customer}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">{inv.email}</p>
+                  <p className="text-sm font-medium text-slate-900 dark:text-white">{inv.patient}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{inv.mrn}</p>
                 </div>
                 <div className="mt-2 flex items-center justify-between">
                   <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium", statusConfig[inv.status].className)}>
@@ -359,7 +386,7 @@ export default function InvoicesPage() {
                 </div>
                 <div className="mt-1 flex items-center justify-between text-xs text-slate-400">
                   <span>Issued: {inv.date}</span>
-                  <span>Due: {inv.dueDate}</span>
+                  <span>{inv.insurance} · {inv.scans} scans</span>
                 </div>
               </div>
             );
@@ -383,15 +410,17 @@ export default function InvoicesPage() {
                 const selectedInvoices = invoices.filter((inv) => selectedIds.has(inv.id));
                 exportToCSV(
                   selectedInvoices,
-                  `lumora-selected-invoices-${new Date().toISOString().split("T")[0]}.csv`,
+                  `lumora-selected-billing-${new Date().toISOString().split("T")[0]}.csv`,
                   [
                     { key: "id", label: "Invoice ID" },
-                    { key: "customer", label: "Customer" },
-                    { key: "email", label: "Email" },
+                    { key: "patient", label: "Patient" },
+                    { key: "mrn", label: "MRN" },
                     { key: "amount", label: "Amount" },
                     { key: "status", label: "Status" },
                     { key: "date", label: "Issue Date" },
                     { key: "dueDate", label: "Due Date" },
+                    { key: "insurance", label: "Insurance" },
+                    { key: "claimStatus", label: "Claim Status" },
                   ]
                 );
                 toast("Exported " + selectedIds.size + " invoices", "success");
@@ -420,7 +449,7 @@ export default function InvoicesPage() {
         open={!!detailInvoice}
         onClose={() => setDetailInvoice(null)}
         title={detailInvoice?.id ?? ""}
-        subtitle={detailInvoice?.customer}
+        subtitle={detailInvoice?.patient}
         badge={
           detailInvoice && (
             <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium", statusConfig[detailInvoice.status].className)}>
@@ -431,20 +460,22 @@ export default function InvoicesPage() {
         rows={
           detailInvoice
             ? [
-                { label: "Customer", value: detailInvoice.customer },
-                { label: "Email", value: detailInvoice.email },
+                { label: "Patient", value: detailInvoice.patient },
+                { label: "MRN", value: detailInvoice.mrn },
+                { label: "Scans", value: `${detailInvoice.scans} ($${250}/scan)` },
                 { label: "Amount", value: `$${detailInvoice.amount.toLocaleString()}` },
                 { label: "Status", value: statusConfig[detailInvoice.status].label },
+                { label: "Insurance", value: detailInvoice.insurance },
+                { label: "Claim Status", value: detailInvoice.claimStatus },
+                { label: "AI-Assisted", value: detailInvoice.aiAssisted ? "Yes" : "No" },
                 { label: "Issue Date", value: detailInvoice.date },
                 { label: "Due Date", value: detailInvoice.dueDate },
               ]
             : []
         }
         footer={
-          <button
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
-          >
-            <Eye className="h-4 w-4" />
+          <button className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700">
+            <Receipt className="h-4 w-4" />
             View Invoice Details
           </button>
         }

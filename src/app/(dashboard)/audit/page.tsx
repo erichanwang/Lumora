@@ -7,11 +7,15 @@ import {
   UserPlus,
   Settings,
   Shield,
-  DollarSign,
+  CreditCard,
   FileText,
-  LogOut,
+  BrainCircuit,
   Download,
   Search,
+  ScanEye,
+  Activity,
+  UserCheck,
+  AlertTriangle,
 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -27,29 +31,29 @@ interface AuditEntry {
   resource: string;
   ip: string;
   timestamp: string;
-  type: "user" | "settings" | "auth" | "billing" | "content" | "security";
+  type: "scan" | "diagnosis" | "model" | "billing" | "report" | "security";
 }
 
 const auditLog: AuditEntry[] = [
-  { id: "1", user: "Alex Morgan", action: "Updated user role", resource: "User #42", ip: "192.168.1.1", timestamp: "2 min ago", type: "user" },
-  { id: "2", user: "Sarah Chen", action: "Changed password", resource: "Account", ip: "10.0.0.5", timestamp: "15 min ago", type: "security" },
-  { id: "3", user: "System", action: "Deployed update v2.4.1", resource: "Production", ip: "—", timestamp: "1 hour ago", type: "settings" },
-  { id: "4", user: "Michael Kim", action: "Generated invoice", resource: "INV-2025-009", ip: "192.168.1.1", timestamp: "2 hours ago", type: "billing" },
-  { id: "5", user: "Emily Rodriguez", action: "Created report", resource: "Q1 Analytics", ip: "172.16.0.8", timestamp: "3 hours ago", type: "content" },
-  { id: "6", user: "Alex Morgan", action: "Updated billing info", resource: "Subscription", ip: "192.168.1.1", timestamp: "5 hours ago", type: "billing" },
-  { id: "7", user: "David Park", action: "Exported user data", resource: "Users CSV", ip: "10.0.0.15", timestamp: "1 day ago", type: "security" },
-  { id: "8", user: "System", action: "Failed login attempt", resource: "User 'admin'", ip: "45.33.32.156", timestamp: "2 days ago", type: "auth" },
-  { id: "9", user: "Anna Novak", action: "Changed API permissions", resource: "API Keys", ip: "192.168.1.1", timestamp: "3 days ago", type: "settings" },
-  { id: "10", user: "James Wilson", action: "Deleted report", resource: "Draft Report", ip: "10.0.0.22", timestamp: "5 days ago", type: "content" },
+  { id: "1", user: "Dr. Sarah Chen", action: "Reviewed AI detection result", resource: "Scan #SCN-4821 (Melanoma probable)", ip: "192.168.1.1", timestamp: "2 min ago", type: "scan" },
+  { id: "2", user: "Dr. Michael Kim", action: "Overrode AI classification", resource: "Scan #SCN-4815 → Malignant confirmed", ip: "10.0.0.5", timestamp: "15 min ago", type: "diagnosis" },
+  { id: "3", user: "System", action: "Deployed model update v3.3", resource: "ResNet-50 (melanoma sensitivity +0.4%)", ip: "—", timestamp: "1 hour ago", type: "model" },
+  { id: "4", user: "Billing Dept", action: "Generated detection invoice", resource: "INV-DET-2025-009 (42 scans)", ip: "192.168.1.1", timestamp: "2 hours ago", type: "billing" },
+  { id: "5", user: "Dr. Emily Rodriguez", action: "Generated performance report", resource: "Q1 Model Benchmark Report", ip: "172.16.0.8", timestamp: "3 hours ago", type: "report" },
+  { id: "6", user: "Dr. Sarah Chen", action: "Flagged for urgent biopsy", resource: "Scan #SCN-4822 (BCC, 98.7% confidence)", ip: "192.168.1.1", timestamp: "5 hours ago", type: "diagnosis" },
+  { id: "7", user: "Dr. David Park", action: "Exported patient detection data", resource: "Patient cohort CSV (340 records)", ip: "10.0.0.15", timestamp: "1 day ago", type: "security" },
+  { id: "8", user: "System", action: "Failed API authentication", resource: "External integration 'DermPACS'", ip: "45.33.32.156", timestamp: "2 days ago", type: "security" },
+  { id: "9", user: "Dr. Anna Novak", action: "Changed confidence threshold", resource: "BCC detection: 0.85 → 0.92", ip: "192.168.1.1", timestamp: "3 days ago", type: "model" },
+  { id: "10", user: "Dr. Priya Sharma", action: "Deleted draft report", resource: "Weekly Summary Draft", ip: "10.0.0.22", timestamp: "5 days ago", type: "report" },
 ];
 
-const typeConfig: Record<AuditEntry["type"], { icon: typeof UserPlus; color: string; bg: string }> = {
-  user: { icon: UserPlus, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-100 dark:bg-indigo-900/40" },
-  settings: { icon: Settings, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/40" },
-  auth: { icon: LogOut, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-100 dark:bg-rose-900/40" },
-  billing: { icon: DollarSign, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-100 dark:bg-emerald-900/40" },
-  content: { icon: FileText, color: "text-sky-600 dark:text-sky-400", bg: "bg-sky-100 dark:bg-sky-900/40" },
-  security: { icon: Shield, color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-100 dark:bg-violet-900/40" },
+const typeConfig: Record<AuditEntry["type"], { icon: typeof ScanEye; color: string; bg: string; label: string }> = {
+  scan: { icon: ScanEye, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-100 dark:bg-indigo-900/40", label: "Scan" },
+  diagnosis: { icon: Activity, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-100 dark:bg-rose-900/40", label: "Diagnosis" },
+  model: { icon: BrainCircuit, color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-100 dark:bg-violet-900/40", label: "Model" },
+  billing: { icon: CreditCard, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-100 dark:bg-emerald-900/40", label: "Billing" },
+  report: { icon: FileText, color: "text-sky-600 dark:text-sky-400", bg: "bg-sky-100 dark:bg-sky-900/40", label: "Report" },
+  security: { icon: Shield, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/40", label: "Security" },
 };
 
 import { PageTransition, SectionItem } from "@/components/ui/page-transition";
@@ -106,17 +110,17 @@ export default function AuditLogPage() {
               className="hidden opacity-25 dark:block"
               unoptimized
             />
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Audit Log</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Detection Audit Log</h1>
           </div>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Track every action taken across the platform.
+            Track every scan, diagnosis, and model change across the platform.
           </p>
         </div>
         <button
           onClick={() =>
             exportToCSV(
               filtered as unknown as Record<string, unknown>[],
-              `lumora-audit-log-${new Date().toISOString().split("T")[0]}.csv`,
+              `lumora-detection-audit-${new Date().toISOString().split("T")[0]}.csv`,
               [
                 { key: "id", label: "ID" },
                 { key: "user", label: "User" },
@@ -135,6 +139,24 @@ export default function AuditLogPage() {
         </button>
       </div>
 
+      {/* Stats row */}
+      <div className="grid gap-3 sm:grid-cols-4">
+        {[
+          { label: "Total Events", value: auditLog.length, icon: ScrollText, color: "text-indigo-600" },
+          { label: "Scans Today", value: "47", icon: ScanEye, color: "text-emerald-600" },
+          { label: "Diagnosis Overrides", value: "3", icon: Activity, color: "text-rose-600" },
+          { label: "Security Alerts", value: "2", icon: AlertTriangle, color: "text-amber-600" },
+        ].map((stat) => (
+          <div key={stat.label} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
+              <stat.icon className={cn("h-4 w-4", stat.color)} />
+            </div>
+            <p className="mt-1 text-xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
+          </div>
+        ))}
+      </div>
+
       {/* Search bar */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1 max-w-xs">
@@ -146,10 +168,11 @@ export default function AuditLogPage() {
             onChange={(e) => { setSearchQuery(e.target.value); setPage(0); }}
             className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-900 outline-none transition-colors focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30"
           />
-        </div>        <div className="flex items-center gap-2">
+        </div>
+        <div className="flex items-center gap-2">
           <Filter className="h-4 w-4 text-slate-400" />
           <div className="flex flex-wrap gap-2">
-            {["all", "user", "settings", "auth", "billing", "content", "security"].map((type) => (
+            {["all", "scan", "diagnosis", "model", "billing", "report", "security"].map((type) => (
               <button
                 key={type}
                 onClick={() => { setTypeFilter(type); setPage(0); }}
@@ -180,7 +203,7 @@ export default function AuditLogPage() {
             return (
               <div
                 key={entry.id}
-                className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-4 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700/50"
+                className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-4 transition-all hover:shadow-sm hover:-translate-y-0.5 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700/50"
               >
                 <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${cfg.bg}`}>
                   <IconComponent className={`h-5 w-5 ${cfg.color}`} />
@@ -191,9 +214,14 @@ export default function AuditLogPage() {
                       <span className="font-semibold">{entry.user}</span>{" "}
                       {entry.action}
                     </p>
-                    <span className="text-xs text-slate-400 dark:text-slate-500 shrink-0">
-                      {entry.timestamp}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={cn("inline-flex rounded-full px-2 py-0.5 text-xs font-medium", cfg.bg, cfg.color)}>
+                        {cfg.label}
+                      </span>
+                      <span className="text-xs text-slate-400 dark:text-slate-500 shrink-0">
+                        {entry.timestamp}
+                      </span>
+                    </div>
                   </div>
                   <div className="mt-1 flex flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-400">
                     <span className="rounded-md bg-slate-100 px-2 py-0.5 dark:bg-slate-700">

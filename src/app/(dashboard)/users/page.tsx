@@ -11,6 +11,11 @@ import {
   Filter,
   Download,
   Eye,
+  Heart,
+  AlertTriangle,
+  Calendar,
+  MapPin,
+  Activity,
 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -24,20 +29,24 @@ import { useDebounce } from "@/lib/use-debounce";
 import { CopyButton } from "@/lib/clipboard";
 import { PageTransition, SectionItem } from "@/components/ui/page-transition";
 
-const allUsers = [
-  { id: 1, name: "Alex Morgan", email: "alex@lumora.io", role: "Admin", status: "active", plan: "Enterprise", location: "San Francisco, CA", avatar: "AM", joined: "Jan 2023", revenue: 12400 },
-  { id: 2, name: "Sarah Chen", email: "sarah@example.com", role: "Editor", status: "active", plan: "Pro", location: "New York, NY", avatar: "SC", joined: "Mar 2023", revenue: 8400 },
-  { id: 3, name: "James Wilson", email: "james@example.com", role: "Viewer", status: "inactive", plan: "Free", location: "London, UK", avatar: "JW", joined: "Jun 2023", revenue: 0 },
-  { id: 4, name: "Emily Rodriguez", email: "emily@example.com", role: "Editor", status: "active", plan: "Pro", location: "Miami, FL", avatar: "ER", joined: "Feb 2024", revenue: 5600 },
-  { id: 5, name: "Michael Kim", email: "michael@example.com", role: "Admin", status: "active", plan: "Enterprise", location: "Seattle, WA", avatar: "MK", joined: "Aug 2022", revenue: 18900 },
-  { id: 6, name: "Lisa Thompson", email: "lisa@example.com", role: "Viewer", status: "pending", plan: "Free", location: "Austin, TX", avatar: "LT", joined: "Mar 2025", revenue: 0 },
-  { id: 7, name: "David Park", email: "david@example.com", role: "Editor", status: "active", plan: "Pro", location: "Chicago, IL", avatar: "DP", joined: "Nov 2023", revenue: 7200 },
-  { id: 8, name: "Anna Novak", email: "anna@example.com", role: "Admin", status: "active", plan: "Enterprise", location: "Berlin, DE", avatar: "AN", joined: "Apr 2023", revenue: 15100 },
-  { id: 9, name: "Tom Fischer", email: "tom@example.com", role: "Viewer", status: "inactive", plan: "Free", location: "Vienna, AT", avatar: "TF", joined: "Sep 2024", revenue: 0 },
-  { id: 10, name: "Rachel Green", email: "rachel@example.com", role: "Editor", status: "active", plan: "Pro", location: "Boston, MA", avatar: "RG", joined: "Oct 2023", revenue: 9300 },
-  { id: 11, name: "Chris Evans", email: "chris@example.com", role: "Viewer", status: "pending", plan: "Free", location: "Denver, CO", avatar: "CE", joined: "Jan 2025", revenue: 0 },
-  { id: 12, name: "Priya Sharma", email: "priya@example.com", role: "Admin", status: "active", plan: "Enterprise", location: "Mumbai, IN", avatar: "PS", joined: "Jul 2022", revenue: 22100 },
+const allPatients = [
+  { id: 1, name: "Margaret Wilson", mrn: "MRN-2847", age: 67, sex: "F", riskLevel: "High", status: "active", diagnoses: 3, lastScan: "Mar 1, 2025", location: "Portland, OR", avatar: "MW", riskFactors: ["Family history of melanoma", "Fair skin", ">50 nevi"], notes: "Under quarterly monitoring. History of BCC excised 2023.", totalScans: 22 },
+  { id: 2, name: "Robert Chen", mrn: "MRN-3912", age: 54, sex: "M", riskLevel: "Medium", status: "active", diagnoses: 1, lastScan: "Feb 28, 2025", location: "Seattle, WA", avatar: "RC", riskFactors: ["Sun exposure (outdoor occupation)", "Previous AK"], notes: "Annual screening. One atypical nevus under observation.", totalScans: 8 },
+  { id: 3, name: "James Harrison", mrn: "MRN-1556", age: 72, sex: "M", riskLevel: "High", status: "active", diagnoses: 5, lastScan: "Feb 26, 2025", location: "Boise, ID", avatar: "JH", riskFactors: ["Multiple prior melanomas", "Immunosuppressed", "History of severe sunburns"], notes: "Monthly monitoring. Stage II melanoma survivor. Referred to oncology.", totalScans: 45 },
+  { id: 4, name: "Emily Santos", mrn: "MRN-4783", age: 29, sex: "F", riskLevel: "Low", status: "active", diagnoses: 0, lastScan: "Feb 20, 2025", location: "San Francisco, CA", avatar: "ES", riskFactors: ["New mole concern"], notes: "First-time screening. No significant findings.", totalScans: 1 },
+  { id: 5, name: "David Kowalski", mrn: "MRN-5621", age: 45, sex: "M", riskLevel: "Medium", status: "active", diagnoses: 2, lastScan: "Mar 2, 2025", location: "Denver, CO", avatar: "DK", riskFactors: ["History of BCC", "High-altitude residence", "Fitzpatrick type II"], notes: "BCC excised 2024. Semi-annual follow-up recommended.", totalScans: 12 },
+  { id: 6, name: "Lisa Thompson", mrn: "MRN-1049", age: 58, sex: "F", riskLevel: "Low", status: "pending", diagnoses: 0, lastScan: "—", location: "Austin, TX", avatar: "LT", riskFactors: ["Routine screening referral"], notes: "Awaiting initial dermoscopic imaging.", totalScans: 0 },
+  { id: 7, name: "Carlos Mendez", mrn: "MRN-3356", age: 63, sex: "M", riskLevel: "High", status: "active", diagnoses: 4, lastScan: "Feb 18, 2025", location: "Miami, FL", avatar: "CM", riskFactors: ["Dysplastic nevus syndrome", "Familial atypical mole-melanoma syndrome"], notes: "Total body photography every 6 months. 2 dysplastic nevi excised 2024.", totalScans: 30 },
+  { id: 8, name: "Anna Novak", mrn: "MRN-2190", age: 41, sex: "F", riskLevel: "Medium", status: "active", diagnoses: 1, lastScan: "Feb 22, 2025", location: "Chicago, IL", avatar: "AN", riskFactors: ["Previous AK diagnosis", "Tanning bed use history"], notes: "Suspicious lesion on left forearm — biopsy recommended.", totalScans: 6 },
+  { id: 9, name: "Tom Baker", mrn: "MRN-4033", age: 76, sex: "M", riskLevel: "Medium", status: "inactive", diagnoses: 1, lastScan: "Nov 15, 2024", location: "Boston, MA", avatar: "TB", riskFactors: ["Age > 70", "Northern European ancestry"], notes: "Overdue for follow-up. Outreach letter sent.", totalScans: 15 },
+  { id: 10, name: "Rachel Kim", mrn: "MRN-1295", age: 35, sex: "F", riskLevel: "Low", status: "active", diagnoses: 0, lastScan: "Mar 1, 2025", location: "New York, NY", avatar: "RK", riskFactors: ["Pregnancy-related changes"], notes: "Benign nevi — no follow-up required.", totalScans: 3 },
 ];
+
+const riskConfig: Record<string, { label: string; color: string; bg: string }> = {
+  High: { label: "High", color: "text-red-600 dark:text-red-400", bg: "bg-red-100 dark:bg-red-900/40" },
+  Medium: { label: "Medium", color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/40" },
+  Low: { label: "Low", color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-100 dark:bg-emerald-900/40" },
+};
 
 const statusStyles: Record<string, string> = {
   active: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400",
@@ -45,27 +54,21 @@ const statusStyles: Record<string, string> = {
   pending: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400",
 };
 
-const roleColors: Record<string, string> = {
-  Admin: "text-purple-600 dark:text-purple-400",
-  Editor: "text-blue-600 dark:text-blue-400",
-  Viewer: "text-slate-600 dark:text-slate-400",
-};
-
-export default function UsersPage() {
+export default function PatientsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
   const [search, setSearch] = useState(searchParams.get("q") || "");
-  const [roleFilter, setRoleFilter] = useState(searchParams.get("role") || "all");
+  const [riskFilter, setRiskFilter] = useState(searchParams.get("risk") || "all");
   const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "all");
   const [sortField, setSortField] = useState(searchParams.get("sort") || "name");
   const [sortDir, setSortDir] = useState<"asc" | "desc">((searchParams.get("dir") as "asc" | "desc") || "asc");
   const [page, setPage] = useState(Number(searchParams.get("page")) || 0);
   const perPage = 5;
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
-  const [detailUser, setDetailUser] = useState<(typeof allUsers)[number] | null>(null);
-  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(new Set(["name", "role", "status", "plan", "revenue", "joined"]));
+  const [detailPatient, setDetailPatient] = useState<(typeof allPatients)[number] | null>(null);
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(new Set(["name", "riskLevel", "diagnoses", "lastScan", "status"]));
   const { toast } = useToast();
   const debouncedSearch = useDebounce(search, 300);
 
@@ -84,10 +87,10 @@ export default function UsersPage() {
     setPage(0);
     syncUrl({ q: val, page: "0" });
   };
-  const setRoleAndSync = (val: string) => {
-    setRoleFilter(val);
+  const setRiskAndSync = (val: string) => {
+    setRiskFilter(val);
     setPage(0);
-    syncUrl({ role: val, page: "0" });
+    syncUrl({ risk: val, page: "0" });
   };
   const setStatusAndSync = (val: string) => {
     setStatusFilter(val);
@@ -107,13 +110,14 @@ export default function UsersPage() {
   };
 
   const filtered = useMemo(() => {
-    let result = allUsers.filter((u) => {
+    let result = allPatients.filter((p) => {
       const matchesSearch =
-        u.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        u.email.toLowerCase().includes(debouncedSearch.toLowerCase());
-      const matchesRole = roleFilter === "all" || u.role.toLowerCase() === roleFilter;
-      const matchesStatus = statusFilter === "all" || u.status === statusFilter;
-      return matchesSearch && matchesRole && matchesStatus;
+        p.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        p.mrn.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        p.location.toLowerCase().includes(debouncedSearch.toLowerCase());
+      const matchesRisk = riskFilter === "all" || p.riskLevel.toLowerCase() === riskFilter;
+      const matchesStatus = statusFilter === "all" || p.status === statusFilter;
+      return matchesSearch && matchesRisk && matchesStatus;
     });
 
     result.sort((a, b) => {
@@ -126,7 +130,7 @@ export default function UsersPage() {
     });
 
     return result;
-  }, [debouncedSearch, roleFilter, statusFilter, sortField, sortDir]);
+  }, [debouncedSearch, riskFilter, statusFilter, sortField, sortDir]);
 
   const paged = filtered.slice(page * perPage, (page + 1) * perPage);
   const totalPages = Math.ceil(filtered.length / perPage);
@@ -144,13 +148,11 @@ export default function UsersPage() {
     );
   };
 
-  // Pagination state for enhanced pagination
-  const [perPageState, setPerPageState] = useState(perPage);
-
   return (
     <PageTransition>
-      {/* Header */}
       <SectionItem>
+      <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
@@ -170,21 +172,20 @@ export default function UsersPage() {
               className="hidden opacity-25 dark:block"
               unoptimized
             />
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Users</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Patient Management</h1>
           </div>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Manage team members, roles, and permissions
+            Manage patient records, risk assessments, and screening schedules
           </p>
         </div>
         <div className="flex items-center gap-2">
           <ColumnToggle
             columns={[
-              { key: "name", label: "User" },
-              { key: "role", label: "Role" },
+              { key: "name", label: "Patient" },
+              { key: "riskLevel", label: "Risk" },
+              { key: "diagnoses", label: "Diagnoses" },
+              { key: "lastScan", label: "Last Scan" },
               { key: "status", label: "Status" },
-              { key: "plan", label: "Plan" },
-              { key: "revenue", label: "Revenue" },
-              { key: "joined", label: "Joined" },
             ]}
             visibleColumns={visibleColumns}
             onChange={setVisibleColumns}
@@ -192,17 +193,18 @@ export default function UsersPage() {
           <button
             onClick={() =>
               exportToCSV(
-                allUsers,
-                `lumora-users-${new Date().toISOString().split("T")[0]}.csv`,
+                allPatients,
+                `lumora-patients-${new Date().toISOString().split("T")[0]}.csv`,
                 [
                   { key: "name", label: "Name" },
-                  { key: "email", label: "Email" },
-                  { key: "role", label: "Role" },
+                  { key: "mrn", label: "MRN" },
+                  { key: "age", label: "Age" },
+                  { key: "sex", label: "Sex" },
+                  { key: "riskLevel", label: "Risk Level" },
                   { key: "status", label: "Status" },
-                  { key: "plan", label: "Plan" },
+                  { key: "diagnoses", label: "Diagnoses" },
+                  { key: "totalScans", label: "Total Scans" },
                   { key: "location", label: "Location" },
-                  { key: "revenue", label: "Revenue" },
-                  { key: "joined", label: "Joined" },
                 ]
               )
             }
@@ -213,7 +215,7 @@ export default function UsersPage() {
           </button>
           <button className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95">
             <UserPlus className="h-4 w-4" />
-            Add User
+            Add Patient
           </button>
         </div>
       </div>
@@ -221,13 +223,16 @@ export default function UsersPage() {
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-4">
         {[
-          { label: "Total Users", value: allUsers.length.toString() },
-          { label: "Active", value: allUsers.filter((u) => u.status === "active").length.toString(), color: "text-emerald-600" },
-          { label: "Pending", value: allUsers.filter((u) => u.status === "pending").length.toString(), color: "text-amber-600" },
-          { label: "Revenue", value: `$${(allUsers.reduce((s, u) => s + u.revenue, 0) / 1000).toFixed(0)}K`, color: "text-indigo-600" },
+          { label: "Total Patients", value: allPatients.length.toString(), icon: Users, color: "text-indigo-600" },
+          { label: "High Risk", value: allPatients.filter((p) => p.riskLevel === "High").length.toString(), icon: AlertTriangle, color: "text-red-600" },
+          { label: "Active Diagnoses", value: allPatients.reduce((s, p) => s + p.diagnoses, 0).toString(), icon: Heart, color: "text-rose-600" },
+          { label: "Total Scans", value: allPatients.reduce((s, p) => s + p.totalScans, 0).toString(), icon: Activity, color: "text-emerald-600" },
         ].map((stat) => (
-          <div key={stat.label} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
+          <div key={stat.label} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 dark:border-slate-700 dark:bg-slate-800">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
+              <stat.icon className={cn("h-5 w-5", stat.color)} />
+            </div>
             <p className={cn("mt-2 text-2xl font-bold text-slate-900 dark:text-white", stat.color)}>{stat.value}</p>
           </div>
         ))}
@@ -239,7 +244,7 @@ export default function UsersPage() {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Search users..."
+            placeholder="Search patients..."
             value={search}
             onChange={(e) => { setSearchAndSync(e.target.value); }}
             className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-900 outline-none transition-colors focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30"
@@ -247,14 +252,14 @@ export default function UsersPage() {
         </div>
         <Filter className="h-4 w-4 text-slate-400" />
         <select
-          value={roleFilter}
-          onChange={(e) => { setRoleAndSync(e.target.value); }}
+          value={riskFilter}
+          onChange={(e) => { setRiskAndSync(e.target.value); }}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
         >
-          <option value="all">All Roles</option>
-          <option value="admin">Admin</option>
-          <option value="editor">Editor</option>
-          <option value="viewer">Viewer</option>
+          <option value="all">All Risk Levels</option>
+          <option value="high">High Risk</option>
+          <option value="medium">Medium Risk</option>
+          <option value="low">Low Risk</option>
         </select>
         <select
           value={statusFilter}
@@ -268,12 +273,12 @@ export default function UsersPage() {
         </select>
       </div>
 
-      {/* Empty state for no results */}
+      {/* Empty state */}
       {filtered.length === 0 ? (
         <EmptyState
           icon={Users}
-          title="No users found"
-          description={search ? "Try adjusting your search or filters." : "No users match the current filters."}
+          title="No patients found"
+          description={search ? "Try adjusting your search or filters." : "No patients match the current filters."}
         />
       ) : (
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
@@ -290,19 +295,18 @@ export default function UsersPage() {
                         if (selectedIds.size === paged.length) {
                           setSelectedIds(new Set());
                         } else {
-                          setSelectedIds(new Set(paged.map((u) => u.id)));
+                          setSelectedIds(new Set(paged.map((p) => p.id)));
                         }
                       }}
                       className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
                     />
                   </th>
                   {[
-                    { key: "name", label: "User" },
-                    { key: "role", label: "Role" },
+                    { key: "name", label: "Patient" },
+                    { key: "riskLevel", label: "Risk" },
+                    { key: "diagnoses", label: "Diagnoses" },
+                    { key: "lastScan", label: "Last Scan" },
                     { key: "status", label: "Status" },
-                    { key: "plan", label: "Plan" },
-                    { key: "revenue", label: "Revenue" },
-                    { key: "joined", label: "Joined" },
                   ].map((col) => (
                     <th
                       key={col.key}
@@ -319,131 +323,146 @@ export default function UsersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                {paged.map((user) => (
-                  <tr
-                    key={user.id}
-                    className={cn(
-                      "transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer",
-                      selectedIds.has(user.id) && "bg-indigo-50/50 dark:bg-indigo-950/20"
-                    )}
-                    onClick={(e) => {
-                      const target = e.target as HTMLElement;
-                      if (target.tagName === "INPUT" || target.tagName === "BUTTON") return;
-                      setSelectedIds((prev) => {
-                        const next = new Set(prev);
-                        if (next.has(user.id)) next.delete(user.id);
-                        else next.add(user.id);
-                        return next;
-                      });
-                    }}
-                  >
-                    <td className="whitespace-nowrap px-4 py-4">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.has(user.id)}
-                        onChange={() => {
-                          setSelectedIds((prev) => {
-                            const next = new Set(prev);
-                            if (next.has(user.id)) next.delete(user.id);
-                            else next.add(user.id);
-                            return next;
-                          });
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                        className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
-                      />
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-xs font-bold text-white">
-                          {user.avatar}
+                {paged.map((patient) => {
+                  const risk = riskConfig[patient.riskLevel];
+                  return (
+                    <tr
+                      key={patient.id}
+                      className={cn(
+                        "transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer",
+                        selectedIds.has(patient.id) && "bg-indigo-50/50 dark:bg-indigo-950/20"
+                      )}
+                      onClick={(e) => {
+                        const target = e.target as HTMLElement;
+                        if (target.tagName === "INPUT" || target.tagName === "BUTTON") return;
+                        setSelectedIds((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(patient.id)) next.delete(patient.id);
+                          else next.add(patient.id);
+                          return next;
+                        });
+                      }}
+                    >
+                      <td className="whitespace-nowrap px-4 py-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(patient.id)}
+                          onChange={() => {
+                            setSelectedIds((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(patient.id)) next.delete(patient.id);
+                              else next.add(patient.id);
+                              return next;
+                            });
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                        />
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className={cn("flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold text-white", patient.riskLevel === "High" ? "bg-gradient-to-br from-red-500 to-rose-600" : patient.riskLevel === "Medium" ? "bg-gradient-to-br from-amber-500 to-orange-600" : "bg-gradient-to-br from-emerald-500 to-teal-600")}>
+                            {patient.avatar}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-slate-900 dark:text-white">{patient.name}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                              {patient.mrn} · {patient.age}y {patient.sex}
+                              <CopyButton text={patient.mrn} toast={toast} />
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-slate-900 dark:text-white">{user.name}</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">
-                            {user.email}
-                            <CopyButton text={user.email} toast={toast} />
-                          </p>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium", risk.bg, risk.color)}>
+                          <AlertTriangle className="h-3 w-3" />
+                          {risk.label}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <span className={cn("text-sm font-semibold", patient.diagnoses > 0 ? "text-rose-600 dark:text-rose-400" : "text-slate-400")}>
+                          {patient.diagnoses > 0 ? patient.diagnoses : "—"}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <div className="flex items-center gap-1.5 text-sm">
+                          <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                          <span className="text-slate-600 dark:text-slate-300">{patient.lastScan}</span>
                         </div>
-                      </div>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <div className="flex items-center gap-1.5">
-                        <Shield className={cn("h-3.5 w-3.5", roleColors[user.role])} />
-                        <span className={cn("text-sm font-medium", roleColors[user.role])}>{user.role}</span>
-                      </div>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium capitalize", statusStyles[user.status])}>{user.status}</span>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <span className={cn("text-sm", user.plan === "Enterprise" ? "font-semibold text-indigo-600 dark:text-indigo-400" : user.plan === "Pro" ? "font-medium text-slate-900 dark:text-white" : "text-slate-500 dark:text-slate-400")}>{user.plan}</span>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">{user.revenue > 0 ? `$${user.revenue.toLocaleString()}` : "—"}</td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{user.joined}</td>
-                    <td className="whitespace-nowrap px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setDetailUser(user); }}
-                          className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
-                          title="View details"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium capitalize", statusStyles[patient.status])}>{patient.status}</span>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setDetailPatient(patient); }}
+                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
+                            title="View details"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* Users cards — mobile */}
+        {/* Mobile cards */}
         <div className="divide-y divide-slate-100 sm:hidden dark:divide-slate-700">
-          {paged.map((user) => (
-            <div key={user.id} className="p-4">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.has(user.id)}
-                    onChange={() => {
-                      setSelectedIds((prev) => {
-                        const next = new Set(prev);
-                        if (next.has(user.id)) next.delete(user.id);
-                        else next.add(user.id);
-                        return next;
-                      });
-                    }}
-                    className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
-                  />
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-xs font-bold text-white">
-                    {user.avatar}
+          {paged.map((patient) => {
+            const risk = riskConfig[patient.riskLevel];
+            return (
+              <div key={patient.id} className="p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(patient.id)}
+                      onChange={() => {
+                        setSelectedIds((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(patient.id)) next.delete(patient.id);
+                          else next.add(patient.id);
+                          return next;
+                        });
+                      }}
+                      className="h-4 w-4 rounded border-slate-300 text-indigo-600 dark:border-slate-600"
+                    />
+                    <div className={cn("flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold text-white", patient.riskLevel === "High" ? "bg-gradient-to-br from-red-500 to-rose-600" : patient.riskLevel === "Medium" ? "bg-gradient-to-br from-amber-500 to-orange-600" : "bg-gradient-to-br from-emerald-500 to-teal-600")}>
+                      {patient.avatar}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-900 dark:text-white">{patient.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        {patient.mrn} · {patient.age}y
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-900 dark:text-white">{user.name}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      {user.email}
-                      <CopyButton text={user.email} toast={toast} />
-                    </p>
-                  </div>
+                  <button
+                    onClick={() => setDetailPatient(patient)}
+                    className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
+                    title="View details"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </button>
                 </div>
-                <button
-                  onClick={() => setDetailUser(user)}
-                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
-                  title="View details"
-                >
-                  <Eye className="h-4 w-4" />
-                </button>
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium", risk.bg, risk.color)}>
+                    <AlertTriangle className="h-3 w-3" />{risk.label}
+                  </span>
+                  <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium capitalize", statusStyles[patient.status])}>{patient.status}</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400">
+                    {patient.diagnoses} dx · {patient.totalScans} scans
+                  </span>
+                </div>
               </div>
-              <div className="mt-3 flex flex-wrap items-center gap-3">
-                <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium capitalize", statusStyles[user.status])}>{user.status}</span>
-                <span className={cn("text-sm", roleColors[user.role])}>{user.role} · {user.plan}</span>
-                <span className="text-sm text-slate-500 dark:text-slate-400">${user.revenue.toLocaleString()} · {user.joined}</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Bulk action bar */}
@@ -462,21 +481,20 @@ export default function UsersPage() {
             </div>
             <button
               onClick={() => {
-                const selectedUsers = allUsers.filter((u) => selectedIds.has(u.id));
+                const selectedPatients = allPatients.filter((p) => selectedIds.has(p.id));
                 exportToCSV(
-                  selectedUsers,
-                  `lumora-selected-users-${new Date().toISOString().split("T")[0]}.csv`,
+                  selectedPatients,
+                  `lumora-selected-patients-${new Date().toISOString().split("T")[0]}.csv`,
                   [
                     { key: "name", label: "Name" },
-                    { key: "email", label: "Email" },
-                    { key: "role", label: "Role" },
+                    { key: "mrn", label: "MRN" },
+                    { key: "riskLevel", label: "Risk Level" },
+                    { key: "diagnoses", label: "Diagnoses" },
                     { key: "status", label: "Status" },
-                    { key: "plan", label: "Plan" },
-                    { key: "revenue", label: "Revenue" },
-                    { key: "joined", label: "Joined" },
+                    { key: "totalScans", label: "Total Scans" },
                   ]
                 );
-                toast("Exported " + selectedIds.size + " users", "success");
+                toast("Exported " + selectedIds.size + " patients", "success");
               }}
               className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700"
             >
@@ -497,48 +515,43 @@ export default function UsersPage() {
       </div>
       )}
 
-      </SectionItem>
-
       {/* Detail Drawer */}
       <DetailDrawer
-        open={!!detailUser}
-        onClose={() => setDetailUser(null)}
-        title={detailUser?.name ?? ""}
-        subtitle={detailUser?.email}
+        open={!!detailPatient}
+        onClose={() => setDetailPatient(null)}
+        title={detailPatient?.name ?? ""}
+        subtitle={`${detailPatient?.mrn} · ${detailPatient?.age}y ${detailPatient?.sex}`}
         badge={
-          detailUser && (
-            <span
-              className={cn(
-                "inline-flex rounded-full px-2.5 py-1 text-xs font-medium capitalize",
-                statusStyles[detailUser.status]
-              )}
-            >
-              {detailUser.status}
+          detailPatient && (
+            <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium", riskConfig[detailPatient.riskLevel].bg, riskConfig[detailPatient.riskLevel].color)}>
+              <AlertTriangle className="h-3 w-3" />
+              {riskConfig[detailPatient.riskLevel].label} Risk
             </span>
           )
         }
         rows={
-          detailUser
+          detailPatient
             ? [
-                { label: "Role", value: <span className={cn("font-medium", roleColors[detailUser.role])}>{detailUser.role}</span> },
-                { label: "Plan", value: detailUser.plan },
-                { label: "Revenue", value: detailUser.revenue > 0 ? `$${detailUser.revenue.toLocaleString()}` : "—" },
-                { label: "Location", value: detailUser.location },
-                { label: "Joined", value: detailUser.joined },
+                { label: "Risk Level", value: <span className={cn("font-medium", riskConfig[detailPatient.riskLevel].color)}>{detailPatient.riskLevel}</span> },
+                { label: "Status", value: <span className="capitalize">{detailPatient.status}</span> },
+                { label: "Diagnoses", value: detailPatient.diagnoses > 0 ? String(detailPatient.diagnoses) : "None" },
+                { label: "Total Scans", value: String(detailPatient.totalScans) },
+                { label: "Last Scan", value: detailPatient.lastScan },
+                { label: "Location", value: detailPatient.location },
+                { label: "Risk Factors", value: <div className="flex flex-wrap gap-1">{detailPatient.riskFactors.map((rf, i) => <span key={i} className="rounded-md bg-slate-100 px-2 py-0.5 text-xs dark:bg-slate-700">{rf}</span>)}</div> },
+                { label: "Clinical Notes", value: detailPatient.notes },
               ]
             : []
         }
         footer={
-          <button
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95"
-          >
+          <button className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95">
             <Eye className="h-4 w-4" />
-            View Full Profile
+            View Full Record
           </button>
         }
       />
-
-
+      </div>
+      </SectionItem>
     </PageTransition>
   );
 }

@@ -224,17 +224,18 @@ export default function AnalyticsPage() {
                     <Cell key={entry.short} fill={entry.color} stroke={isDark ? "#1e293b" : "#fff"} strokeWidth={2} />
                   ))}
                 </Pie>
-                <Tooltip content={({ active, payload }) =>
-                  active && payload?.length ? (
+                <Tooltip content={({ active, payload }) => {
+                  const first = payload?.[0];
+                  return active && first ? (
                     <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-lg dark:border-slate-700 dark:bg-slate-800">
-                      <p className="text-sm font-semibold text-slate-900 dark:text-white">{payload[0].payload.name}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{payload[0].value.toLocaleString()} detections</p>
-                      <p className={cn("text-xs font-medium mt-0.5", payload[0].payload.status === "malignant" ? "text-red-600" : "text-emerald-600")}>
-                        {payload[0].payload.status === "malignant" ? "Malignant" : "Benign"}
+                      <p className="text-sm font-semibold text-slate-900 dark:text-white">{first.payload.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{first.value.toLocaleString()} detections</p>
+                      <p className={cn("text-xs font-medium mt-0.5", first.payload.status === "malignant" ? "text-red-600" : "text-emerald-600")}>
+                        {first.payload.status === "malignant" ? "Malignant" : "Benign"}
                       </p>
                     </div>
-                  ) : null
-                } />
+                  ) : null;
+                }} />
                 <Legend
                   verticalAlign="bottom" height={36} iconType="circle" iconSize={8}
                   formatter={(value: string) => <span className="text-xs text-slate-600 dark:text-slate-400">{value}</span>}
@@ -257,14 +258,15 @@ export default function AnalyticsPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} horizontal={false} />
                 <XAxis type="number" stroke={axisStroke} fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis type="category" dataKey="name" stroke={axisStroke} fontSize={11} tickLine={false} axisLine={false} width={70} />
-                <Tooltip content={({ active, payload }) =>
-                  active && payload?.length ? (
+                <Tooltip content={({ active, payload }) => {
+                  const first = payload?.[0];
+                  return active && first ? (
                     <div className="rounded-lg border border-slate-200 bg-white p-2.5 shadow-lg dark:border-slate-700 dark:bg-slate-800">
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{payload[0].payload.name}</p>
-                      <p className="text-sm font-semibold text-slate-900 dark:text-white">{payload[0].value.toLocaleString()} detections</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{first.payload.name}</p>
+                      <p className="text-sm font-semibold text-slate-900 dark:text-white">{first.value.toLocaleString()} detections</p>
                     </div>
-                  ) : null
-                } />
+                  ) : null;
+                }} />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={28}>
                   {CONFIDENCE_DISTRIBUTION.map((entry) => (
                     <Cell key={entry.name} fill={entry.color} fillOpacity={isDark ? 0.7 : 0.85} />

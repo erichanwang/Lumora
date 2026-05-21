@@ -5,7 +5,6 @@ import {
   Users,
   Mail,
   Shield,
-  MoreHorizontal,
   Plus,
   Search,
   BadgeCheck,
@@ -16,6 +15,10 @@ import {
   Loader2,
   Eye,
   Download,
+  Stethoscope,
+  Microscope,
+  FlaskConical,
+  Brain,
 } from "lucide-react";
 import Image from "next/image";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -31,27 +34,38 @@ interface TeamMember {
   id: string;
   name: string;
   email: string;
-  role: "Admin" | "Editor" | "Viewer";
+  role: "Radiologist" | "Dermatologist" | "Pathologist" | "Clinician";
+  specialty: string;
   status: "active" | "invited" | "inactive";
   joined: string;
+  casesReviewed: number;
   lastActive?: string;
+  certifications: string[];
 }
 
 const members: TeamMember[] = [
-  { id: "1", name: "Alex Morgan", email: "alex@lumora.io", role: "Admin", status: "active", joined: "Jan 2023", lastActive: "2 min ago" },
-  { id: "2", name: "Sarah Chen", email: "sarah@example.com", role: "Editor", status: "active", joined: "Mar 2023", lastActive: "1 hour ago" },
-  { id: "3", name: "Michael Kim", email: "michael@example.com", role: "Admin", status: "active", joined: "Aug 2022", lastActive: "30 min ago" },
-  { id: "4", name: "David Park", email: "david@example.com", role: "Editor", status: "invited", joined: "—", lastActive: "—" },
-  { id: "5", name: "Lisa Thompson", email: "lisa@example.com", role: "Viewer", status: "active", joined: "Mar 2025", lastActive: "1 day ago" },
+  { id: "1", name: "Dr. Sarah Chen", email: "sarah@lumora.io", role: "Dermatologist", specialty: "Melanoma & Pigmented Lesions", status: "active", joined: "Jan 2023", casesReviewed: 2847, lastActive: "2 min ago", certifications: ["ABD Board Certified", "Dermoscopy Master"] },
+  { id: "2", name: "Dr. Michael Kim", email: "michael@lumora.io", role: "Radiologist", specialty: "AI-Assisted Imaging", status: "active", joined: "Mar 2023", casesReviewed: 1923, lastActive: "1 hour ago", certifications: ["ABR Board Certified", "AI/ML in Radiology"] },
+  { id: "3", name: "Dr. Emily Rodriguez", email: "emily@lumora.io", role: "Pathologist", specialty: "Dermatopathology", status: "active", joined: "Aug 2022", casesReviewed: 4510, lastActive: "30 min ago", certifications: ["ABP Board Certified", "Fellowship: Dermatopathology"] },
+  { id: "4", name: "Dr. David Park", email: "david@lumora.io", role: "Clinician", specialty: "General Dermatology", status: "invited", joined: "—", casesReviewed: 0, lastActive: "—", certifications: ["MD, FAAD"] },
+  { id: "5", name: "Dr. Lisa Thompson", email: "lisa@lumora.io", role: "Dermatologist", specialty: "Pediatric Dermatology", status: "active", joined: "Mar 2025", casesReviewed: 156, lastActive: "1 day ago", certifications: ["ABD Board Certified", "Pediatric Derm Subspecialty"] },
 ];
 
 const roleBadge = (role: TeamMember["role"]) => {
   const styles = {
-    Admin: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300",
-    Editor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-    Viewer: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+    Dermatologist: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300",
+    Radiologist: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+    Pathologist: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+    Clinician: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
   };
   return styles[role];
+};
+
+const roleIcons: Record<TeamMember["role"], typeof Stethoscope> = {
+  Dermatologist: Stethoscope,
+  Radiologist: Brain,
+  Pathologist: Microscope,
+  Clinician: Shield,
 };
 
 const statusIcon = (status: TeamMember["status"]) => {
@@ -72,14 +86,14 @@ const statusLabel = (status: TeamMember["status"]) => {
 
 import { PageTransition, SectionItem } from "@/components/ui/page-transition";
 
-export default function TeamPage() {
+export default function ClinicalTeamPage() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const debouncedSearch = useDebounce(searchQuery, 300);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [emails, setEmails] = useState<string[]>([""]);
-  const [inviteRole, setInviteRole] = useState<TeamMember["role"]>("Editor");
+  const [inviteRole, setInviteRole] = useState<TeamMember["role"]>("Clinician");
   const [sending, setSending] = useState(false);
   const [emailErrors, setEmailErrors] = useState<Record<number, string>>({});
   const [page, setPage] = useState(0);
@@ -90,7 +104,8 @@ export default function TeamPage() {
   const filtered = members.filter(
     (m) =>
       m.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-      m.email.toLowerCase().includes(debouncedSearch.toLowerCase())
+      m.email.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      m.specialty.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
 
   const paged = filtered.slice(page * perPage, (page + 1) * perPage);
@@ -125,7 +140,6 @@ export default function TeamPage() {
       next[index] = value;
       return next;
     });
-    // Clear error on edit
     if (emailErrors[index]) {
       setEmailErrors((prev) => {
         const next = { ...prev };
@@ -160,13 +174,11 @@ export default function TeamPage() {
     if (!validateEmails()) return;
 
     setSending(true);
-
-    // Simulate sending invites
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const validEmails = emails.filter((e) => e.trim() !== "");
     toast(
-      `Invitation${validEmails.length > 1 ? "s" : ""} sent to ${validEmails.length} ${validEmails.length > 1 ? "recipients" : "recipient"} with ${inviteRole} role`,
+      `Invitation${validEmails.length > 1 ? "s" : ""} sent to ${validEmails.length} ${validEmails.length > 1 ? "clinicians" : "clinician"} with ${inviteRole} role`,
       "success"
     );
 
@@ -176,10 +188,13 @@ export default function TeamPage() {
     setEmailErrors({});
   };
 
+  const totalCases = members.reduce((s, m) => s + m.casesReviewed, 0);
+
   return (
     <PageTransition>
       <SectionItem>
-      <div className="space-y-6">        <div>
+      <div className="space-y-6">
+        <div>
         <div className="flex items-center gap-2">
           <Image
             src="/lumora-icon.svg"
@@ -197,11 +212,29 @@ export default function TeamPage() {
             className="hidden opacity-25 dark:block"
             unoptimized
           />
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Team</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Clinical Team</h1>
         </div>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Manage your team members and their roles.
+          Manage your clinical team of dermatologists, radiologists, and pathologists
         </p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid gap-4 sm:grid-cols-4">
+        {[
+          { label: "Team Members", value: members.length.toString(), icon: Users, color: "text-indigo-600" },
+          { label: "Active Clinicians", value: members.filter((m) => m.status === "active").length.toString(), icon: BadgeCheck, color: "text-emerald-600" },
+          { label: "Total Cases Reviewed", value: totalCases.toLocaleString(), icon: Brain, color: "text-violet-600" },
+          { label: "Specialties", value: [...new Set(members.map((m) => m.role))].length.toString(), icon: Shield, color: "text-amber-600" },
+        ].map((stat) => (
+          <div key={stat.label} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 dark:border-slate-700 dark:bg-slate-800">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
+              <stat.icon className={cn("h-5 w-5", stat.color)} />
+            </div>
+            <p className={cn("mt-2 text-2xl font-bold text-slate-900 dark:text-white", stat.color)}>{stat.value}</p>
+          </div>
+        ))}
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -209,7 +242,7 @@ export default function TeamPage() {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Search members..."
+            placeholder="Search clinicians..."
             value={searchQuery}
             onChange={(e) => { setSearchQuery(e.target.value); setPage(0); }}
             className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-10 pr-4 text-sm text-slate-900 outline-none transition-colors focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30"
@@ -220,21 +253,21 @@ export default function TeamPage() {
           className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95"
         >
           <Plus className="h-4 w-4" />
-          Invite member
+          Invite Clinician
         </button>
       </div>
 
       {filtered.length === 0 ? (
         <EmptyState
           icon={Users}
-          title="No members found"
-          description={searchQuery ? "Try a different search term." : "No team members yet. Invite your first member to get started."}
+          title="No clinicians found"
+          description={searchQuery ? "Try a different search term." : "No clinical team members yet. Invite your first clinician to get started."}
           action={
             <button
               onClick={() => setInviteOpen(true)}
               className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
             >
-              Invite member
+              Invite Clinician
             </button>
           }
         />
@@ -258,138 +291,150 @@ export default function TeamPage() {
                     className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
                   />
                 </th>
-                <th className="px-6 py-3">Name</th>
+                <th className="px-6 py-3">Clinician</th>
                 <th className="px-6 py-3">Role</th>
+                <th className="px-6 py-3">Specialty</th>
                 <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3">Joined</th>
-                <th className="px-6 py-3">Last Active</th>
+                <th className="px-6 py-3">Cases Reviewed</th>
                 <th className="w-12 px-6 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-              {paged.map((member) => (
-                <tr
-                  key={member.id}
-                  className={cn(
-                    "transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer",
-                    selectedIds.has(member.id) && "bg-indigo-50/50 dark:bg-indigo-950/20"
-                  )}
-                  onClick={() => {
-                    setSelectedIds((prev) => {
-                      const next = new Set(prev);
-                      if (next.has(member.id)) next.delete(member.id);
-                      else next.add(member.id);
-                      return next;
-                    });
-                  }}
-                >
-                  <td className="whitespace-nowrap px-4 py-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.has(member.id)}
-                      onChange={() => {
-                        setSelectedIds((prev) => {
-                          const next = new Set(prev);
-                          if (next.has(member.id)) next.delete(member.id);
-                          else next.add(member.id);
-                          return next;
-                        });
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
-                    />
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400">
-                        {member.name.split(" ").map((n) => n[0]).join("")}
+              {paged.map((member) => {
+                const RoleIcon = roleIcons[member.role];
+                return (
+                  <tr
+                    key={member.id}
+                    className={cn(
+                      "transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer",
+                      selectedIds.has(member.id) && "bg-indigo-50/50 dark:bg-indigo-950/20"
+                    )}
+                    onClick={() => {
+                      setSelectedIds((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(member.id)) next.delete(member.id);
+                        else next.add(member.id);
+                        return next;
+                      });
+                    }}
+                  >
+                    <td className="whitespace-nowrap px-4 py-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(member.id)}
+                        onChange={() => {
+                          setSelectedIds((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(member.id)) next.delete(member.id);
+                            else next.add(member.id);
+                            return next;
+                          });
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                      />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-sm font-semibold text-white">
+                          {member.name.split(" ").map((n) => n[1] === "." ? n.slice(2) : n).join("").slice(0, 2)}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-slate-900 dark:text-white">{member.name}</p>
+                          <p className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                            <Mail className="h-3 w-3" />
+                            {member.email}
+                            <CopyButton text={member.email} toast={toast} />
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">{member.name}</p>
-                        <p className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                          <Mail className="h-3 w-3" />
-                          {member.email}
-                          <CopyButton text={member.email} toast={toast} />
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${roleBadge(member.role)}`}>
-                      <Shield className="h-3 w-3" />
-                      {member.role}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center gap-1 text-sm text-slate-600 dark:text-slate-400">
-                      {statusIcon(member.status)}
-                      {statusLabel(member.status)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{member.joined}</td>
-                  <td className="px-6 py-4 text-sm text-slate-400 dark:text-slate-500">{member.lastActive || "—"}</td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setDetailMember(member); }}
-                      className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 active:scale-95 dark:hover:bg-slate-700 dark:hover:text-slate-300"
-                      title="View details"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${roleBadge(member.role)}`}>
+                        <RoleIcon className="h-3 w-3" />
+                        {member.role}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm text-slate-600 dark:text-slate-400">{member.specialty}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center gap-1 text-sm text-slate-600 dark:text-slate-400">
+                        {statusIcon(member.status)}
+                        {statusLabel(member.status)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                        {member.casesReviewed.toLocaleString()}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setDetailMember(member); }}
+                        className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 active:scale-95 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+                        title="View details"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
 
           {/* Mobile cards */}
           <div className="divide-y divide-slate-100 sm:hidden dark:divide-slate-700">
-            {paged.map((member) => (
-              <div key={member.id} className="bg-white p-4 dark:bg-slate-800">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.has(member.id)}
-                      onChange={() => {
-                        setSelectedIds((prev) => {
-                          const next = new Set(prev);
-                          if (next.has(member.id)) next.delete(member.id);
-                          else next.add(member.id);
-                          return next;
-                        });
-                      }}
-                      className="h-4 w-4 rounded border-slate-300 text-indigo-600 dark:border-slate-600"
-                    />
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400">
-                      {member.name.split(" ").map((n) => n[0]).join("")}
+            {paged.map((member) => {
+              const RoleIcon = roleIcons[member.role];
+              return (
+                <div key={member.id} className="bg-white p-4 dark:bg-slate-800">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(member.id)}
+                        onChange={() => {
+                          setSelectedIds((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(member.id)) next.delete(member.id);
+                            else next.add(member.id);
+                            return next;
+                          });
+                        }}
+                        className="h-4 w-4 rounded border-slate-300 text-indigo-600 dark:border-slate-600"
+                      />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-sm font-semibold text-white">
+                        {member.name.split(" ").map((n) => n[1] === "." ? n.slice(2) : n).join("").slice(0, 2)}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">{member.name}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{member.email}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-900 dark:text-white">{member.name}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{member.email}</p>
-                    </div>
+                    <button
+                      onClick={() => setDetailMember(member)}
+                      className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
+                      title="View details"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => setDetailMember(member)}
-                    className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-700"
-                    title="View details"
-                  >
-                    <Eye className="h-4 w-4" />
-                  </button>
+                  <div className="mt-3 flex flex-wrap items-center gap-3">
+                    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${roleBadge(member.role)}`}>
+                      <RoleIcon className="h-3 w-3" />
+                      {member.role}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-sm text-slate-600 dark:text-slate-400">
+                      {statusIcon(member.status)}
+                      {statusLabel(member.status)}
+                    </span>
+                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{member.casesReviewed.toLocaleString()} cases</span>
+                  </div>
                 </div>
-                <div className="mt-3 flex flex-wrap items-center gap-3">
-                  <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${roleBadge(member.role)}`}>
-                    <Shield className="h-3 w-3" />
-                    {member.role}
-                  </span>
-                  <span className="inline-flex items-center gap-1 text-sm text-slate-600 dark:text-slate-400">
-                    {statusIcon(member.status)}
-                    {statusLabel(member.status)}
-                  </span>
-                  <span className="text-sm text-slate-400">Joined {member.joined}</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Bulk action bar */}
@@ -409,16 +454,17 @@ export default function TeamPage() {
                   const selectedMembers = members.filter((m) => selectedIds.has(m.id));
                   exportToCSV(
                     selectedMembers as unknown as Record<string, unknown>[],
-                    `lumora-selected-team-${new Date().toISOString().split("T")[0]}.csv`,
+                    `lumora-clinical-team-${new Date().toISOString().split("T")[0]}.csv`,
                     [
                       { key: "name", label: "Name" },
                       { key: "email", label: "Email" },
                       { key: "role", label: "Role" },
+                      { key: "specialty", label: "Specialty" },
                       { key: "status", label: "Status" },
-                      { key: "joined", label: "Joined" },
+                      { key: "casesReviewed", label: "Cases Reviewed" },
                     ]
                   );
-                  toast("Exported " + selectedIds.size + " members", "success");
+                  toast("Exported " + selectedIds.size + " clinicians", "success");
                 }}
                 className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700"
               >
@@ -448,7 +494,7 @@ export default function TeamPage() {
           >
             <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 dark:border-slate-700">
               <h2 className="text-base font-semibold text-slate-900 dark:text-white">
-                Invite Team Members
+                Invite Clinical Team Member
               </h2>
               <button
                 onClick={() => setInviteOpen(false)}
@@ -472,7 +518,7 @@ export default function TeamPage() {
                           type="email"
                           value={email}
                           onChange={(e) => updateEmail(i, e.target.value)}
-                          placeholder="colleague@company.com"
+                          placeholder="clinician@hospital.com"
                           className={cn(
                             "w-full rounded-lg border bg-white py-2 pl-9 pr-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:ring-2 dark:bg-slate-900 dark:text-white",
                             emailErrors[i]
@@ -506,16 +552,17 @@ export default function TeamPage() {
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Role
+                  Clinical Role
                 </label>
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value as TeamMember["role"])}
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
                 >
-                  <option value="Viewer">Viewer — Read-only access</option>
-                  <option value="Editor">Editor — Can edit content</option>
-                  <option value="Admin">Admin — Full access</option>
+                  <option value="Clinician">Clinician — General dermatology</option>
+                  <option value="Dermatologist">Dermatologist — Specialized in lesion assessment</option>
+                  <option value="Radiologist">Radiologist — AI-assisted image analysis</option>
+                  <option value="Pathologist">Pathologist — Histopathology confirmation</option>
                 </select>
               </div>
             </div>
@@ -551,7 +598,7 @@ export default function TeamPage() {
         subtitle={detailMember?.email}
         badge={
           detailMember && (
-            <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${roleBadge(detailMember.role)}`}>
+            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${roleBadge(detailMember.role)}`}>
               {detailMember.role}
             </span>
           )
@@ -560,9 +607,12 @@ export default function TeamPage() {
           detailMember
             ? [
                 { label: "Role", value: detailMember.role },
+                { label: "Specialty", value: detailMember.specialty },
                 { label: "Status", value: statusLabel(detailMember.status) },
+                { label: "Cases Reviewed", value: detailMember.casesReviewed.toLocaleString() },
                 { label: "Joined", value: detailMember.joined },
                 { label: "Last Active", value: detailMember.lastActive || "—" },
+                { label: "Certifications", value: <div className="flex flex-wrap gap-1">{detailMember.certifications.map((c, i) => <span key={i} className="rounded-md bg-slate-100 px-2 py-0.5 text-xs dark:bg-slate-700">{c}</span>)}</div> },
               ]
             : []
         }

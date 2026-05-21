@@ -7,7 +7,7 @@ import {
   LayoutDashboard,
   BarChart3,
   Users,
-  ShoppingCart,
+  ScanEye,
   Settings,
   ChevronLeft,
   FileText,
@@ -16,6 +16,7 @@ import {
   UserCog,
   ScrollText,
   Microscope,
+  Stethoscope,
 } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -26,13 +27,13 @@ const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Detection", href: "/detection", icon: Microscope },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
-  { name: "Users", href: "/users", icon: Users },
-  { name: "Team", href: "/team", icon: UserCog },
-  { name: "Orders", href: "/orders", icon: ShoppingCart },
+  { name: "Patients", href: "/users", icon: Users },
+  { name: "Clinical Team", href: "/team", icon: Stethoscope },
+  { name: "Scan Queue", href: "/orders", icon: ScanEye },
   { name: "Reports", href: "/reports", icon: FileText },
-  { name: "Invoices", href: "/invoices", icon: Receipt },
+  { name: "Billing", href: "/invoices", icon: Receipt },
   { name: "Audit Log", href: "/audit", icon: ScrollText },
-  { name: "Health", href: "/health", icon: Activity },
+  { name: "Model Health", href: "/health", icon: Activity },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 

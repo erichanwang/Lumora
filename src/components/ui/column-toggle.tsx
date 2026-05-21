@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Columns3, Check } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export interface ColumnDef {
@@ -51,6 +52,16 @@ export function ColumnToggle({ columns, visibleColumns, onChange }: ColumnToggle
       </button>
       {open && (
         <div className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-xl border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+          <div className="flex items-center justify-center border-b border-slate-100 px-3 py-2 dark:border-slate-700">
+            <Image
+              src="/favicon.svg"
+              alt=""
+              width={12}
+              height={12}
+              className="opacity-40"
+              unoptimized
+            />
+          </div>
           {columns.map((col) => (
             <button
               key={col.key}

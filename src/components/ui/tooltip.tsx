@@ -56,7 +56,7 @@ export function Tooltip({
 
   return (
     <div
-      className="relative inline-flex"
+      className="relative inline-flex w-full"
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
       onFocus={() => setVisible(true)}

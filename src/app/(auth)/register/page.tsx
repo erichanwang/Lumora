@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Loader2, Check, Shield, AlertTriangle, Key, Eye, EyeOff } from "lucide-react";
@@ -12,7 +11,6 @@ import { cn } from "@/lib/utils";
 import { AuthGradient } from "@/components/ui/auth-gradient";
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -85,12 +83,13 @@ export default function RegisterPage() {
       <div className="flex flex-1 items-center justify-center px-6 py-12 lg:px-8">
         <div className="w-full max-w-sm">
           <Link href="/" className="flex items-center gap-2 mb-10">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
+            <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 shrink-0">
               <Image
                 src="/lumora-icon-white.svg"
                 alt="Lumora"
                 width={18}
                 height={18}
+                className="sm:w-[20px] sm:h-[20px]"
                 unoptimized
               />
             </div>

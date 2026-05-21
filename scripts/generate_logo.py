@@ -37,6 +37,12 @@ Coordinate System:
 import os
 from pathlib import Path
 
+try:
+    from PIL import Image, ImageDraw
+    HAS_PILLOW = True
+except ImportError:
+    HAS_PILLOW = False
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = PROJECT_ROOT / "public"
 
@@ -395,13 +401,104 @@ def _minify_svg(svg: str) -> str:
     return "\n".join(lines)
 
 
+def _draw_rounded_rect(draw, xy, radius, fill):
+    """Draw a rounded rectangle on a Pillow ImageDraw.
+
+    Uses pieslice arcs at corners with fallback to simple rectangle
+    when the radius is too large for the dimensions.
+    """
+    x0, y0, x1, y1 = xy
+    w, h = x1 - x0, y1 - y0
+    effective_r = min(radius, w // 2, h // 2)
+    r2 = effective_r * 2
+
+    if effective_r < 2:
+        draw.rectangle([x0, y0, x1, y1], fill=fill)
+        return
+
+    draw.rectangle([x0 + effective_r, y0, x1 - effective_r, y1], fill=fill)
+    draw.rectangle([x0, y0 + effective_r, x1, y1 - effective_r], fill=fill)
+    draw.pieslice([x0, y0, x0 + r2, y0 + r2], 180, 270, fill=fill)
+    draw.pieslice([x1 - r2, y0, x1, y0 + r2], 270, 360, fill=fill)
+    draw.pieslice([x0, y1 - r2, x0 + r2, y1], 90, 180, fill=fill)
+    draw.pieslice([x1 - r2, y1 - r2, x1, y1], 0, 90, fill=fill)
+
+
+def _generate_png_icon(size, filename):
+    """Generate a PNG PWA icon programmatically using Pillow.
+
+    Creates a recognizable Lumora mark: gradient background pill,
+    white L-beam structure, and a glowing spark dot.
+    """
+    if not HAS_PILLOW:
+        print(f"  ⚠️  Skipping {filename} — Pillow not installed")
+        return
+
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # Background rounded rectangle with indigo→violet gradient
+    margin = int(size * 0.06)
+    radius = int(size * 0.18)
+
+    for y in range(margin, size - margin):
+        ratio = (y - margin) / (size - 2 * margin)
+        r = int(99 * (1 - ratio) + 139 * ratio)
+        g = int(102 * (1 - ratio) + 92 * ratio)
+        b = int(241 * (1 - ratio) + 246 * ratio)
+        color = (r, g, b, 255)
+        draw.rectangle([margin, y, size - margin, y + 1], fill=color)
+
+    # Clip corners to create rounded rect effect
+    mask = Image.new("L", (size, size), 0)
+    mask_draw = ImageDraw.Draw(mask)
+    _draw_rounded_rect(mask_draw, [margin, margin, size - margin, size - margin], radius, 255)
+    img.putalpha(mask)
+
+    # White L-beam
+    beam_color = (255, 255, 255, 255)
+    scale = size / 40.0
+
+    # Vertical pillar
+    vx = int(15 * scale)
+    vy = int(5 * scale)
+    vw = int(10 * scale)
+    vh = int(24 * scale)
+    beam_radius = int(5 * scale)
+    _draw_rounded_rect(draw, [vx, vy, vx + vw, vy + vh], beam_radius, beam_color)
+
+    # Horizontal base
+    hx = int(15 * scale)
+    hy = int(22 * scale)
+    hw = int(23 * scale)
+    hh = int(9 * scale)
+    _draw_rounded_rect(draw, [hx, hy, hx + hw, hy + hh], beam_radius, beam_color)
+
+    # Spark dot
+    spark_x = int(26 * scale)
+    spark_y = int(5.5 * scale)
+    spark_r = max(int(2.5 * scale), 2)
+    draw.ellipse(
+        [spark_x - spark_r, spark_y - spark_r, spark_x + spark_r, spark_y + spark_r],
+        fill=(255, 255, 255, 255)
+    )
+
+    path = PUBLIC_DIR / filename
+    img.save(path, "PNG", optimize=True)
+    size_kb = os.path.getsize(path) / 1024
+    print(f"  ✅  {filename:30s}  ({size_kb:5.1f} KB)")
+    return size_kb
+
+
 def generate_all():
-    """Generate all Lumora logo SVG variants."""
+    """Generate all Lumora logo SVG variants and PWA PNG icons."""
     print("🎨  Generating Lumora brand assets...\n")
 
     PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
 
-    total_before = 0
+    total_size = 0
+
+    # SVG assets
     for filename, generator_fn in ASSETS.items():
         svg_content = generator_fn()
         minified = _minify_svg(svg_content)
@@ -409,11 +506,18 @@ def generate_all():
         with open(path, "w") as f:
             f.write(minified)
         size_kb = os.path.getsize(path) / 1024
-        total_before += size_kb
+        total_size += size_kb
         print(f"  ✅  {filename:30s}  ({size_kb:5.1f} KB)")
 
+    # PNG PWA icons
+    print()
+    png_kb = _generate_png_icon(192, "icon-192.png") or 0
+    total_size += png_kb
+    png_kb = _generate_png_icon(512, "icon-512.png") or 0
+    total_size += png_kb
+
     print(f"\n📁  All assets saved to: {PUBLIC_DIR}")
-    print(f"📦  Total size: {total_before:.1f} KB")
+    print(f"📦  Total size: {total_size:.1f} KB")
     print("✨  Done! Lumora logo generated.\n")
 
 

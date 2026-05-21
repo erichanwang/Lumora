@@ -81,12 +81,13 @@ export default function LoginPage() {
       <div className="flex flex-1 items-center justify-center px-6 py-12 lg:px-8">
         <div className="w-full max-w-sm">
           <Link href="/" className="flex items-center gap-2 mb-10">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
+            <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 shrink-0">
               <Image
                 src="/lumora-icon-white.svg"
                 alt="Lumora"
                 width={18}
                 height={18}
+                className="sm:w-[20px] sm:h-[20px]"
                 unoptimized
               />
             </div>
@@ -245,7 +246,7 @@ export default function LoginPage() {
 
       <AuthGradient>
         <blockquote className="text-xl font-medium text-white">
-          "Lumora has transformed how we understand our business data. The insights are incredible."
+          &ldquo;Lumora has transformed how we understand our business data. The insights are incredible.&rdquo;
         </blockquote>
         <div className="mt-4 flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-sm font-bold text-white">

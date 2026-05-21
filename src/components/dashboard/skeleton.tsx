@@ -4,7 +4,10 @@ function Skeleton({ className, delay }: { className?: string; delay?: number }) 
   return (
     <div
       className={cn(
-        "animate-pulse rounded-lg bg-slate-200 dark:bg-slate-700",
+        "rounded-lg bg-slate-200 dark:bg-slate-700/60 relative overflow-hidden",
+        "after:absolute after:inset-0 after:translate-x-[-100%] after:animate-shimmer-slide",
+        "after:bg-gradient-to-r after:from-transparent after:via-white/20 after:to-transparent",
+        "dark:after:via-slate-600/30",
         className
       )}
       style={delay ? { animationDelay: `${delay}ms` } : undefined}

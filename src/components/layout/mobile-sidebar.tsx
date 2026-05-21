@@ -73,13 +73,13 @@ export function MobileSidebar({
       >
         {/* Logo */}
         <div className="flex h-16 items-center justify-between border-b border-slate-800 px-4 dark:border-slate-900">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <Image
               src="/lumora-logo-white.svg"
               alt="Lumora"
-              width={140}
-              height={28}
-              className="shrink-0"
+              width={130}
+              height={26}
+              className="shrink-0 max-w-[130px] h-auto"
               priority
               unoptimized
             />

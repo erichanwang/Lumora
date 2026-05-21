@@ -26,6 +26,7 @@ export function AuthGradient({ children }: AuthGradientProps) {
           alt="Lumora"
           width={140}
           height={28}
+          className="max-w-[120px] sm:max-w-[140px] h-auto"
           priority
           unoptimized
         />

@@ -17,6 +17,7 @@ import {
   ScrollText,
 } from "lucide-react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { useState } from "react";
 
 const navigation = [
@@ -93,16 +94,23 @@ export function Sidebar({ collapsed: controlledCollapsed, onToggle }: { collapse
               key={item.name}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                "relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                 isActive
-                  ? "bg-indigo-500/10 text-indigo-400 shadow-sm dark:bg-indigo-500/20 dark:text-indigo-300"
+                  ? "text-indigo-400 dark:text-indigo-300"
                   : "text-slate-400 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900",
                 collapsed && isActive && "ring-1 ring-indigo-500/30"
               )}
               title={collapsed ? item.name : undefined}
             >
-              <item.icon className="h-5 w-5 shrink-0" />
-              {!collapsed && <span>{item.name}</span>}
+              {isActive && (
+                <motion.div
+                  layoutId="sidebar-active"
+                  className="absolute inset-0 rounded-lg bg-indigo-500/10 shadow-sm dark:bg-indigo-500/20"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <item.icon className="relative z-10 h-5 w-5 shrink-0" />
+              {!collapsed && <span className="relative z-10">{item.name}</span>}
             </Link>
           );
         })}

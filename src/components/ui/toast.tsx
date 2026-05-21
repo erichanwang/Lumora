@@ -91,6 +91,15 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             alt=""
             width={80}
             height={80}
+            className="dark:hidden"
+            unoptimized
+          />
+          <Image
+            src="/lumora-icon-white.svg"
+            alt=""
+            width={80}
+            height={80}
+            className="hidden dark:block"
             unoptimized
           />
         </div>

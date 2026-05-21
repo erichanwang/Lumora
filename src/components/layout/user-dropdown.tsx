@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import {
   User,
   Settings,
@@ -59,8 +60,21 @@ export function UserDropdown({
     >
       {/* User info */}
       <div className="border-b border-slate-100 px-4 py-3 dark:border-slate-700">
-        <p className="text-sm font-medium text-slate-900 dark:text-white">Alex Morgan</p>
-        <p className="text-xs text-slate-500 dark:text-slate-400">alex@lumora.io</p>
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600">
+            <Image
+              src="/lumora-icon-white.svg"
+              alt=""
+              width={18}
+              height={18}
+              unoptimized
+            />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-slate-900 dark:text-white">Alex Morgan</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">alex@lumora.io</p>
+          </div>
+        </div>
       </div>
 
       {/* Items */}

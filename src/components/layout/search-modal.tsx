@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Search, LayoutDashboard, BarChart3, Users, ShoppingCart, Settings, FileText, Receipt, UserPlus, Activity, ArrowRight, History, HeartPulse, Sun, Moon, PanelLeft, Keyboard, Zap } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/theme-context";
@@ -238,13 +239,29 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
         </div>
 
         {/* Footer */}
-        <div className="border-t border-slate-100 px-4 py-2 dark:border-slate-700">
+        <div className="flex items-center justify-between border-t border-slate-100 px-4 py-2 dark:border-slate-700">
           <div className="flex items-center gap-4 text-xs text-slate-400">
             <span>↑↓ Navigate</span>
             <span>↵ Open</span>
             <span>⌘K Close</span>
             <span className="hidden sm:inline">⌘/ Shortcuts</span>
           </div>
+          <Image
+            src="/lumora-icon.svg"
+            alt=""
+            width={14}
+            height={14}
+            className="opacity-20 dark:hidden"
+            unoptimized
+          />
+          <Image
+            src="/lumora-icon-white.svg"
+            alt=""
+            width={14}
+            height={14}
+            className="hidden opacity-20 dark:block"
+            unoptimized
+          />
         </div>
       </div>
     </div>

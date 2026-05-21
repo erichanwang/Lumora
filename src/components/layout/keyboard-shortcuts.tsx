@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Keyboard } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const shortcuts = [
@@ -54,8 +54,16 @@ export function KeyboardShortcuts() {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 dark:border-slate-700">
-          <div className="flex items-center gap-2">
-            <Keyboard className="h-5 w-5 text-slate-500" />
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
+              <Image
+                src="/lumora-icon-white.svg"
+                alt=""
+                width={16}
+                height={16}
+                unoptimized
+              />
+            </div>
             <h2 className="text-base font-semibold text-slate-900 dark:text-white">
               Keyboard Shortcuts
             </h2>

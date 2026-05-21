@@ -12,6 +12,7 @@ import {
   CheckCheck,
   RefreshCw,
 } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useNotifications, useMarkAllRead } from "@/lib/swr";
 
@@ -155,7 +156,22 @@ export function NotificationsPanel({
         {displayedNotifs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 text-center">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700">
-              <Bell className="h-6 w-6 text-slate-400 dark:text-slate-500" />
+              <Image
+                src="/lumora-icon.svg"
+                alt=""
+                width={24}
+                height={24}
+                className="opacity-30 dark:hidden"
+                unoptimized
+              />
+              <Image
+                src="/lumora-icon-white.svg"
+                alt=""
+                width={24}
+                height={24}
+                className="hidden opacity-30 dark:block"
+                unoptimized
+              />
             </div>
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
               {totalCount === 0 ? "No notifications yet" : "All caught up!"}
@@ -163,7 +179,7 @@ export function NotificationsPanel({
             <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
               {totalCount === 0
                 ? "Notifications will appear here when something happens."
-                : "You've read everything."}
+                : "You&apos;ve read everything."}
             </p>
           </div>
         ) : (

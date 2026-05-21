@@ -1,7 +1,9 @@
 "use client";
 
 import { Bell, Search, Moon, Sun, Menu } from "lucide-react";
-import { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/theme-context";
 import { SearchModal } from "./search-modal";
@@ -31,6 +33,26 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
           >
             <Menu className="h-5 w-5" />
           </button>
+
+          {/* Mobile logo — visible only on small screens */}
+          <Link href="/" className="shrink-0 lg:hidden">
+            <Image
+              src="/lumora-icon.svg"
+              alt="Lumora"
+              width={28}
+              height={28}
+              className="dark:hidden"
+              unoptimized
+            />
+            <Image
+              src="/lumora-icon-white.svg"
+              alt="Lumora"
+              width={28}
+              height={28}
+              className="hidden dark:block"
+              unoptimized
+            />
+          </Link>
 
           {/* Search bar */}
           <div className="max-w-md flex-1">

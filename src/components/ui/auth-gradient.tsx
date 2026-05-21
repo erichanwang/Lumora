@@ -25,7 +25,7 @@ export function AuthGradient({ children }: AuthGradientProps) {
           alt=""
           width={400}
           height={80}
-          className="hidden opacity-20 dark:block"
+          className="hidden dark:block"
           unoptimized
         />
       </div>

@@ -221,24 +221,35 @@ export default function DashboardPage() {
           </p>
           <div className="space-y-4">
             {topProducts.map((product, i) => (
-              <div key={product.name} className="flex items-center gap-4">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-sm font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300">
-                  {i + 1}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 dark:text-white">{product.name}</p>
-                  <div className="mt-1 h-1.5 w-full rounded-full bg-slate-100 dark:bg-slate-700">
-                    <div
-                      className={cn("h-1.5 rounded-full", product.color)}
-                      style={{ width: `${100 - i * 20}%` }}
-                    />
+              <motion.div
+                key={product.name}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: i * 0.1 }}
+                whileHover={{
+                  scale: 1.02,
+                  boxShadow: "0 4px 12px rgba(99, 102, 241, 0.08)",
+                  transition: { duration: 0.2 },
+                }}
+                className="flex items-center gap-4 rounded-lg p-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50"
+              >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-sm font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                    {i + 1}
                   </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{product.revenue}</p>
-                  <p className="text-xs font-medium text-emerald-600">{product.growth}</p>
-                </div>
-              </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">{product.name}</p>
+                    <div className="mt-1 h-1.5 w-full rounded-full bg-slate-100 dark:bg-slate-700">
+                      <div
+                        className={cn("h-1.5 rounded-full transition-all duration-500", product.color)}
+                        style={{ width: `${100 - i * 20}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{product.revenue}</p>
+                    <p className="text-xs font-medium text-emerald-600">{product.growth}</p>
+                  </div>
+              </motion.div>
             ))}
           </div>
         </div>

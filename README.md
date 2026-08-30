@@ -1,14 +1,14 @@
-# Lumora — Illuminate Your Business Performance
+# Lumora: Illuminate Your Business Performance
 
 A modern SaaS dashboard for monitoring business performance, analytics, and growth. Built with Next.js 15, TypeScript, and Tailwind CSS.
 
 ## Brand
 
-**Lumora** combines *luminous* + *ora* (time/now) — a dashboard that illuminates real-time business insights. The logo features:
+**Lumora** combines *luminous* + *ora* (time/now), a dashboard that illuminates real-time business insights. The logo features:
 
-- **The Beam** — A stylized "L" letterform representing structural data foundations
-- **The Prism** — A faceted crystal refracting light into actionable insight
-- **The Spark** — A luminous point at the apex representing the moment of clarity
+- **The Beam**: A stylized "L" letterform representing structural data foundations
+- **The Prism**: A faceted crystal refracting light into actionable insight
+- **The Spark**: A luminous point at the apex representing the moment of clarity
 
 ## Tech Stack
 
